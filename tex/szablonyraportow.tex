@@ -1,0 +1,40 @@
+\chapter{Szablony raportów w systemie Latex}
+
+\section{Środowisko kompilacji raportów}
+
+blablabla nie mam pojecia
+
+\section{Idea działania szablonów}
+
+Do wszystkich tych dokumentów potrzebny jest szablon w języku oprogramowania do zautomatyzowanego składu tekstu. W tej pracy został wybrany program LaTeX ze względu na jego możliwości automatyzacji procesu parsowania danych i uzupełniania nimi danych miejsc w tekście.
+\par Stworzenie szablonów polega, więc na wcześniejszym przygotowaniu plików tex, zawierających wcześniej strukturę danego dokumentu z "pustymi" miejscami do uzupełnienia przez program. Do uzupełnienia tych miejsc można wykorzystać funkcję LaTeXu jaką jest tworzenie nowych środowisk z parametrami, gdzie odpowiednio parametry te będą wartościami, które zostaną wpisane w dane miejsce w danym dokumencie. Następnie wystarczy wywołać dane środowisko z odpowiednimi wartościami aby otrzymać uzupełniony dokument. Dane środowisko możemy wywoływać wielokrotnie od różnych wartości tworząc w ten sposób wiele dokumentów tego samego typu o różnych zmiennych wartościach takich jak np imię i nazwisko. 
+\par Do wytworzenia wywołań tych środowisk posłuży właśnie program stworzony w javie. Poprzez dodanie zapytania SQL w odpowiedniej formule do plików tex. Program DBRaportLatex wyszuka takie zapytanie i uzupełni szablon wywołaniami środowisk z wartościami parametrów, jakimi będą wartości pola z rekordów zapytania SQL. 
+
+
+
+
+\section{Tworzenie szablonów raportów do systemu rekrutacji}
+
+W rekrutacji na uczelnie wykorzystuje się dokumenty, które należało dokładnie odwzorować w nowym systemie. Są to następujące dokumenty:
+\begin{enumerate}
+\item protokół przekazania
+\item listy potwierdzenia podjęcia studiów 
+\item listy rankingowe 
+\item listy przyjętych
+\item listy nieprzyjętych
+\item decyzja o przyjęciu danego kandydata
+\item decyzja o nieprzyjęciu danego kandydata
+\end{enumerate}
+
+Przy tworzeniu szablonów wystąpiły powtarzające się problemy, które należało rozwiązać.  Jako że rozwiązania tych problemów powtarzają się, to zamiast opisywania każdego szablonu po kolei, przedstawione poniżej zostały najważniejsze problemy, wynikające z tworzenia tych szablonów.
+
+\subsection{Wyświetlanie listy}
+Problem występujący w protokole przekazania oraz we wszystkich listach. Przykładowo potrzebujemy wyświetlić poniższą listę, gdzie oczywiście wartości pochodzą z bazy danych:
+\begin{verbatim}
+Lp. Tok studiów Liczba kopert
+1 Informatyka — niestacjonarne STUDIA pierwszego stopnia 1455
+2 Informatyka — stacjonarne STUDIA pierwszego stopnia 729
+3 Mechatronika — niestacjonarne STUDIA pierwszego stopnia 1447
+...
+\end{verbatim}
+

@@ -1,4 +1,4 @@
-\chapter{Testowanie Systemu}
+\chapter{Uruchomienie oraz testowanie Systemu}
 
 Przed wdrożeniem programu do realnego systemu, program należy przetestować. Testy powinny być prowadzone na tymczasowej bazie danych, ponieważ idea testów jest taka, że po podmianie bazy danych na realną wszystko ma działać bez zmian. Zmienić się może tylko zapis połączenia z bazą danych w pliku konfiguracyjnym. Dzięki takiemu zabiegowi, będzie można być pewnym tego, że wszystko będzie działać na prawdziwej bazie danych.  Do przeprowadzenia testów potrzebne będzie  odtworzyć przyszłe środowisko, w którym będzie działać program, przygotować szablony dokumentów, które są wytwarzane w procesie rekrutacji oraz wygenerować dokumenty. Ostatnim już krokiem będzie sprawdzenie czy podczas tego procesu nie ma żadnych komplikacji oraz czy wygenerowane dokumenty nie zawierają błędów.
 
@@ -29,7 +29,7 @@ dbpath=D:\test systemu\rekrutacja.fdb
 user=SYSDBA
 password= masterkey
 \end{lstlisting}
-\subsection{ Stworzenie struktury}
+\subsection{ Stworzenie struktury bazy}
 
 Dotychczasowy system wykorzystywał tabelę (widok) która była generowana dynamicznie i która zawiera wszystkich studentów w rekrutacji. Zawiera ona wszystkie dane potrzebne do wytworzenia dokumentów. Jeden rekord to jeden student ze wszystkimi informacjami na jego temat. Dodatkowo jeszcze potrzebna jest tabela z informacjami na temat rekrutacji, takimi jak na przykład nazwisko i imię przewodniczącego komisji, czy data wydania decyzji przyjęcia studenta. Z tych tabel będą pobierane informacje, natomiast do wygenerowania danych potrzebne będą dwie dodatkowe tymczasowe tabele.
 Tabela główna z kandydatami(zapis SQL):
@@ -195,7 +195,19 @@ test = :licznik;
 suspend;
 end
 \end{lstlisting}
-Powyższa procedura z jednej osoby z tabeli dane tworzy jednego kandydata, losując mu tok nauki, ilość punktów oraz czy zostanie przyjęty lub nie. Dorzucane są także pewne stałe wartości, podobne do tych w oryginalnej bazie danych, które nie wymagają uzmiennienia. Procedura ta, po jednorazowym wywołaniu, wygenerowała 10001 rekordów w tabeli "kandydat\_aligeza". Daje to wystarczającą ilość testowych kandydatów do przeprowadzenia testów.
+Powyższa procedura z jednej osoby z tabeli dane tworzy jednego kandydata, losując mu tok nauki, ilość punktów oraz czy zostanie przyjęty lub nie. Dorzucane są także pewne stałe wartości, podobne do tych w oryginalnej bazie danych, które nie wymagają uzmiennienia. Procedura ta, po jednorazowym wywołaniu, wygenerowała 10001 rekordów w tabeli "kandydat\_aligeza". Daje to wystarczającą ilość testowych kandydatów do przeprowadzenia testów. Baza danych z przeprowadzonych testów znajduje się w załącznikach.
 
-\section{ Przygotowanie szablonów raportów}
+\section{Dostosowanie zapytań SQL w szablonach}
+
+Dokładny opis zapytań SQL i procesu ich tworzenia.
+
+
+\section{Przebieg generowania raportów}
+
+Proces uruchamiania oraz przebiegu
+
+\section{Wyniki testu}
+
+Krótki opis wyników testu.
+
 
