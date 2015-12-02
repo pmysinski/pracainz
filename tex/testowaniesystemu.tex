@@ -1,20 +1,20 @@
 \chapter{Testowanie Systemu}
 
-Przed wdrożeniem programu do realnego systemu, program należy przetestować. Test powinny być prowadzone na tymczasowej bazie danych, ponieważ idea testów jest taka, że po podmianie bazy danych na realną wszystko ma działać bez zmian. Zmienić się może tylko zapis połączenia z bazą danych w pliku konfiguracyjnym. Dzieki takiemu zabiegowi, będzie można być pewnym tego, że wszystko będzie działać na prawdziwej bazie danych.  Do przeprowadzenia testów potrzebne będzie więc odtworzyć przyszłe środowisko, w którym będzie działać program, przygotować szablony dokumentów, które są wytwarzane w procesie rekrutacji oraz wygenerować dokumenty. Ostatnim już krokiem będzie sprawdzenie czy podczas tego procesu nie ma żadnych komplikacji oraz czy wygenerowane dokumenty nie zawierają błędów.
+Przed wdrożeniem programu do realnego systemu, program należy przetestować. Testy powinny być prowadzone na tymczasowej bazie danych, ponieważ idea testów jest taka, że po podmianie bazy danych na realną wszystko ma działać bez zmian. Zmienić się może tylko zapis połączenia z bazą danych w pliku konfiguracyjnym. Dzięki takiemu zabiegowi, będzie można być pewnym tego, że wszystko będzie działać na prawdziwej bazie danych.  Do przeprowadzenia testów potrzebne będzie  odtworzyć przyszłe środowisko, w którym będzie działać program, przygotować szablony dokumentów, które są wytwarzane w procesie rekrutacji oraz wygenerować dokumenty. Ostatnim już krokiem będzie sprawdzenie czy podczas tego procesu nie ma żadnych komplikacji oraz czy wygenerowane dokumenty nie zawierają błędów.
 
 \section{ Generowanie przykładowych danych}
 
-W celu przetestowania systemu generowania raportów w procesie rekrutacji kandydatów na studia potrzebne będą fikcyjne dane w dokładnie tej samej strukturze co w systemie rekrutacji, ponieważ w szablonach latexu znajdują się zapytania SQL do danych tabel w bazie danych. 
+W celu przetestowania systemu generowania raportów w procesie rekrutacji kandydatów na studia potrzebne będą testowe dane w dokładnie tej samej strukturze co w systemie rekrutacji, ponieważ w szablonach latexu znajdują się zapytania SQL do danych tabel w bazie danych. 
 W celu otrzymania tych danych potrzebne będzie:
 1.	Utworzenie nowej bazy danych na silniku Firebird’a 
 2.	Stworzenie wystarczającej struktury tabel odzwierciedlającą strukturę w systemie uczelnianym.
-3.	Wygenerowanie dużej ilości fikcyjnych osób.
+3.	Wygenerowanie dużej ilości testowych danych osobowych.
 4.	Uzupełnienie tabel danymi, które zostały wygenerowane wcześniej oraz dodanie do nich dodatkowych, jednocześnie losowych, informacji na temat procesu rekrutacji.
-Po wykonaniu tych kroków, powinna powstać baza danych do której bez problem program połączy się i wyciągnie z niej potrzebne dane dokładnie jak z prawdziwej bazy danych.
+Po wykonaniu tych kroków, powinna powstać baza danych do której bez problem program połączy się i wyciągnie z niej potrzebne dane dokładnie jak z realnej bazy danych.
 
 \subsection{ Tworzenie bazy danych }
 
-Do stworzenia pliku bazy danych na silniku firebird’a posłużyć się można narzędziem dostepnym w katalogu bin zainstalowanego serwera firebird.  Narzędzie to pozwala z lini komend tworzyć i łączyć się z bazami danych. W tym przypadku użyta zostanie komenda „CREATE DATABASE”
+Do stworzenia pliku bazy danych na silniku firebird’a posłużyć się można narzędziem dostepnym w katalogu bin zainstalowanego serwera firebird.  Narzędzie to pozwala z linii komend tworzyć i łączyć się z bazami danych. W tym przypadku użyta zostanie komenda „CREATE DATABASE”
 \begin{lstlisting}
 C:\Program Files\Firebird\bin>isql
 SQL>CREATE DATABASE 'D:\test systemu\rekrutacja.fdb'
@@ -31,7 +31,7 @@ password= masterkey
 \end{lstlisting}
 \subsection{ Stworzenie struktury}
 
-Dotychczasowy system wykorzystywał tabelę (widok) która była generowana dynamicznie i która zawiera wszystkich studentów w rekrutacji. Zawiera ona wszystkie dane potrzebne do wytworzenia dokumentów. Jeden rekord to jeden student ze wszystkimi informacjami na jego temat. Dodatkowo jeszcze potrzebna jest tabela z informacjami na temat rekrutacji, takimi jak na przykład nazwisko i imie przewodniczącego komisji, czy data wydania dezycji przyjęcia studenta. Z tych tabel będą pobierane informacje, natomiast do wygenerowania danych potrzebne będą dwie dodatkowe tymaczasowe tabele.
+Dotychczasowy system wykorzystywał tabelę (widok) która była generowana dynamicznie i która zawiera wszystkich studentów w rekrutacji. Zawiera ona wszystkie dane potrzebne do wytworzenia dokumentów. Jeden rekord to jeden student ze wszystkimi informacjami na jego temat. Dodatkowo jeszcze potrzebna jest tabela z informacjami na temat rekrutacji, takimi jak na przykład nazwisko i imię przewodniczącego komisji, czy data wydania decyzji przyjęcia studenta. Z tych tabel będą pobierane informacje, natomiast do wygenerowania danych potrzebne będą dwie dodatkowe tymczasowe tabele.
 Tabela główna z kandydatami(zapis SQL):
 \begin{lstlisting}
 CREATE TABLE KANDYDAT_ALIGEZA (
@@ -94,18 +94,18 @@ CREATE TABLE TOKNAUKI_ALIGEZA (
     KOD_IKR                  VARCHAR(3)
 );
 \end{lstlisting}
-\subsection{ Generowanie fikcyjnych danych osobowych}
+\subsection{ Generowanie testowych danych osobowych}
 
-Do wygenerowania kandydatów potrzeba imienia nazwiska oraz adresu. Takie dane dostępne są w książkach telefonicznych. Posługując się jedną z takich książek stworzony został plik csv o seperatorze „;” zawierajacy po kolei imie z nazwiskiem, adres, pesel, nazwisko oraz imie. Pesel został dodany do każdej osoby jako losowy ciąg cyfr spełniający walidację pesela. Ze względu na fakt iż pesel został wygenerowany losowo, może zdarzyć się iż mężczyzna posiadać będzie kobiecy pesel, w następstwie czego, we wygenerowanych dokumentach wypisane zostanie „Pani” i na odwrót.
+Do wygenerowania kandydatów potrzeba imienia nazwiska oraz adresu. Takie dane dostępne są w książkach telefonicznych. Posługując się jedną z takich książek stworzony został plik csv o separatorze „;” zawierający po kolei imię z nazwiskiem, adres, pesel, nazwisko oraz imie. Pesel został dodany do każdej osoby jako losowy ciąg cyfr spełniający walidację peselu. Ze względu na fakt iż pesel został wygenerowany losowo, może zdarzyć się iż mężczyzna posiadać będzie kobiecy pesel, w następstwie czego, we wygenerowanych dokumentach wypisane zostanie „Pani” i na odwrót.
 Struktura pliku:
 \begin{lstlisting}
  Abram Andrzej; Lwowska 116;88071640299;Abram;Andrzej
  Abram Halina; Ludwika Zamenhofa 2;86111210691;Abram;Halina
 ...
 
-
 \end{lstlisting}
-Taki plik bardzo łatwo zaimportować do bazy danych do tabeli „dane”. Do importu wykorzystana została funkcja programu IBExpert „import data”. Jedna linijka w pliku zostaje zaimportowana jako jeden rekord, w którym każde pole po kolei odpowiada wartościom między średnikami. Zaimportowanych w ten sposób zostało 10001 rekordów (osób) do tabeli „dane” do dalszych manipulacji.
+
+Tak sformatowany plik CSV,  łatwo zaimportować do bazy danych do tabeli „dane” ze względu na identyczną kolejność danych w kolumnach. Do importu wykorzystana została funkcja programu IBExpert „import data”. Jedna linijka w pliku zostaje zaimportowana jako jeden rekord, w którym każde pole po kolei odpowiada wartościom między średnikami. Zaimportowanych w ten sposób zostało 10001 rekordów (osób) do tabeli „dane” do dalszych manipulacji.
 
 \subsection{Generowanie kandydatów na studentów}
 
@@ -128,9 +128,10 @@ rokAkademicki	2015/2016
 czyUwzglednicDateWydaniaDecyzji	N
 ...
 
-
 \end{lstlisting}
+
 Mając już to wszystko potrzebna jest procedura, która utworzy listę kandydatów z tych wszystkich danych. 
+
 \begin{lstlisting}
 create procedure GENERUJ
 returns (
@@ -188,10 +189,13 @@ cast( 'Nowy Sacz 33-300' as varchar(100)),
 :stopien,:skrot,    :punkty,:punkty,:punkty,:czy_przyjety,
 cast(:data_dec as DATE),'328/2015','2015-08-14');
 
-    licznik = :licznik + 1;
+licznik = :licznik + 1;
 end
 test = :licznik;
 suspend;
 end
 \end{lstlisting}
-Powyższa procedura z jednej osoby z tabeli dane tworzy jednego kandydata, losując mu tok nauki, ilość punktów oraz czy zostanie przyjęty lub nie. Dorzucane są także pewne stałe wartości, podobne do tych w oryginalnej bazie danych, które nie wymagają uzmiennienia. Po wykonaniu jednorazowym tej procedury powinniśmy otrzymać wszystkie dane potrzebne do przeprowadzenia procesu generowania dokumentów potrzebnych w rekrutacji.
+Powyższa procedura z jednej osoby z tabeli dane tworzy jednego kandydata, losując mu tok nauki, ilość punktów oraz czy zostanie przyjęty lub nie. Dorzucane są także pewne stałe wartości, podobne do tych w oryginalnej bazie danych, które nie wymagają uzmiennienia. Procedura ta, po jednorazowym wywołaniu, wygenerowała 10001 rekordów w tabeli "kandydat\_aligeza". Daje to wystarczającą ilość testowych kandydatów do przeprowadzenia testów.
+
+\section{ Przygotowanie szablonów raportów}
+
