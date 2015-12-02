@@ -1,0 +1,162 @@
+\pdfoutput=1
+\pdfcompresslevel=9
+\pdfinfo
+{
+    /Author (Autor)
+    /Title (Tytul)
+    /Subject (Tematyka)
+    /Keywords (Slowa kluczowe)
+}
+%\documentclass[a4paper,polish,onecolumn,oneside,floatssmall,11pt,titleauthor,wide,openright]{mwrep}
+%\usepackage[scale={0.7,0.8},paper=a4paper,twoside]{geometry}
+\documentclass[a4paper,onecolumn,oneside,12pt,wide,floatssmall]{mwrep}
+% \usepackage{polish}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{bookman}
+\usepackage{geometry}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+% \usepackage{t1enc}
+% \usepackage[pdftex, bookmarks]{hyperref}
+\usepackage[pdftex, bookmarks=false]{hyperref}
+\def\url#1{{ \tt #1}}
+
+\usepackage{listings}
+
+% marginesy
+\textwidth\paperwidth
+\advance\textwidth -55mm
+\oddsidemargin-0.9in
+\advance\oddsidemargin 30mm
+\evensidemargin-0.9in
+\advance\evensidemargin 30mm
+\topmargin -1in
+\advance\topmargin 20mm
+\setlength\textheight{48\baselineskip}
+\addtolength\textheight{\topskip}
+\marginparwidth15mm
+\newgeometry{tmargin=2.5cm, bmargin=2.5cm, lmargin=3cm, rmargin=2.5cm}
+
+\clubpenalty=10000 % to kara za sierotki
+\widowpenalty=10000 % nie pozostawia wdów
+\brokenpenalty=10000 % nie dzieli wyrazów pomiędzy stronami
+\sloppy
+
+\tolerance4500
+\pretolerance250
+\hfuzz=1.5pt
+\hbadness1450
+
+\usepackage[pdftex]{color,graphicx}
+\usepackage[polish]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}
+
+
+% \textheight232mm
+% \setlength{\textwidth}{\textwidth}
+% \setlength{\oddsidemargin}{\evensidemargin}
+% \setlength{\evensidemargin}{0.3cm}
+\usepackage[sort, compress]{cite}
+
+%\usepackage{multibib}
+%\newcites{bk,st,doc,web}{Książki i~artykuły,Standardy i~zalecenia,Dokumentacja produktów,Publikacje i~serwisy internetowe}
+
+\theoremstyle{definition}
+\newtheorem{defn}{Definicja}[section]
+\newtheorem{conj}{Teza}[section]
+\newtheorem{conjmain}{Teza}
+\newtheorem{exmp}{Przykład}[section]
+
+\theoremstyle{plain}% default
+\newtheorem{thm}{Twierdzenie}[section]
+\newtheorem{lem}[thm]{Lemat}
+\newtheorem{prop}[thm]{Hipoteza}
+\newtheorem*{cor}{Wniosek}
+
+\theoremstyle{remark}
+\newtheorem*{rem}{Uwaga}
+\newtheorem*{note}{Uwaga}
+\newtheorem{case}{Przypadek}
+
+\definecolor{ListingBackground}{rgb}{0.95,0.95,0.95}
+
+\lstset{
+        language=SQL,
+    inputencoding=utf8x, 
+    extendedchars=\true,
+    literate={ą}{{\k{a}}}1
+             {Ą}{{\k{A}}}1
+             {ę}{{\k{e}}}1
+             {Ę}{{\k{E}}}1
+             {ó}{{\'o}}1
+             {Ó}{{\'O}}1
+             {ś}{{\'s}}1
+             {Ś}{{\'S}}1
+             {ł}{{\l{}}}1
+             {Ł}{{\L{}}}1
+             {ż}{{\.z}}1
+             {Ż}{{\.Z}}1
+             {ź}{{\'z}}1
+             {Ź}{{\'Z}}1
+             {ć}{{\'c}}1
+             {Ć}{{\'C}}1
+             {ń}{{\'n}}1
+             {Ń}{{\'N}}1
+}
+
+\begin{document}
+
+\renewcommand*\lstlistingname{Wydruk}
+\renewcommand*\lstlistlistingname{Spis wydruków}
+
+\pagenumbering{roman}
+\renewcommand{\baselinestretch}{1.0}
+\raggedbottom
+\input{tex/tytol.tex}
+
+\newpage
+\pagenumbering{arabic}
+\setcounter{page}{3}
+
+\tableofcontents
+% \addcontentsline{toc}{chapter}{{Przedmowa1}{vii}}{vii}
+
+% \chapter*{Spis tablic, rysunków i~wydruków}
+% \listoftables
+% \listoffigures
+% \lstlistoflistings
+
+%\setlength{\baselineskip}{7mm}
+
+
+\input{tex/wprowadzenie.tex}
+
+\input{tex/testowaniesystemu.tex}
+
+\appendix
+
+% tutaj załączniki
+
+%\chapter*{Bibliografia}
+\nocite{*}
+\bibliographystyle{plplain}
+%\bibliographystylebk{plplain}
+%\bibliographystylest{plplain}
+%\bibliographystyledoc{plplain}
+% \bibliographystyleweb{plplain}
+%\bibliographybk{BIB/books}
+%\bibliographyst{BIB/books}
+%\bibliographydoc{BIB/books}
+% \bibliographyweb{BIB/books}
+
+% \bibliography{bib/verificard,bib/jml,bib/daikon}
+\bibliography{bib/daikon,bib/statistics,bib/other}
+
+\end{document}
+
+% ex: set tabstop=4 shiftwidth=4 softtabstop=4 noexpandtab fileformat=unix filetype=tex spelllang=pl,en spell:
+

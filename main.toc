@@ -1,0 +1,12 @@
+\select@language {polish}
+\contentsline {chapter}{\numberline {1\relax .\kern .5em }Wprowadzenie}{4}{chapter.1}
+\contentsline {section}{\numberline {1.1\relax .\kern .5em } Zagadnienie generowania raport\IeC {\'o}w}{4}{section.1.1}
+\contentsline {section}{\numberline {1.2\relax .\kern .5em } Dotychczasowy proces generowania raport\IeC {\'o}w}{4}{section.1.2}
+\contentsline {section}{\numberline {1.3\relax .\kern .5em }Cel i zakres pracy}{4}{section.1.3}
+\contentsline {chapter}{\numberline {2\relax .\kern .5em }Testowanie Systemu}{5}{chapter.2}
+\contentsline {section}{\numberline {2.1\relax .\kern .5em } Generowanie przyk\IeC {\l }adowych danych}{5}{section.2.1}
+\contentsline {subsection}{\numberline {2.1.1\relax .\kern .5em } Tworzenie bazy danych }{5}{subsection.2.1.1}
+\contentsline {subsection}{\numberline {2.1.2\relax .\kern .5em } Stworzenie struktury}{6}{subsection.2.1.2}
+\contentsline {subsection}{\numberline {2.1.3\relax .\kern .5em } Generowanie fikcyjnych danych osobowych}{7}{subsection.2.1.3}
+\contentsline {subsection}{\numberline {2.1.4\relax .\kern .5em }Generowanie kandydat\IeC {\'o}w na student\IeC {\'o}w}{7}{subsection.2.1.4}
+\contentsline {chapter}{Bibliografia}{10}{chapter*.2}
