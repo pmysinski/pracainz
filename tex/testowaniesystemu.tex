@@ -132,7 +132,7 @@ czyUwzglednicDateWydaniaDecyzji	N
 
 Mając już to wszystko potrzebna jest procedura, która utworzy listę kandydatów z tych wszystkich danych. 
 
-\begin{lstlisting}
+\begin{verbatim}
 create procedure GENERUJ
 returns (
     TESTCHAR varchar(50),
@@ -194,12 +194,134 @@ end
 test = :licznik;
 suspend;
 end
-\end{lstlisting}
-Powyższa procedura z jednej osoby z tabeli dane tworzy jednego kandydata, losując mu tok nauki, ilość punktów oraz czy zostanie przyjęty lub nie. Dorzucane są także pewne stałe wartości, podobne do tych w oryginalnej bazie danych, które nie wymagają uzmiennienia. Procedura ta, po jednorazowym wywołaniu, wygenerowała 10001 rekordów w tabeli "kandydat\_aligeza". Daje to wystarczającą ilość testowych kandydatów do przeprowadzenia testów. Baza danych z przeprowadzonych testów znajduje się w załącznikach.
+\end{verbatim}
+Powyższa procedura z jednej osoby z tabeli dane tworzy jednego kandydata, losując mu tok nauki, ilość punktów oraz czy zostanie przyjęty lub nie. Dorzucane są także pewne stałe wartości, podobne do tych w oryginalnej bazie danych, które nie wymagają uzmiennienia. Procedura ta, po jednorazowym wywołaniu, wygenerowała 10001 rekordów w tabeli "kandydat\_aligeza". Daje to wystarczającą ilość testowych kandydatów do przeprowadzenia testów. Baza danych z przeprowadzonych testów znajduje się w załączniku.
 
-\section{Dostosowanie zapytań SQL w szablonach}
+\section{Dodanie zapytań SQL do szablonów}
 
-Dokładny opis zapytań SQL i procesu ich tworzenia.
+Stworzone szablony w poprzednim rozdziale nie zawierają zapytań, które odzwierciedlały by wyselekcjonowanie danych z istniejącej struktury bazy. Zawierają tylko sztywne dane testujące środowiska latexowe. Aby szablony podczas procesu tworzenia dokumentów zostały uzupełnione poprawnymi danymi potrzeba je uzupełnić o odpowiednia zapytania SQL w odpowiedniej formie tak aby parser zawarty w programie był wstanie je znaleźć i wykonań.
+\par 
+W sumie potrzeba 9 zapytań, za pomocą których wyciągnięte zostaną dane do szablonów. Poniżej opisane zostały każde z zapytań oraz przykład jakie dane zostaną wyselekcjonowane z bazy przez to zapytanie. W tej sekcji skupimy się tylko i wyłącznie na uzyskaniu potrzebnych danych do środowisk latexu, a nie jak one zostaną wykorzystane. Dokładny opis jak wygląda wykorzystanie takiego zapisu znajduje się w rozdziale \ref{ch:szablonyraportowwsystemielatex}.
+\par 
+Pierwsze zapytanie które zostanie omówione jest  zapytanie o podstawowe parametry, informacje na temat rekrutacji. Znajduje się ono w pliku aaasetup.tex. Plik posiada 3 litery a w nazwie ponieważ program parsujący, otwiera pliki alfabetycznie a zapytanie to musi zostać wykonane jako pierwsze.  Poniżej mamy przykład danych do zapisania:
+ \begin{verbatim}
+\parametrRekrutacyjny{dataWydaniaDecyzji}{09.10.2015}
+\parametrRekrutacyjny{miejsceWydaniaDecyzji}{Nowy Sącz}
+\parametrRekrutacyjny{rokAkademicki}{2015/2016}
+...
+\end{verbatim}
+Aby uzyskać takie dane, potrzeba będzie pobrać wszystkie rekordy z tabeli SETUP\_ALIGEZA (struktura tabeli znajduje się w poprzedniej sekcji) klucz oraz wartość. Zapytanie nie będzie więc zbyt skomplikowane:
+ \begin{verbatim}
+SELECT klucz,wartosc FROM setup_aligeza
+\end{verbatim}
+Po wywołaniu go faktycznie otrzymamy dane potrzebne nam dane. Jednak aby program parsujący był wstanie znaleźć takie zapytanie w szablonie potrzeba je obudować w odpowiednią konstrukcję, która będzie odpowiadać wyrażeniu regularnemu zapisanemu w parserze. Należy także wpisać nazwę środowiska w odpowiednie miejsce między znakami @@. Dodatkowo musimy jeszcze postarać się aby kompilator latex'a zignorował nasz zapis i go nie wyświetlał. Do tego celu zastosowana została komenda iffalse.
+ \begin{verbatim}
+\iffalse@@parametrRekrutacyjny@@
+SELECT klucz,wartosc FROM setup_aligeza
+@END@\fi
+\end{verbatim}
+
+Następnie zapytanie zawarte w pliku 'protokolprzekazania.tex'. Występuje tu nowy problem otworzenia środowiska na początku oraz zamknięcia na końcu. Pokazane jest to na przykładowych danych poniżej:
+ \begin{verbatim}
+\protokolprzekazaniaA{1}
+\protokolprzekazania{Informatyka ---
+ niestacjonarne STUDIA pierwszego stopnia}{1455}
+\protokolprzekazania{Informatyka ---
+ stacjonarne STUDIA pierwszego stopnia}{729}
+\protokolprzekazania{Mechatronika ---
+ niestacjonarne STUDIA pierwszego stopnia}{1447}
+...
+\endprotokolprzekazaniaA        
+\end{verbatim}
+Pomijając narazie otwarcie środowiska protokolprzekazaniaA{1} oraz zamkniecie endprotokolprzekazaniaA, w zapytaniu potrzebujemy wyświetlić każdy tok nauczania oraz z agregowaną liczbę kandydatów na tym toku. Do agregacji użyjemy polecenia group by na polu tok, a aby otrzymać liczbę kandydatów funkcji count(*). Dodatkowo potrzeba także wybrać tylko kandydatów z danej daty decyzji. Do tego posłuży podzapytanie które pobierze date decyzji z aktualnej rekrutacji i porówna ją z datą decyzji dla danego kandydata. 
+ \begin{verbatim}
+SELECT  k.kierunek_my||' --- '||k.forma_studiow_my||
+' STUDIA '||k.stopien_studiow_my AS tok, count(*) AS ile
+FROM kandydat_aligeza k
+WHERE  k.data_decyzji=(SELECT wartosc FROM
+ setup_aligeza WHERE klucz='dataWydaniaDecyzji') 
+GROUP BY tok
+\end{verbatim}
+Takie zapytanie wyświetli nam dane pomiędzy tymi pominiętymi dotychczas komendami. 
+Rozwiązaniem wyświetlenia tych komend jest funkcja programu uzupełniającego szablony, a dokładnie funkcja grupowania. Dokładny opis tej funkcji znajduje się w rozdziale ref. Do zapytania dodamy jako pierwsze pole wartość 1, a następnie użyta zostanie funkcja grupowania po 1 polu wewnątrz szablonu:
+ \begin{verbatim}
+\iffalse @@protokolprzekazania@1@@
+SELECT 1 AS n,k.kierunek_my||' --- '||
+k.forma_studiow_my||' STUDIA '||
+k.stopien_studiow_my AS tok, count(*) AS ile
+FROM kandydat_aligeza k
+WHERE  k.data_decyzji=(SELECT wartosc FROM
+ setup_aligeza WHERE klucz='dataWydaniaDecyzji') 
+GROUP BY tok
+@END@\fi
+\end{verbatim}
+
+W kolejnym szablonie 'listasekretariat.tex' potrzebujemy utworzenia list kandydatów dla każdego toku nauki. Przez tok nauki rozumie się każdą kombinację kierunku, formy oraz stopnia studiów. W szablonie zostało to rozwiązane tak, że każda lista otwiera się poprzez wywołanie komendy listarsekretariatA z trzema parametrami, którymi są właśnie kierunek, forma oraz stopień studiów. Na przykładowych danych wygląda to następująco:
+ \begin{verbatim}
+\listarsekretariatA{drugiego stopnia}{Informatyka}{stacjonarne}
+\listarsekretariat{ Ablewicz Monika}{39}
+\listarsekretariat{ Abram Halina}{69}
+...
+\endlistarsekretariatA
+\listarsekretariatA{drugiego stopnia}{Mechatronika}{stacjonarne}
+\listarsekretariat{ Adamek Danuta}{141}
+\listarsekretariat{ Adamek Urszula}{35}
+\listarsekretariat{ Adamik Zbigniew}{95}
+...
+\endlistarsekretariatA
+...
+\end{verbatim}
+
+W zapytaniu więc potrzebne będzie wybrać wszystkich kandydatów z datą decyzji aktualnej rekrutacji, a następnie wyświetlić kierunek, forma oraz stopień studiów, imię, nazwisko oraz numer teczki. W zapytaniu także potrzebne będzie posortowanie po polach które będą grupowane w programie uzupełniającym szablon. Każde na tych polach w zapytaniu SQL użyjemy polecenia ORDER BY. Ostatecznie poinformujemy program aby otrzymane dane grupował po 3 pierwszych polach:
+ \begin{verbatim}
+\iffalse@@listarsekretariat@3@@
+SELECT stopien_studiow_my,kierunek_my,forma_studiow_my,
+       nazwiskoimiona,stud_nrteczki
+FROM kandydat_aligeza
+WHERE data_decyzji=(select wartosc from setup_aligeza where klucz='dataWydaniaDecyzji')
+ORDER BY kierunek_forma_skrot_my, nazwiskoimiona
+@END@\fi
+\end{verbatim}
+
+W szablonach znajdują się jeszcze 3 kolejne podobne listy: przyjętych, nieprzyjętych oraz rankingowa. Zasada utworzenia zapytań do tych list jest identyczna jak w liście do sekretariatu. Różnią się one będą jedynie pewnymi warunkami wewnątrz zapytań SQL czy też polami po których będą sortowane dane.
+
+\par Lista przyjętych:
+ \begin{verbatim}
+\iffalse@@listaprzyjetych@3@@
+SELECT stopien_studiow_my,kierunek_my,forma_studiow_my,
+       nazwiskoimiona 
+FROM kandydat_aligeza 
+WHERE czy_przyjety=1 and
+     data_decyzji=(SELECT wartosc FROM setup_aligeza WHERE klucz='dataWydaniaDecyzji')
+ORDER BY kierunek_forma_skrot_my,
+         nazwiskoimiona
+@END@\fi
+\end{verbatim}
+\par Lista nieprzyjętych:
+ \begin{verbatim}
+\iffalse@@listaprzyjetych@3@@
+SELECT stopien_studiow_my,kierunek_my,forma_studiow_my,
+       nazwiskoimiona 
+FROM kandydat_aligeza 
+WHERE czy_przyjety=2 and
+     data_decyzji=(SELECT wartosc FROM setup_aligeza WHERE klucz='dataWydaniaDecyzji')
+ORDER BY kierunek_forma_skrot_my,
+         nazwiskoimiona
+@END@\fi
+\end{verbatim}
+\par Lista  rankingowa:
+ \begin{verbatim}
+\iffalse@@listarankingowa@3@@
+SELECT stopien_studiow_my,kierunek_my,forma_studiow_my,
+       nazwiskoimiona,STUD_ILPUNKTOW
+FROM kandydat_aligeza
+WHERE  data_decyzji=(select wartosc from setup_aligeza where klucz='dataWydaniaDecyzji')
+ORDER BY kierunek_forma_skrot_my, STUD_ILPUNKTOW desc
+@END@\fi
+\end{verbatim}
+
+
+
 
 
 \section{Przebieg generowania raportów}
