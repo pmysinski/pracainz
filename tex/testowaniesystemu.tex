@@ -1,6 +1,60 @@
 \chapter{Uruchomienie oraz testowanie Systemu}
 
 Przed wdrożeniem programu do realnego systemu, program należy przetestować. Testy powinny być prowadzone na tymczasowej bazie danych, ponieważ idea testów jest taka, że po podmianie bazy danych na realną wszystko ma działać bez zmian. Zmienić się może tylko zapis połączenia z bazą danych w pliku konfiguracyjnym. Dzięki takiemu zabiegowi, będzie można być pewnym tego, że wszystko będzie działać na prawdziwej bazie danych.  Do przeprowadzenia testów potrzebne będzie  odtworzyć przyszłe środowisko, w którym będzie działać program, przygotować szablony dokumentów, które są wytwarzane w procesie rekrutacji oraz wygenerować dokumenty. Ostatnim już krokiem będzie sprawdzenie czy podczas tego procesu nie ma żadnych komplikacji oraz czy wygenerowane dokumenty nie zawierają błędów.
+\section{Wstępne ustalenia}
+\subsection{Specyfikacja maszyny do testów}
+Testy przeprowadzone będą na komputerze o następującej specyfikacji:
+\begin{verbatim}
+OS Name	Microsoft Windows 7 Ultimate
+Version	6.1.7601 Service Pack 1 Build 7601
+System Model	Z97-HD3
+System Type	x64-based PC
+Processor	Intel(R) Core(TM) i5-4590 CPU @ 3.30GHz,
+3301 Mhz, 4 Core(s), 4 Logical Processor(s)
+Installed Physical Memory (RAM)	8,00 GB
+Total Physical Memory	7,86 GB
+Available Physical Memory	3,99 GB
+Total Virtual Memory	9,86 GB
+Available Virtual Memory	3,75 GB
+Page File Space	2,00 GB
+\end{verbatim}
+
+Do działania programu DBRaportlatex zainstalowana została JAVA w wersji:
+\begin{verbatim}
+C:\Users\Pawlos>java -version
+java version "1.8.0_60"
+Java(TM) SE Runtime Environment (build 1.8.0_60-b27)
+Java HotSpot(TM) 64-Bit Server VM (build 25.60-b23, mixed mode)
+\end{verbatim}
+
+\subsection{Struktura katalogowa}
+
+Do przejrzystego przechowywania wszystkich rzeczy potrzebnych w systemie rekrutacji, potrzebna będzie odpowiednia struktura katalogów. Do przechowywania potrzebne będą: \\
+\begin{itemize}
+\item program: DBRaportLatex.jar
+\item plik konfiguracyjny: dblatexraportconfig.bat
+\item środowisko kompilacji latex
+\item szablony dokumentów 
+\item plik bazy danych(tylko w testach)
+\item pliki wynikowe
+\item biblioteki potrzebne dla silnika bazy danych firebird w wersji embedded \\
+\end{itemize}
+
+Proponowana struktura więc może wyglądać następująco:
+
+\dirtree{%
+ .1 /.
+ .2 Firebird.
+ .2 output.
+ .2 template.
+ .2 texlive.
+ .2 DBRaportLatex.jar.
+ .2 dblatexraportconfig.bat.
+ .2 rekrutacja.fdb.
+}
+\vspace{5mm}
+Do katalogu texlive przegrane zostało środowisko do kompilacji plików latex. W katalogu firebird są biblioteki tylko na czas testów do wersji embedded bazy danych. W katalogu template dograne zostaną szablony dokumentów.
+
 
 \section{ Generowanie przykładowych danych}
 
@@ -201,9 +255,9 @@ Powyższa procedura z jednej osoby z tabeli dane tworzy jednego kandydata, losuj
 
 Stworzone szablony w poprzednim rozdziale nie zawierają zapytań, które odzwierciedlały by wyselekcjonowanie danych z istniejącej struktury bazy. Zawierają tylko sztywne dane testujące środowiska latexowe. Aby szablony podczas procesu tworzenia dokumentów zostały uzupełnione poprawnymi danymi potrzeba je uzupełnić o odpowiednia zapytania SQL w odpowiedniej formie tak aby parser zawarty w programie był wstanie je znaleźć i wykonań.
 \par 
-W sumie potrzeba 9 zapytań, za pomocą których wyciągnięte zostaną dane do szablonów. Poniżej opisane zostały każde z zapytań oraz przykład jakie dane zostaną wyselekcjonowane z bazy przez to zapytanie. W tej sekcji skupimy się tylko i wyłącznie na uzyskaniu potrzebnych danych do środowisk latexu, a nie jak one zostaną wykorzystane. Dokładny opis jak wygląda wykorzystanie takiego zapisu znajduje się w rozdziale \ref{ch:szablonyraportowwsystemielatex}.
+W sumie potrzeba 9 zapytań, za pomocą których wyciągnięte zostaną dane do szablonów. Poniżej opisane zostały każde z zapytań oraz przykład jakie dane zostaną wyselekcjonowane z bazy przez to zapytanie. W tej sekcji skupimy się tylko i wyłącznie na uzyskaniu potrzebnych danych do środowisk latexu, a nie jak one zostaną wykorzystane. Dokładny opis jak wygląda wykorzystanie takiego zapisu znajduje się w rozdziale \ref{ch:szablonyraportowwsystemielatex}. Dodać jeszcze należy ze poniższe zapytania znajdują się pod koniec każdego szablonu, zaraz po zdefiniowaniu środowisk. Takie umiejscowienie tych zapytań sprawi, że dane zostaną uzupełnione zaraz pod tymi zapytaniami.
 \par 
-Pierwsze zapytanie które zostanie omówione jest  zapytanie o podstawowe parametry, informacje na temat rekrutacji. Znajduje się ono w pliku aaasetup.tex. Plik posiada 3 litery a w nazwie ponieważ program parsujący, otwiera pliki alfabetycznie a zapytanie to musi zostać wykonane jako pierwsze.  Poniżej mamy przykład danych do zapisania:
+Pierwsze zapytanie które zostanie omówione jest to  zapytanie o podstawowe parametry, informacje na temat rekrutacji. Znajduje się ono w pliku aaasetup.tex. Plik posiada 3 litery a w nazwie ponieważ program parsujący, otwiera pliki alfabetycznie a zapytanie to musi zostać wykonane jako pierwsze.  Poniżej mamy przykład danych do zapisania:
  \begin{verbatim}
 \parametrRekrutacyjny{dataWydaniaDecyzji}{09.10.2015}
 \parametrRekrutacyjny{miejsceWydaniaDecyzji}{Nowy Sącz}
@@ -256,6 +310,23 @@ GROUP BY tok
 @END@\fi
 \end{verbatim}
 
+Dla szablonu 'pocztex.tex' potrzebujemy prostą listę z adresami każdego kandydata z danej rekrutacji:
+
+
+ \begin{verbatim}
+\iffalse@@pocztex@@
+SELECT ka.nazwiskoimiona,
+       ka.adr_ulica_miejscowosc_nr_domu,
+	   ka.adr_kod_pocztowy_poczta,
+	   ka.stud_nrteczki||' '||ka.kierunek_forma_skrot_my||' '||ka.stud_id	   
+FROM kandydat_aligeza ka 
+WHERE  ka.data_decyzji=
+(select wartosc from setup_aligeza 
+where klucz='dataWydaniaDecyzji')
+ORDER BY ka.kierunek_forma_skrot_my, ka.nazwiskoimiona
+@END@\fi
+\end{verbatim}
+
 W kolejnym szablonie 'listasekretariat.tex' potrzebujemy utworzenia list kandydatów dla każdego toku nauki. Przez tok nauki rozumie się każdą kombinację kierunku, formy oraz stopnia studiów. W szablonie zostało to rozwiązane tak, że każda lista otwiera się poprzez wywołanie komendy listarsekretariatA z trzema parametrami, którymi są właśnie kierunek, forma oraz stopień studiów. Na przykładowych danych wygląda to następująco:
  \begin{verbatim}
 \listarsekretariatA{drugiego stopnia}{Informatyka}{stacjonarne}
@@ -278,12 +349,14 @@ W zapytaniu więc potrzebne będzie wybrać wszystkich kandydatów z datą decyz
 SELECT stopien_studiow_my,kierunek_my,forma_studiow_my,
        nazwiskoimiona,stud_nrteczki
 FROM kandydat_aligeza
-WHERE data_decyzji=(select wartosc from setup_aligeza where klucz='dataWydaniaDecyzji')
+WHERE data_decyzji=
+(select wartosc from setup_aligeza
+ where klucz='dataWydaniaDecyzji')
 ORDER BY kierunek_forma_skrot_my, nazwiskoimiona
 @END@\fi
 \end{verbatim}
 
-W szablonach znajdują się jeszcze 3 kolejne podobne listy: przyjętych, nieprzyjętych oraz rankingowa. Zasada utworzenia zapytań do tych list jest identyczna jak w liście do sekretariatu. Różnią się one będą jedynie pewnymi warunkami wewnątrz zapytań SQL czy też polami po których będą sortowane dane.
+W szablonach znajdują się jeszcze 4 kolejne podobne listy: przyjętych, nieprzyjętych,wysyłkowa oraz rankingowa. Zasada utworzenia zapytań do tych list jest identyczna jak w liście do sekretariatu. Różnią się one będą jedynie pewnymi warunkami wewnątrz zapytań SQL czy też polami po których będą sortowane dane.
 
 \par Lista przyjętych:
  \begin{verbatim}
@@ -292,7 +365,9 @@ SELECT stopien_studiow_my,kierunek_my,forma_studiow_my,
        nazwiskoimiona 
 FROM kandydat_aligeza 
 WHERE czy_przyjety=1 and
-     data_decyzji=(SELECT wartosc FROM setup_aligeza WHERE klucz='dataWydaniaDecyzji')
+     data_decyzji=
+     (SELECT wartosc FROM setup_aligeza 
+     WHERE klucz='dataWydaniaDecyzji')
 ORDER BY kierunek_forma_skrot_my,
          nazwiskoimiona
 @END@\fi
@@ -304,9 +379,22 @@ SELECT stopien_studiow_my,kierunek_my,forma_studiow_my,
        nazwiskoimiona 
 FROM kandydat_aligeza 
 WHERE czy_przyjety=2 and
-     data_decyzji=(SELECT wartosc FROM setup_aligeza WHERE klucz='dataWydaniaDecyzji')
+     data_decyzji=(SELECT wartosc FROM setup_aligeza 
+     WHERE klucz='dataWydaniaDecyzji')
 ORDER BY kierunek_forma_skrot_my,
          nazwiskoimiona
+@END@\fi
+\end{verbatim}
+\par Lista wysyłkowa:
+ \begin{verbatim}
+\iffalse @@listawysylkowa@3@@
+SELECT stopien_studiow_my,kierunek_my,forma_studiow_my,
+      nazwiskoimiona, adr_ulica_miejscowosc_nr_domu||'; '||
+       ADR_KOD_POCZTOWY_POCZTA
+FROM kandydat_aligeza 
+WHERE data_decyzji=(select wartosc from setup_aligeza 
+where klucz='dataWydaniaDecyzji')
+ORDER BY kierunek_forma_skrot_my, nazwiskoimiona
 @END@\fi
 \end{verbatim}
 \par Lista  rankingowa:
@@ -315,21 +403,171 @@ ORDER BY kierunek_forma_skrot_my,
 SELECT stopien_studiow_my,kierunek_my,forma_studiow_my,
        nazwiskoimiona,STUD_ILPUNKTOW
 FROM kandydat_aligeza
-WHERE  data_decyzji=(select wartosc from setup_aligeza where klucz='dataWydaniaDecyzji')
+WHERE  data_decyzji=(select wartosc from setup_aligeza 
+where klucz='dataWydaniaDecyzji')
 ORDER BY kierunek_forma_skrot_my, STUD_ILPUNKTOW desc
 @END@\fi
 \end{verbatim}
+\par 
+W ostatnim szablonie wystąpił problem ilości parametrów jakie trzeba przekazać do poprawnego działania szablonu. W latex'ie można stworzyć środowisko o maksymalnie 9 parametrach, natomiast w szablonie 'decyzja.tex' dla każdego kandydata potrzeba 12 różnych informacji. Rozwiązaniem tego problemu także było grupowanie przez program uzupełniania raportów. Grupowanie wytnie 3 pierwsze pola i wstawi je do nowego środowiska. W zapytaniu SQL wyświetlanie daty musi posiadać dodatkowe 0 przy datach typu 01.02.2015 gdzie właśnie liczby dni lub miesięcy są mniejsze od 10:
+ \begin{verbatim}
+\iffalse@@decyzja@3@@
+SELECT ka.stopien_studiow_my,ka.kierunek_my
+,ka.forma_studiow_my,
+ka.stud_ilpunktow,ka.nr_decyzji,ka.nazwiskoimiona,
+ka.adr_ulica_miejscowosc_nr_domu,
+ka.adr_kod_pocztowy_poczta,
+ka.stud_nrteczki||' '||ka.kierunek_forma_skrot_my||
+' '||ka.stud_id,czy_przyjety,
+extract(day from ka.dataprzyjeciapodania)||'.'||
+substring(100+extract(month from ka.dataprzyjeciapodania)
+from 2 for 2)||'.'||
+extract(year from ka.dataprzyjeciapodania),panpani
+FROM kandydat_aligeza ka 
+WHERE  ka.data_decyzji=(select wartosc from setup_aligeza 
+where klucz='dataWydaniaDecyzji')
+ORDER BY ka.kierunek_forma_skrot_my, ka.nazwiskoimiona
+@END@\fi
+\end{verbatim}
+\section{Konfiguracja programu}
+
+W głównym katalogu znajduje się plik konfiguracyjny programu o nazwie  dblatexraportconfig.bat. Plik ten jest jednocześnie plikiem wsadowym oraz zawiera konfiguracje programu DBRaportlatex.jar. Część kodu batch uruchamia program DBraportlatex razem z odpowiednimi parametrami do uruchomienia embedded firebird:
+ \begin{verbatim}
+@echo off
+java -Djava.library.path=.\firebird -jar dbraportlatex.jar
+pause
+exit
+\end{verbatim}
+
+Następnie od linijki zawierającej '\#dbLatexRaportConfig' zaczynają się zmienne konfiguracyjne:
+  \begin{itemize}
+  \item Ścieżka do szablonów latex
+   \begin{verbatim}
+templatepath=template/
+  \end{verbatim}
+  \item Ścieżka do uzupełnionych szablonów latex oraz skompilowanego pliku pdf
+  \begin{verbatim}
+output=output/
+ \end{verbatim}
+ \item Ścieżka do uzupełnionych szablonów latex oraz skompilowanego pliku pdf
+  \begin{verbatim}
+output=output/
+ \end{verbatim}
+  \item Kodowanie szablonów latex
+   \begin{verbatim}
+encodingtex=UTF-8
+  \end{verbatim}
+   \item Konfiguracja połączenia z bazą danych
+    \begin{verbatim}
+dbengine=firebirdsql
+hostname=embedded
+dbpath=rekrutacja.fdb
+user=SYSDBA
+password=
+dbencoding=WIN1250
+   \end{verbatim}
+  \item Ścieżka do komilatora latex
+   \begin{verbatim}
+pdflatexpath=texlive\2010min\bin\win32\pdflatex.exe
+  \end{verbatim}
+    \item Lista plików do kompilacji
+ \begin{verbatim}
+pdfcompilemainfile=main.tex,main.tex
+\end{verbatim}
+\end{itemize}
+\section{Przebieg testów}
+
+W bazie danych znajduje się 10001 kandydatów. Należy spodziewać się tyle samo wygenerowanych na listach.  Program został uruchomiony z pliku wsadowego dblatexraportconfig.bat:
+   \begin{verbatim}
+
+Wprowadz date wydania decyzji w pliku aaasetup.tex
+Press any key to continue . . .
+Invalid switch - "main.pdf".
+Config loaded: dblatexraportconfig.bat
+pattern=
+templatepath=template/
+output=output/
+encodingtex=UTF-8
+dbengine=firebirdsql
+hostname=embedded
+dbpath=rekrutacja.fdb
+user=SYSDBA
+password=*********
+dbencoding=WIN1250
+pdflatexpath=texlive\2010min\bin\win32\pdflatex.exe
+pdfcompilemainfile=main.tex,main.tex
+
+Connection to database: OK
 
 
+Loaded file: template\aaasetup.tex
+Loaded file: template\decyzja.tex
+Loaded file: template\listanieprzyjetych.tex
+Loaded file: template\listaprzyjetych.tex
+Loaded file: template\listarankingowa.tex
+Loaded file: template\listarsekretariat.tex
+Loaded file: template\listawysylkowa.tex
+Loaded file: template\main.tex
+Loaded file: template\pocztex.tex
+Loaded file: template\protokolprzekazania.tex
+
+aaasetup.tex - processing SQL statements
+no returns SQL1
+9 records SQL2
+
+decyzja.tex - processing SQL statements
+10001 records SQL1
+
+listanieprzyjetych.tex - processing SQL statements
+5051 records SQL1
+
+listaprzyjetych.tex - processing SQL statements
+4950 records SQL1
+
+listarankingowa.tex - processing SQL statements
+10001 records SQL1
+
+listarsekretariat.tex - processing SQL statements
+10001 records SQL1
+
+listawysylkowa.tex - processing SQL statements
+10001 records SQL1
+
+main.tex - processing SQL statements
+
+pocztex.tex - processing SQL statements
+10001 records SQL1
+
+protokolprzekazania.tex - processing SQL statements
+8 records SQL1
 
 
+Saved to file: output/aaasetup.tex
+Saved to file: output/decyzja.tex
+Saved to file: output/listanieprzyjetych.tex
+Saved to file: output/listaprzyjetych.tex
+Saved to file: output/listarankingowa.tex
+Saved to file: output/listarsekretariat.tex
+Saved to file: output/listawysylkowa.tex
+Saved to file: output/main.tex
+Saved to file: output/pocztex.tex
+Saved to file: output/protokolprzekazania.tex
+Executing shell command:
+cmd /c start texlive\2010min\bin\win32\pdflatex.exe --output-directory=output/ o
+utput/main.texExecuting shell command:
+cmd /c start texlive\2010min\bin\win32\pdflatex.exe --output-directory=output/ o
+utput/main.tex
 
-\section{Przebieg generowania raportów}
 
-Proces uruchamiania oraz przebiegu
+WORK DONE!!!
+
+Directory pdf results output: output/
+ \end{verbatim}
+  
+Program wykonał się bez żadnych błędów i wykonał swoje zadanie. Uzupełnienie szablonów trwało niżej 1 sekundy, natomiast podwójna kompilacja wszystkich szablonów około jednej minuty, co spełnia założenia projektu.
 
 \section{Wyniki testu}
 
-Krótki opis wyników testu.
+Wszystkie szablony zostały uzupełnione poprawnie oraz kompilacja przebiegła bezproblemowo. W pliku wynikowym PDF ze wszystkimi dokumentami gotowymi do druku wszystko jest zgodnie z oczekiwaniami. Wygenerowany plik PDF z testów  dołączony jest w załączniku.
 
 
