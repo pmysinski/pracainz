@@ -69,25 +69,25 @@ Po wykonaniu tych kroków, powinna powstać baza danych do której bez problem p
 \subsection{ Tworzenie bazy danych }
 
 Do stworzenia pliku bazy danych na silniku firebird’a posłużyć się można narzędziem dostepnym w katalogu bin zainstalowanego serwera firebird.  Narzędzie to pozwala z linii komend tworzyć i łączyć się z bazami danych. W tym przypadku użyta zostanie komenda „CREATE DATABASE”
-\begin{lstlisting}
+\begin{verbatim}
 C:\Program Files\Firebird\bin>isql
 SQL>CREATE DATABASE 'D:\test systemu\rekrutacja.fdb'
 CON>user 'SYSDBA' password 'masterkey';
-\end{lstlisting}
+\end{verbatim}
 Po wykonaniu tego polecenia zostanie utworzona baza danych. Takie same dane należy teraz wpisać do pliku konfiguracyjnego programu czyli DBRaportLatex.bat aby program mogł się połączyć z tą bazą:
-\begin{lstlisting}
+\begin{verbatim}
 dbengine=firebirdsql
 hostname=//localhost
 port=3050
 dbpath=D:\test systemu\rekrutacja.fdb
 user=SYSDBA
 password= masterkey
-\end{lstlisting}
+\end{verbatim}
 \subsection{ Stworzenie struktury bazy}
 
 Dotychczasowy system wykorzystywał tabelę (widok) która była generowana dynamicznie i która zawiera wszystkich studentów w rekrutacji. Zawiera ona wszystkie dane potrzebne do wytworzenia dokumentów. Jeden rekord to jeden student ze wszystkimi informacjami na jego temat. Dodatkowo jeszcze potrzebna jest tabela z informacjami na temat rekrutacji, takimi jak na przykład nazwisko i imię przewodniczącego komisji, czy data wydania decyzji przyjęcia studenta. Z tych tabel będą pobierane informacje, natomiast do wygenerowania danych potrzebne będą dwie dodatkowe tymczasowe tabele.
 Tabela główna z kandydatami(zapis SQL):
-\begin{lstlisting}
+\begin{verbatim}
 CREATE TABLE KANDYDAT_ALIGEZA (
     STUD_ID                        INTEGER NOT NULL,
     OSOBA_ID                       INTEGER NOT NULL,
@@ -116,16 +116,16 @@ CREATE TABLE KANDYDAT_ALIGEZA (
     ILE_PUNKTOW                    INTEGER,
     PANPANI                        CHAR(1)
 );
-\end{lstlisting}
+\end{verbatim}
 Tabela z dodatkowymi informacjami(wartości przypisane są do kluczy tekstowych, jest to tablica asocjacyjna):
-\begin{lstlisting}
+\begin{verbatim}
 CREATE TABLE SETUP_ALIGEZA (
     KLUCZ    VARCHAR(50) NOT NULL,
     WARTOSC  VARCHAR(100)
 );
-\end{lstlisting}
+\end{verbatim}
 Tymczasowa tabela do zaimportowania listy imion i nazwisk oraz losowych peseli.
-\begin{lstlisting}
+\begin{verbatim}
 CREATE TABLE DANE (
     IMIE_NAZ  VARCHAR(200),
     ADRES     VARCHAR(200),
@@ -133,9 +133,9 @@ CREATE TABLE DANE (
     NAZWISKO  VARCHAR(100),
     IMIE      VARCHAR(100)
 );
-\end{lstlisting}
+\end{verbatim}
 Tymczasowa tabela do procedury losowego uzupełniania informacji o rekrucie o kierunku jaki wybrał.
-\begin{lstlisting}
+\begin{verbatim}
 CREATE TABLE TOKNAUKI_ALIGEZA (
     TOKNAUKI_ID              INTEGER NOT NULL,
     KIERUNEK_MY              VARCHAR(50),
@@ -147,17 +147,17 @@ CREATE TABLE TOKNAUKI_ALIGEZA (
     DATA_DECYZJI_DO          TIMESTAMP,
     KOD_IKR                  VARCHAR(3)
 );
-\end{lstlisting}
+\end{verbatim}
 \subsection{ Generowanie testowych danych osobowych}
 
 Do wygenerowania kandydatów potrzeba imienia nazwiska oraz adresu. Takie dane dostępne są w książkach telefonicznych. Posługując się jedną z takich książek stworzony został plik csv o separatorze „;” zawierający po kolei imię z nazwiskiem, adres, pesel, nazwisko oraz imie. Pesel został dodany do każdej osoby jako losowy ciąg cyfr spełniający walidację peselu. Ze względu na fakt iż pesel został wygenerowany losowo, może zdarzyć się iż mężczyzna posiadać będzie kobiecy pesel, w następstwie czego, we wygenerowanych dokumentach wypisane zostanie „Pani” i na odwrót.
 Struktura pliku:
-\begin{lstlisting}
+\begin{verbatim}
  Abram Andrzej; Lwowska 116;88071640299;Abram;Andrzej
  Abram Halina; Ludwika Zamenhofa 2;86111210691;Abram;Halina
 ...
 
-\end{lstlisting}
+\end{verbatim}
 
 Tak sformatowany plik CSV,  łatwo zaimportować do bazy danych do tabeli „dane” ze względu na identyczną kolejność danych w kolumnach. Do importu wykorzystana została funkcja programu IBExpert „import data”. Jedna linijka w pliku zostaje zaimportowana jako jeden rekord, w którym każde pole po kolei odpowiada wartościom między średnikami. Zaimportowanych w ten sposób zostało 10001 rekordów (osób) do tabeli „dane” do dalszych manipulacji.
 
@@ -165,16 +165,16 @@ Tak sformatowany plik CSV,  łatwo zaimportować do bazy danych do tabeli „dan
 
 Kolejnym krokiem jest uzupełnienie tabeli z tokami studiów. W testach dodanych zostało 8 przykładowych toków nauki. 
 
-\begin{lstlisting}
+\begin{verbatim}
 1 Informatyka	niestacjonarne	pierwszego stopnia	INF-n				
 2 Mechatronika	niestacjonarne	pierwszego stopnia	MT-n				
 3 Mechatronika	stacjonarne	pierwszego stopnia	MT-s				
 ...
 
 
-\end{lstlisting}
+\end{verbatim}
 Uzupełnienia wymaga także tabela z dodatkowymi informacjami „SETUP\_ALIGEZA” przykładowymi danymi:
-\begin{lstlisting}
+\begin{verbatim}
 dataWydaniaDecyzji	09.10.2015
 miejsceWydaniaDecyzji	Nowy Sącz
 przewodniczacyIKR	mgr inż. Sławomir Jurkowski
@@ -182,7 +182,7 @@ rokAkademicki	2015/2016
 czyUwzglednicDateWydaniaDecyzji	N
 ...
 
-\end{lstlisting}
+\end{verbatim}
 
 Mając już to wszystko potrzebna jest procedura, która utworzy listę kandydatów z tych wszystkich danych. 
 
