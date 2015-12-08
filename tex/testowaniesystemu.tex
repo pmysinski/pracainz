@@ -1,4 +1,4 @@
-\chapter{Uruchomienie oraz testowanie Systemu}
+\chapter{Uruchomienie oraz testowanie systemu}
 
 Przed wdrożeniem programu do realnego systemu, program należy przetestować. Testy powinny być prowadzone na tymczasowej bazie danych, ponieważ idea testów jest taka, że po podmianie bazy danych na realną wszystko ma działać bez zmian. Zmienić się może tylko zapis połączenia z bazą danych w pliku konfiguracyjnym. Dzięki takiemu zabiegowi, będzie można być pewnym tego, że wszystko będzie działać na prawdziwej bazie danych.  Do przeprowadzenia testów potrzebne będzie  odtworzyć przyszłe środowisko, w którym będzie działać program, przygotować szablony dokumentów, które są wytwarzane w procesie rekrutacji oraz wygenerować dokumenty. Ostatnim już krokiem będzie sprawdzenie czy podczas tego procesu nie ma żadnych komplikacji oraz czy wygenerowane dokumenty nie zawierają błędów.
 \section{Wstępne ustalenia}
@@ -477,12 +477,11 @@ pdfcompilemainfile=main.tex,main.tex
 \end{itemize}
 \section{Przebieg testów}
 
-W bazie danych znajduje się 10001 kandydatów. Należy spodziewać się tyle samo wygenerowanych na listach.  Program został uruchomiony z pliku wsadowego dblatexraportconfig.bat:
-   \begin{verbatim}
+W bazie danych znajduje się 10001 kandydatów. Należy spodziewać się tyle samo wygenerowanych na listach.  Program został uruchomiony z pliku wsadowego dblatexraportconfig.bat. Poniżej znajduje się wydruk z konsoli po uruchomieniu programu z krótkimi opisami poszczególnych procesów:
 
-Wprowadz date wydania decyzji w pliku aaasetup.tex
-Press any key to continue . . .
-Invalid switch - "main.pdf".
+\begin{enumerate}
+\item Ładowanie pliku konfiguracyjnego przez program:
+\begin{verbatim}
 Config loaded: dblatexraportconfig.bat
 pattern=
 templatepath=template/
@@ -496,10 +495,15 @@ password=*********
 dbencoding=WIN1250
 pdflatexpath=texlive\2010min\bin\win32\pdflatex.exe
 pdfcompilemainfile=main.tex,main.tex
-
+ \end{verbatim}
+ 
+ \item Połączenie z bazą danych:
+\begin{verbatim}
 Connection to database: OK
-
-
+ \end{verbatim}
+ 
+  \item Ładowanie szablonów do pamięci:
+\begin{verbatim}
 Loaded file: template\aaasetup.tex
 Loaded file: template\decyzja.tex
 Loaded file: template\listanieprzyjetych.tex
@@ -510,7 +514,10 @@ Loaded file: template\listawysylkowa.tex
 Loaded file: template\main.tex
 Loaded file: template\pocztex.tex
 Loaded file: template\protokolprzekazania.tex
-
+ \end{verbatim}
+ 
+   \item Wywoływanie zapytań SQL oraz uzupełnianie szablonów:
+ \begin{verbatim}
 aaasetup.tex - processing SQL statements
 no returns SQL1
 9 records SQL2
@@ -541,7 +548,10 @@ pocztex.tex - processing SQL statements
 protokolprzekazania.tex - processing SQL statements
 8 records SQL1
 
-
+ \end{verbatim}
+ 
+   \item Zapisywanie uzupełnionych szablonów do katalogu wynikowego:
+ \begin{verbatim}
 Saved to file: output/aaasetup.tex
 Saved to file: output/decyzja.tex
 Saved to file: output/listanieprzyjetych.tex
@@ -552,22 +562,26 @@ Saved to file: output/listawysylkowa.tex
 Saved to file: output/main.tex
 Saved to file: output/pocztex.tex
 Saved to file: output/protokolprzekazania.tex
+
+ \end{verbatim}
+ 
+   \item Wywoływanie kompilatora Latex dla głównego pliku main.tex, co spowoduje skompilowanie wszystkich szablonów:
+ \begin{verbatim}
 Executing shell command:
 cmd /c start texlive\2010min\bin\win32\pdflatex.exe --output-directory=output/ o
 utput/main.texExecuting shell command:
 cmd /c start texlive\2010min\bin\win32\pdflatex.exe --output-directory=output/ o
 utput/main.tex
 
-
 WORK DONE!!!
 
 Directory pdf results output: output/
  \end{verbatim}
-  
-Program wykonał się bez żadnych błędów i wykonał swoje zadanie. Uzupełnienie szablonów trwało niżej 1 sekundy, natomiast podwójna kompilacja wszystkich szablonów około jednej minuty, co spełnia założenia projektu.
+\end{enumerate}
+Program wykonał się bez żadnych błędów i wykonał swoje zadanie. Uzupełnienie szablonów trwało niżej 1 sekundy, natomiast podwójna kompilacja wszystkich szablonów około jednej minuty, co spełnia założenia projektu. 
 
 \section{Wyniki testu}
 
-Wszystkie szablony zostały uzupełnione poprawnie oraz kompilacja przebiegła bezproblemowo. W pliku wynikowym PDF ze wszystkimi dokumentami gotowymi do druku wszystko jest zgodnie z oczekiwaniami. Wygenerowany plik PDF z testów  dołączony jest w załączniku.
+Wszystkie szablony zostały uzupełnione poprawnie danymi z bazy danych oraz kompilacja systemu Latex przebiegła bezproblemowo. W pliku wynikowym PDF ze wszystkimi dokumentami gotowymi do druku wszystko jest zgodnie z oczekiwaniami. Wygenerowany plik PDF z testów  dołączony jest w załączniku.
 
 
