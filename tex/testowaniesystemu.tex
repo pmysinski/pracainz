@@ -1,13 +1,13 @@
 \chapter{Uruchomienie oraz testowanie systemu}
 
-Przed wdrożeniem programu do realnego systemu, program należy przetestować. Testy powinny być prowadzone na tymczasowej bazie danych, ponieważ idea testów jest taka, że po podmianie bazy danych na realną wszystko ma działać bez zmian. Zmienić się może tylko zapis połączenia z bazą danych w pliku konfiguracyjnym. Dzięki takiemu zabiegowi, będzie można być pewnym tego, że wszystko będzie działać na prawdziwej bazie danych.  Do przeprowadzenia testów potrzebne będzie  odtworzyć przyszłe środowisko, w którym będzie działać program, przygotować szablony dokumentów, które są wytwarzane w procesie rekrutacji oraz wygenerować dokumenty. Ostatnim już krokiem będzie sprawdzenie czy podczas tego procesu nie ma żadnych komplikacji oraz czy wygenerowane dokumenty nie zawierają błędów.
+Przed wdrożeniem programu do realnego systemu, program należy przetestować. Testy powinny być prowadzone na tymczasowej bazie danych, ponieważ idea testów jest taka, że po podmianie bazy danych na realną wszystko ma działać bez zmian. Zmienić się może tylko zapis połączenia z bazą danych w pliku konfiguracyjnym. Dzięki takiemu zabiegowi, będzie można być pewnym tego, że wszystko będzie działać na prawdziwej bazie danych.  Do przeprowadzenia testów potrzebne będzie odtworzyć przyszłe środowisko, w którym będzie działać program, przygotować szablony dokumentów, które są wytwarzane w procesie rekrutacji oraz wygenerować dokumenty. Ostatnim już krokiem będzie sprawdzenie czy podczas tego procesu nie ma żadnych komplikacji oraz czy wygenerowane dokumenty nie zawierają błędów.
 \section{Wstępne ustalenia}
 \subsection{Specyfikacja maszyny do testów}
 Testy przeprowadzone będą na komputerze o następującej specyfikacji:
-\begin{verbatim}
+\begin{lstlisting}
 OS Name	Microsoft Windows 7 Ultimate
 Version	6.1.7601 Service Pack 1 Build 7601
-System Model	Z97-HD3
+System Model	Z97-lstlisting
 System Type	x64-based PC
 Processor	Intel(R) Core(TM) i5-4590 CPU @ 3.30GHz,
 3301 Mhz, 4 Core(s), 4 Logical Processor(s)
@@ -17,15 +17,15 @@ Available Physical Memory	3,99 GB
 Total Virtual Memory	9,86 GB
 Available Virtual Memory	3,75 GB
 Page File Space	2,00 GB
-\end{verbatim}
+\end{lstlisting}
 
 Do działania programu DBRaportlatex zainstalowana została JAVA w wersji:
-\begin{verbatim}
+\begin{lstlisting}
 C:\Users\Pawlos>java -version
 java version "1.8.0_60"
 Java(TM) SE Runtime Environment (build 1.8.0_60-b27)
 Java HotSpot(TM) 64-Bit Server VM (build 25.60-b23, mixed mode)
-\end{verbatim}
+\end{lstlisting}
 
 \subsection{Struktura katalogowa}
 
@@ -53,7 +53,7 @@ Proponowana struktura więc może wyglądać następująco:
  .2 rekrutacja.fdb.
 }
 \vspace{5mm}
-Do katalogu texlive przegrane zostało środowisko do kompilacji plików latex. W katalogu firebird są biblioteki tylko na czas testów do wersji embedded bazy danych. W katalogu template dograne zostaną szablony dokumentów.
+Do katalogu \emph{texlive} przegrane zostało środowisko do kompilacji plików latex. W katalogu firebird są biblioteki tylko na czas testów do wersji embedded bazy danych. W katalogu \emph{template} dograne zostaną szablony dokumentów.
 
 
 \section{ Generowanie przykładowych danych}
@@ -68,26 +68,26 @@ Po wykonaniu tych kroków, powinna powstać baza danych do której bez problem p
 
 \subsection{ Tworzenie bazy danych }
 
-Do stworzenia pliku bazy danych na silniku firebird’a posłużyć się można narzędziem dostepnym w katalogu bin zainstalowanego serwera firebird.  Narzędzie to pozwala z linii komend tworzyć i łączyć się z bazami danych. W tym przypadku użyta zostanie komenda „CREATE DATABASE”
-\begin{verbatim}
+Do stworzenia pliku bazy danych na silniku firebird’a posłużyć się można narzędziem dostępnym w katalogu bin zainstalowanego serwera firebird.  Narzędzie to pozwala z linii komend tworzyć i łączyć się z bazami danych. W tym przypadku użyta zostanie komenda \emph{CREATE DATABASE}
+\begin{lstlisting}
 C:\Program Files\Firebird\bin>isql
 SQL>CREATE DATABASE 'D:\test systemu\rekrutacja.fdb'
 CON>user 'SYSDBA' password 'masterkey';
-\end{verbatim}
-Po wykonaniu tego polecenia zostanie utworzona baza danych. Takie same dane należy teraz wpisać do pliku konfiguracyjnego programu czyli DBRaportLatex.bat aby program mogł się połączyć z tą bazą:
-\begin{verbatim}
+\end{lstlisting}
+Po wykonaniu tego polecenia zostanie utworzona baza danych. Takie same dane należy teraz wpisać do pliku konfiguracyjnego programu czyli \emph{DBRaportLatex.bat} aby program mógł się połączyć z tą bazą:
+\begin{lstlisting}
 dbengine=firebirdsql
 hostname=//localhost
 port=3050
 dbpath=D:\test systemu\rekrutacja.fdb
 user=SYSDBA
 password= masterkey
-\end{verbatim}
+\end{lstlisting}
 \subsection{ Stworzenie struktury bazy}
 
 Dotychczasowy system wykorzystywał tabelę (widok) która była generowana dynamicznie i która zawiera wszystkich studentów w rekrutacji. Zawiera ona wszystkie dane potrzebne do wytworzenia dokumentów. Jeden rekord to jeden student ze wszystkimi informacjami na jego temat. Dodatkowo jeszcze potrzebna jest tabela z informacjami na temat rekrutacji, takimi jak na przykład nazwisko i imię przewodniczącego komisji, czy data wydania decyzji przyjęcia studenta. Z tych tabel będą pobierane informacje, natomiast do wygenerowania danych potrzebne będą dwie dodatkowe tymczasowe tabele.
 Tabela główna z kandydatami(zapis SQL):
-\begin{verbatim}
+\begin{lstlisting}
 CREATE TABLE KANDYDAT_ALIGEZA (
     STUD_ID                        INTEGER NOT NULL,
     OSOBA_ID                       INTEGER NOT NULL,
@@ -116,16 +116,16 @@ CREATE TABLE KANDYDAT_ALIGEZA (
     ILE_PUNKTOW                    INTEGER,
     PANPANI                        CHAR(1)
 );
-\end{verbatim}
+\end{lstlisting}
 Tabela z dodatkowymi informacjami(wartości przypisane są do kluczy tekstowych, jest to tablica asocjacyjna):
-\begin{verbatim}
+\begin{lstlisting}
 CREATE TABLE SETUP_ALIGEZA (
     KLUCZ    VARCHAR(50) NOT NULL,
     WARTOSC  VARCHAR(100)
 );
-\end{verbatim}
+\end{lstlisting}
 Tymczasowa tabela do zaimportowania listy imion i nazwisk oraz losowych peseli.
-\begin{verbatim}
+\begin{lstlisting}
 CREATE TABLE DANE (
     IMIE_NAZ  VARCHAR(200),
     ADRES     VARCHAR(200),
@@ -133,9 +133,9 @@ CREATE TABLE DANE (
     NAZWISKO  VARCHAR(100),
     IMIE      VARCHAR(100)
 );
-\end{verbatim}
+\end{lstlisting}
 Tymczasowa tabela do procedury losowego uzupełniania informacji o rekrucie o kierunku jaki wybrał.
-\begin{verbatim}
+\begin{lstlisting}
 CREATE TABLE TOKNAUKI_ALIGEZA (
     TOKNAUKI_ID              INTEGER NOT NULL,
     KIERUNEK_MY              VARCHAR(50),
@@ -147,34 +147,32 @@ CREATE TABLE TOKNAUKI_ALIGEZA (
     DATA_DECYZJI_DO          TIMESTAMP,
     KOD_IKR                  VARCHAR(3)
 );
-\end{verbatim}
+\end{lstlisting}
 \subsection{ Generowanie testowych danych osobowych}
 
-Do wygenerowania kandydatów potrzeba imienia nazwiska oraz adresu. Takie dane dostępne są w książkach telefonicznych. Posługując się jedną z takich książek stworzony został plik csv o separatorze „;” zawierający po kolei imię z nazwiskiem, adres, pesel, nazwisko oraz imie. Pesel został dodany do każdej osoby jako losowy ciąg cyfr spełniający walidację peselu. Ze względu na fakt iż pesel został wygenerowany losowo, może zdarzyć się iż mężczyzna posiadać będzie kobiecy pesel, w następstwie czego, we wygenerowanych dokumentach wypisane zostanie „Pani” i na odwrót.
+Do wygenerowania kandydatów potrzebne jest imię, nazwisko oraz adres. Takie dane dostępne są w książkach telefonicznych. Posługując się jedną z nich stworzony został plik \emph{CSV} o separatorze „;” zawierający po kolei imię z nazwiskiem, adres, pesel, nazwisko oraz imię. Pesel został dodany do każdej osoby jako losowy ciąg cyfr spełniający walidację peselu. Ze względu na fakt iż pesel został wygenerowany losowo,  w wygenerowanych dokumentach nie będzie możliwości ustawienia płci osoby, dlatego też w bazie danych do testów 5 pierwszych kandydatów dostanie płeć żeńską, a reszta męską.\\
 Struktura pliku:
-\begin{verbatim}
+\begin{lstlisting}
  Abram Andrzej; Lwowska 116;88071640299;Abram;Andrzej
  Abram Halina; Ludwika Zamenhofa 2;86111210691;Abram;Halina
 ...
 
-\end{verbatim}
+\end{lstlisting}
 
-Tak sformatowany plik CSV,  łatwo zaimportować do bazy danych do tabeli „dane” ze względu na identyczną kolejność danych w kolumnach. Do importu wykorzystana została funkcja programu IBExpert „import data”. Jedna linijka w pliku zostaje zaimportowana jako jeden rekord, w którym każde pole po kolei odpowiada wartościom między średnikami. Zaimportowanych w ten sposób zostało 10001 rekordów (osób) do tabeli „dane” do dalszych manipulacji.
+Tak sformatowany plik \emph{CSV},  łatwo zaimportować do bazy danych do tabeli \emph{dane} ze względu na identyczną kolejność danych w kolumnach. Do importu wykorzystana została funkcja programu \emph{IBExpert}, \emph{import data}. Jedna linijka w pliku zostaje zaimportowana jako jeden rekord, w którym każde pole po kolei odpowiada wartościom między średnikami. Zaimportowanych w ten sposób zostało 10001 rekordów (osób) do tabeli \emph{dane} do dalszych manipulacji, co całkowicie wyczerpuje ilość kandydatów potrzebnych do testów. Ze statystyk wynika, że na uczelni średnio na rekrutacje przypada około trzystu kandydatów.
 
 \subsection{Generowanie kandydatów na studentów}
 
 Kolejnym krokiem jest uzupełnienie tabeli z tokami studiów. W testach dodanych zostało 8 przykładowych toków nauki. 
 
-\begin{verbatim}
+\begin{lstlisting}
 1 Informatyka	niestacjonarne	pierwszego stopnia	INF-n				
 2 Mechatronika	niestacjonarne	pierwszego stopnia	MT-n				
 3 Mechatronika	stacjonarne	pierwszego stopnia	MT-s				
 ...
-
-
-\end{verbatim}
-Uzupełnienia wymaga także tabela z dodatkowymi informacjami „SETUP\_ALIGEZA” przykładowymi danymi:
-\begin{verbatim}
+\end{lstlisting}
+Uzupełnienia wymaga także tabela z dodatkowymi informacjami \emph{setup\_aligeza} przykładowymi danymi:
+\begin{lstlisting}
 dataWydaniaDecyzji	09.10.2015
 miejsceWydaniaDecyzji	Nowy Sącz
 przewodniczacyIKR	mgr inż. Sławomir Jurkowski
@@ -182,11 +180,11 @@ rokAkademicki	2015/2016
 czyUwzglednicDateWydaniaDecyzji	N
 ...
 
-\end{verbatim}
+\end{lstlisting}
 
 Mając już to wszystko potrzebna jest procedura, która utworzy listę kandydatów z tych wszystkich danych. 
 
-\begin{verbatim}
+\begin{lstlisting}
 create procedure GENERUJ
 returns (
     TESTCHAR varchar(50),
@@ -248,35 +246,35 @@ end
 test = :licznik;
 suspend;
 end
-\end{verbatim}
-Powyższa procedura z jednej osoby z tabeli dane tworzy jednego kandydata, losując mu tok nauki, ilość punktów oraz czy zostanie przyjęty lub nie. Dorzucane są także pewne stałe wartości, podobne do tych w oryginalnej bazie danych, które nie wymagają uzmiennienia. Procedura ta, po jednorazowym wywołaniu, wygenerowała 10001 rekordów w tabeli "kandydat\_aligeza". Daje to wystarczającą ilość testowych kandydatów do przeprowadzenia testów. Baza danych z przeprowadzonych testów znajduje się w załączniku.
+\end{lstlisting}
+Powyższa procedura z jednej osoby z tabeli \emph{dane} tworzy jednego kandydata, losując mu tok nauki, ilość punktów oraz czy zostanie przyjęty lub nie. Dodawane są także pewne stałe wartości, podobne do tych w oryginalnej bazie danych, które nie wymagają uzmiennienia. Procedura ta, po jednorazowym wywołaniu, wygenerowała 10001 rekordów w tabeli \emph{kandydat\_aligeza}. Daje to wystarczającą ilość testowych kandydatów do przeprowadzenia testów. Baza danych z przeprowadzonych testów znajduje się w załączniku.
 
 \section{Dodanie zapytań SQL do szablonów}
 
 Stworzone szablony w poprzednim rozdziale nie zawierają zapytań, które odzwierciedlały by wyselekcjonowanie danych z istniejącej struktury bazy. Zawierają tylko sztywne dane testujące środowiska latexowe. Aby szablony podczas procesu tworzenia dokumentów zostały uzupełnione poprawnymi danymi potrzeba je uzupełnić o odpowiednia zapytania SQL w odpowiedniej formie tak aby parser zawarty w programie był wstanie je znaleźć i wykonań.
 \par 
-W sumie potrzeba 9 zapytań, za pomocą których wyciągnięte zostaną dane do szablonów. Poniżej opisane zostały każde z zapytań oraz przykład jakie dane zostaną wyselekcjonowane z bazy przez to zapytanie. W tej sekcji skupimy się tylko i wyłącznie na uzyskaniu potrzebnych danych do środowisk latexu, a nie jak one zostaną wykorzystane. Dokładny opis jak wygląda wykorzystanie takiego zapisu znajduje się w rozdziale \ref{ch:szablonyraportowwsystemielatex}. Dodać jeszcze należy ze poniższe zapytania znajdują się pod koniec każdego szablonu, zaraz po zdefiniowaniu środowisk. Takie umiejscowienie tych zapytań sprawi, że dane zostaną uzupełnione zaraz pod tymi zapytaniami.
+Potrzebnych jest 9 zapytań, za pomocą których wyciągnięte zostaną dane do szablonów. Poniżej opisane zostały każde z zapytań oraz przykład jakie dane zostaną wyselekcjonowane z bazy przez to zapytanie. Ta sekcja skupia się tylko i wyłącznie na uzyskaniu potrzebnych danych do środowisk latexu, a nie jak one zostaną wykorzystane. Dokładny opis jak wygląda wykorzystanie takiego zapisu znajduje się w rozdziale \ref{ch:szablonyraportowwsystemielatex}. Dodać jeszcze należy ze poniższe zapytania znajdują się pod koniec każdego szablonu, zaraz po zdefiniowaniu środowisk. Takie umiejscowienie tych zapytań sprawi, że dane zostaną uzupełnione zaraz pod tymi zapytaniami.
 \par 
 Pierwsze zapytanie które zostanie omówione jest to  zapytanie o podstawowe parametry, informacje na temat rekrutacji. Znajduje się ono w pliku aaasetup.tex. Plik posiada 3 litery a w nazwie ponieważ program parsujący, otwiera pliki alfabetycznie a zapytanie to musi zostać wykonane jako pierwsze.  Poniżej mamy przykład danych do zapisania:
- \begin{verbatim}
+ \begin{lstlisting}
 \parametrRekrutacyjny{dataWydaniaDecyzji}{09.10.2015}
 \parametrRekrutacyjny{miejsceWydaniaDecyzji}{Nowy Sącz}
 \parametrRekrutacyjny{rokAkademicki}{2015/2016}
 ...
-\end{verbatim}
-Aby uzyskać takie dane, potrzeba będzie pobrać wszystkie rekordy z tabeli SETUP\_ALIGEZA (struktura tabeli znajduje się w poprzedniej sekcji) klucz oraz wartość. Zapytanie nie będzie więc zbyt skomplikowane:
- \begin{verbatim}
+\end{lstlisting}
+Aby uzyskać takie dane, potrzeba będzie pobrać wszystkie rekordy z tabeli \emph{setup\_aligeza} (struktura tabeli znajduje się w poprzedniej sekcji) klucz oraz wartość. Zapytanie nie będzie więc zbyt skomplikowane:
+ \begin{lstlisting}
 SELECT klucz,wartosc FROM setup_aligeza
-\end{verbatim}
+\end{lstlisting}
 Po wywołaniu go faktycznie otrzymamy dane potrzebne nam dane. Jednak aby program parsujący był wstanie znaleźć takie zapytanie w szablonie potrzeba je obudować w odpowiednią konstrukcję, która będzie odpowiadać wyrażeniu regularnemu zapisanemu w parserze. Należy także wpisać nazwę środowiska w odpowiednie miejsce między znakami @@. Dodatkowo musimy jeszcze postarać się aby kompilator latex'a zignorował nasz zapis i go nie wyświetlał. Do tego celu zastosowana została komenda iffalse.
- \begin{verbatim}
+ \begin{lstlisting}
 \iffalse@@parametrRekrutacyjny@@
 SELECT klucz,wartosc FROM setup_aligeza
 @END@\fi
-\end{verbatim}
+\end{lstlisting}
 
-Następnie zapytanie zawarte w pliku 'protokolprzekazania.tex'. Występuje tu nowy problem otworzenia środowiska na początku oraz zamknięcia na końcu. Pokazane jest to na przykładowych danych poniżej:
- \begin{verbatim}
+Następnie zapytanie zawarte w pliku \emph{protokolprzekazania.tex}. Występuje tu nowy problem otworzenia środowiska na początku oraz zamknięcia na końcu. Pokazane jest to na przykładowych danych poniżej:
+ \begin{lstlisting}
 \protokolprzekazaniaA{1}
 \protokolprzekazania{Informatyka ---
  niestacjonarne STUDIA pierwszego stopnia}{1455}
@@ -286,19 +284,19 @@ Następnie zapytanie zawarte w pliku 'protokolprzekazania.tex'. Występuje tu no
  niestacjonarne STUDIA pierwszego stopnia}{1447}
 ...
 \endprotokolprzekazaniaA        
-\end{verbatim}
-Pomijając narazie otwarcie środowiska protokolprzekazaniaA{1} oraz zamkniecie endprotokolprzekazaniaA, w zapytaniu potrzebujemy wyświetlić każdy tok nauczania oraz z agregowaną liczbę kandydatów na tym toku. Do agregacji użyjemy polecenia group by na polu tok, a aby otrzymać liczbę kandydatów funkcji count(*). Dodatkowo potrzeba także wybrać tylko kandydatów z danej daty decyzji. Do tego posłuży podzapytanie które pobierze date decyzji z aktualnej rekrutacji i porówna ją z datą decyzji dla danego kandydata. 
- \begin{verbatim}
+\end{lstlisting}
+Pomijając na razie otwarcie środowiska \emph{protokolprzekazaniaA\{1\} }oraz zamkniecie \emph{endprotokolprzekazaniaA}, w zapytaniu potrzebujemy wyświetlić każdy tok nauczania oraz z agregowaną liczbę kandydatów na tym toku. Do agregacji użyjemy polecenia \emph{group}  na polu tok by móc otrzymać liczbę kandydatów używając funkcji count(*). Dodatkowo potrzeba także wybrać kandydatów tylko posiadającą daną datę decyzji. Do tego posłuży podzapytanie, które pobierze datę decyzji z aktualnej rekrutacji i porówna ją z datą decyzji dla danego kandydata. 
+ \begin{lstlisting}
 SELECT  k.kierunek_my||' --- '||k.forma_studiow_my||
 ' STUDIA '||k.stopien_studiow_my AS tok, count(*) AS ile
 FROM kandydat_aligeza k
 WHERE  k.data_decyzji=(SELECT wartosc FROM
  setup_aligeza WHERE klucz='dataWydaniaDecyzji') 
 GROUP BY tok
-\end{verbatim}
+\end{lstlisting}
 Takie zapytanie wyświetli nam dane pomiędzy tymi pominiętymi dotychczas komendami. 
 Rozwiązaniem wyświetlenia tych komend jest funkcja programu uzupełniającego szablony, a dokładnie funkcja grupowania. Dokładny opis tej funkcji znajduje się w rozdziale ref. Do zapytania dodamy jako pierwsze pole wartość 1, a następnie użyta zostanie funkcja grupowania po 1 polu wewnątrz szablonu:
- \begin{verbatim}
+ \begin{lstlisting}
 \iffalse @@protokolprzekazania@1@@
 SELECT 1 AS n,k.kierunek_my||' --- '||
 k.forma_studiow_my||' STUDIA '||
@@ -308,12 +306,12 @@ WHERE  k.data_decyzji=(SELECT wartosc FROM
  setup_aligeza WHERE klucz='dataWydaniaDecyzji') 
 GROUP BY tok
 @END@\fi
-\end{verbatim}
+\end{lstlisting}
 
 Dla szablonu 'pocztex.tex' potrzebujemy prostą listę z adresami każdego kandydata z danej rekrutacji:
 
 
- \begin{verbatim}
+ \begin{lstlisting}
 \iffalse@@pocztex@@
 SELECT ka.nazwiskoimiona,
        ka.adr_ulica_miejscowosc_nr_domu,
@@ -325,10 +323,10 @@ WHERE  ka.data_decyzji=
 where klucz='dataWydaniaDecyzji')
 ORDER BY ka.kierunek_forma_skrot_my, ka.nazwiskoimiona
 @END@\fi
-\end{verbatim}
+\end{lstlisting}
 
-W kolejnym szablonie 'listasekretariat.tex' potrzebujemy utworzenia list kandydatów dla każdego toku nauki. Przez tok nauki rozumie się każdą kombinację kierunku, formy oraz stopnia studiów. W szablonie zostało to rozwiązane tak, że każda lista otwiera się poprzez wywołanie komendy listarsekretariatA z trzema parametrami, którymi są właśnie kierunek, forma oraz stopień studiów. Na przykładowych danych wygląda to następująco:
- \begin{verbatim}
+W kolejnym szablonie \emph{listasekretariat.tex} potrzebne jest utworzeniea list kandydatów dla każdego toku nauki. Przez tok nauki rozumie się każdą kombinację kierunku, formy oraz stopnia studiów. W szablonie zostało to rozwiązane tak, że każda lista otwiera się poprzez wywołanie komendy \emph{listarsekretariatA} z trzema parametrami, którymi są właśnie kierunek, forma oraz stopień studiów. Na przykładowych danych wygląda to następująco:
+ \begin{lstlisting}
 \listarsekretariatA{drugiego stopnia}{Informatyka}{stacjonarne}
 \listarsekretariat{ Ablewicz Monika}{39}
 \listarsekretariat{ Abram Halina}{69}
@@ -341,10 +339,10 @@ W kolejnym szablonie 'listasekretariat.tex' potrzebujemy utworzenia list kandyda
 ...
 \endlistarsekretariatA
 ...
-\end{verbatim}
+\end{lstlisting}
 
-W zapytaniu więc potrzebne będzie wybrać wszystkich kandydatów z datą decyzji aktualnej rekrutacji, a następnie wyświetlić kierunek, forma oraz stopień studiów, imię, nazwisko oraz numer teczki. W zapytaniu także potrzebne będzie posortowanie po polach które będą grupowane w programie uzupełniającym szablon. Każde na tych polach w zapytaniu SQL użyjemy polecenia ORDER BY. Ostatecznie poinformujemy program aby otrzymane dane grupował po 3 pierwszych polach:
- \begin{verbatim}
+W zapytaniu więc potrzebne będzie wybrać wszystkich kandydatów z datą decyzji aktualnej rekrutacji, a następnie wyświetlić kierunek, formę, stopień studiów, imię, nazwisko oraz numer teczki. W zapytaniu także potrzebne będzie sortowanie po polach, które będą grupowane w programie uzupełniającym szablon. Każde na tych polach w zapytaniu SQL użyjemy polecenia \emph{ORDER BY}. Ostatecznie poinformujemy program, aby otrzymane dane grupował po 3 pierwszych polach:
+ \begin{lstlisting}
 \iffalse@@listarsekretariat@3@@
 SELECT stopien_studiow_my,kierunek_my,forma_studiow_my,
        nazwiskoimiona,stud_nrteczki
@@ -354,12 +352,12 @@ WHERE data_decyzji=
  where klucz='dataWydaniaDecyzji')
 ORDER BY kierunek_forma_skrot_my, nazwiskoimiona
 @END@\fi
-\end{verbatim}
+\end{lstlisting}
 
 W szablonach znajdują się jeszcze 4 kolejne podobne listy: przyjętych, nieprzyjętych,wysyłkowa oraz rankingowa. Zasada utworzenia zapytań do tych list jest identyczna jak w liście do sekretariatu. Różnią się one będą jedynie pewnymi warunkami wewnątrz zapytań SQL czy też polami po których będą sortowane dane.
 
 \par Lista przyjętych:
- \begin{verbatim}
+ \begin{lstlisting}
 \iffalse@@listaprzyjetych@3@@
 SELECT stopien_studiow_my,kierunek_my,forma_studiow_my,
        nazwiskoimiona 
@@ -371,9 +369,9 @@ WHERE czy_przyjety=1 and
 ORDER BY kierunek_forma_skrot_my,
          nazwiskoimiona
 @END@\fi
-\end{verbatim}
+\end{lstlisting}
 \par Lista nieprzyjętych:
- \begin{verbatim}
+ \begin{lstlisting}
 \iffalse@@listaprzyjetych@3@@
 SELECT stopien_studiow_my,kierunek_my,forma_studiow_my,
        nazwiskoimiona 
@@ -384,9 +382,9 @@ WHERE czy_przyjety=2 and
 ORDER BY kierunek_forma_skrot_my,
          nazwiskoimiona
 @END@\fi
-\end{verbatim}
+\end{lstlisting}
 \par Lista wysyłkowa:
- \begin{verbatim}
+ \begin{lstlisting}
 \iffalse @@listawysylkowa@3@@
 SELECT stopien_studiow_my,kierunek_my,forma_studiow_my,
       nazwiskoimiona, adr_ulica_miejscowosc_nr_domu||'; '||
@@ -396,9 +394,9 @@ WHERE data_decyzji=(select wartosc from setup_aligeza
 where klucz='dataWydaniaDecyzji')
 ORDER BY kierunek_forma_skrot_my, nazwiskoimiona
 @END@\fi
-\end{verbatim}
+\end{lstlisting}
 \par Lista  rankingowa:
- \begin{verbatim}
+ \begin{lstlisting}
 \iffalse@@listarankingowa@3@@
 SELECT stopien_studiow_my,kierunek_my,forma_studiow_my,
        nazwiskoimiona,STUD_ILPUNKTOW
@@ -407,10 +405,10 @@ WHERE  data_decyzji=(select wartosc from setup_aligeza
 where klucz='dataWydaniaDecyzji')
 ORDER BY kierunek_forma_skrot_my, STUD_ILPUNKTOW desc
 @END@\fi
-\end{verbatim}
+\end{lstlisting}
 \par 
-W ostatnim szablonie wystąpił problem ilości parametrów jakie trzeba przekazać do poprawnego działania szablonu. W latex'ie można stworzyć środowisko o maksymalnie 9 parametrach, natomiast w szablonie 'decyzja.tex' dla każdego kandydata potrzeba 12 różnych informacji. Rozwiązaniem tego problemu także było grupowanie przez program uzupełniania raportów. Grupowanie wytnie 3 pierwsze pola i wstawi je do nowego środowiska. W zapytaniu SQL wyświetlanie daty musi posiadać dodatkowe 0 przy datach typu 01.02.2015 gdzie właśnie liczby dni lub miesięcy są mniejsze od 10:
- \begin{verbatim}
+W ostatnim szablonie wystąpił problem ilości parametrów jakie trzeba przekazać do poprawnego działania szablonu. W latex'ie można stworzyć środowisko o maksymalnie 9 parametrach, natomiast w szablonie \emph{decyzja.tex} dla każdego kandydata potrzeba 12 różnych informacji. Rozwiązaniem tego problemu także było grupowanie przez program uzupełniania raportów. Grupowanie wytnie 3 pierwsze pola i wstawi je do nowego środowiska. W zapytaniu SQL wyświetlanie daty musi posiadać dodatkowe 0 przy datach typu 01.02.2015 gdzie właśnie liczby dni lub miesięcy są mniejsze od 10:
+ \begin{lstlisting}
 \iffalse@@decyzja@3@@
 SELECT ka.stopien_studiow_my,ka.kierunek_my
 ,ka.forma_studiow_my,
@@ -428,60 +426,60 @@ WHERE  ka.data_decyzji=(select wartosc from setup_aligeza
 where klucz='dataWydaniaDecyzji')
 ORDER BY ka.kierunek_forma_skrot_my, ka.nazwiskoimiona
 @END@\fi
-\end{verbatim}
+\end{lstlisting}
 \section{Konfiguracja programu}
 
-W głównym katalogu znajduje się plik konfiguracyjny programu o nazwie  dblatexraportconfig.bat. Plik ten jest jednocześnie plikiem wsadowym oraz zawiera konfiguracje programu DBRaportlatex.jar. Część kodu batch uruchamia program DBraportlatex razem z odpowiednimi parametrami do uruchomienia embedded firebird:
- \begin{verbatim}
+W głównym katalogu znajduje się plik konfiguracyjny programu o nazwie  \emph{dblatexraportconfig.bat}. Plik ten jest jednocześnie plikiem wsadowym oraz zawiera konfiguracje programu \emph{DBRaportlatex.jar}. Część kodu batch uruchamia program DBraportlatex razem z odpowiednimi parametrami do uruchomienia embedded firebird:
+ \begin{lstlisting}
 @echo off
 java -Djava.library.path=.\firebird -jar dbraportlatex.jar
 pause
 exit
-\end{verbatim}
+\end{lstlisting}
 
-Następnie od linijki zawierającej '\#dbLatexRaportConfig' zaczynają się zmienne konfiguracyjne:
+Następnie od linijki zawierającej \emph{\#dbLatexRaportConfig} zaczynają się zmienne konfiguracyjne:
   \begin{itemize}
   \item Ścieżka do szablonów latex
-   \begin{verbatim}
+   \begin{lstlisting}
 templatepath=template/
-  \end{verbatim}
+  \end{lstlisting}
   \item Ścieżka do uzupełnionych szablonów latex oraz skompilowanego pliku pdf
-  \begin{verbatim}
+  \begin{lstlisting}
 output=output/
- \end{verbatim}
+ \end{lstlisting}
  \item Ścieżka do uzupełnionych szablonów latex oraz skompilowanego pliku pdf
-  \begin{verbatim}
+  \begin{lstlisting}
 output=output/
- \end{verbatim}
+ \end{lstlisting}
   \item Kodowanie szablonów latex
-   \begin{verbatim}
+   \begin{lstlisting}
 encodingtex=UTF-8
-  \end{verbatim}
+  \end{lstlisting}
    \item Konfiguracja połączenia z bazą danych
-    \begin{verbatim}
+    \begin{lstlisting}
 dbengine=firebirdsql
 hostname=embedded
 dbpath=rekrutacja.fdb
 user=SYSDBA
 password=
 dbencoding=WIN1250
-   \end{verbatim}
+   \end{lstlisting}
   \item Ścieżka do komilatora latex
-   \begin{verbatim}
+   \begin{lstlisting}
 pdflatexpath=texlive\2010min\bin\win32\pdflatex.exe
-  \end{verbatim}
+  \end{lstlisting}
     \item Lista plików do kompilacji
- \begin{verbatim}
+ \begin{lstlisting}
 pdfcompilemainfile=main.tex,main.tex
-\end{verbatim}
+\end{lstlisting}
 \end{itemize}
 \section{Przebieg testów}
 
-W bazie danych znajduje się 10001 kandydatów. Należy spodziewać się tyle samo wygenerowanych na listach.  Program został uruchomiony z pliku wsadowego dblatexraportconfig.bat. Poniżej znajduje się wydruk z konsoli po uruchomieniu programu z krótkimi opisami poszczególnych procesów:
+W bazie danych znajduje się 10001 kandydatów. Należy spodziewać się tyle samo wygenerowanych na listach.  Program został uruchomiony z pliku wsadowego \emph{dblatexraportconfig.bat}. Poniżej znajduje się wydruk z konsoli po uruchomieniu programu z krótkimi opisami poszczególnych procesów:
 
 \begin{enumerate}
 \item Ładowanie pliku konfiguracyjnego przez program:
-\begin{verbatim}
+\begin{lstlisting}
 Config loaded: dblatexraportconfig.bat
 pattern=
 templatepath=template/
@@ -495,15 +493,15 @@ password=*********
 dbencoding=WIN1250
 pdflatexpath=texlive\2010min\bin\win32\pdflatex.exe
 pdfcompilemainfile=main.tex,main.tex
- \end{verbatim}
+ \end{lstlisting}
  
  \item Połączenie z bazą danych:
-\begin{verbatim}
+\begin{lstlisting}
 Connection to database: OK
- \end{verbatim}
+ \end{lstlisting}
  
   \item Ładowanie szablonów do pamięci:
-\begin{verbatim}
+\begin{lstlisting}
 Loaded file: template\aaasetup.tex
 Loaded file: template\decyzja.tex
 Loaded file: template\listanieprzyjetych.tex
@@ -514,10 +512,10 @@ Loaded file: template\listawysylkowa.tex
 Loaded file: template\main.tex
 Loaded file: template\pocztex.tex
 Loaded file: template\protokolprzekazania.tex
- \end{verbatim}
+ \end{lstlisting}
  
    \item Wywoływanie zapytań SQL oraz uzupełnianie szablonów:
- \begin{verbatim}
+ \begin{lstlisting}
 aaasetup.tex - processing SQL statements
 no returns SQL1
 9 records SQL2
@@ -548,10 +546,10 @@ pocztex.tex - processing SQL statements
 protokolprzekazania.tex - processing SQL statements
 8 records SQL1
 
- \end{verbatim}
+ \end{lstlisting}
  
    \item Zapisywanie uzupełnionych szablonów do katalogu wynikowego:
- \begin{verbatim}
+ \begin{lstlisting}
 Saved to file: output/aaasetup.tex
 Saved to file: output/decyzja.tex
 Saved to file: output/listanieprzyjetych.tex
@@ -563,10 +561,10 @@ Saved to file: output/main.tex
 Saved to file: output/pocztex.tex
 Saved to file: output/protokolprzekazania.tex
 
- \end{verbatim}
+ \end{lstlisting}
  
-   \item Wywoływanie kompilatora Latex dla głównego pliku main.tex, co spowoduje skompilowanie wszystkich szablonów:
- \begin{verbatim}
+   \item Wywoływanie kompilatora Latex dla głównego pliku \emph{main.tex}, co spowoduje skompilowanie wszystkich szablonów:
+ \begin{lstlisting}
 Executing shell command:
 cmd /c start texlive\2010min\bin\win32\pdflatex.exe --output-directory=output/ o
 utput/main.texExecuting shell command:
@@ -576,12 +574,12 @@ utput/main.tex
 WORK DONE!!!
 
 Directory pdf results output: output/
- \end{verbatim}
+ \end{lstlisting}
 \end{enumerate}
 Program wykonał się bez żadnych błędów i wykonał swoje zadanie. Uzupełnienie szablonów trwało niżej 1 sekundy, natomiast podwójna kompilacja wszystkich szablonów około jednej minuty, co spełnia założenia projektu. 
 
 \section{Wyniki testu}
 
-Wszystkie szablony zostały uzupełnione poprawnie danymi z bazy danych oraz kompilacja systemu Latex przebiegła bezproblemowo. W pliku wynikowym PDF ze wszystkimi dokumentami gotowymi do druku wszystko jest zgodnie z oczekiwaniami. Wygenerowany plik PDF z testów  dołączony jest w załączniku.
+Wszystkie szablony zostały uzupełnione poprawnie danymi z bazy danych oraz kompilacja systemu Latex przebiegła bezproblemowo. W pliku wynikowym PDF ze wszystkimi dokumentami gotowymi do druku wszystko jest zgodnie z oczekiwaniami. Wygenerowany plik PDF z testów dołączony jest w załączniku.
 
 
