@@ -1,15 +1,164 @@
 \chapter{Projekt programu i implementacja}
-a
+
+Ten rozdział przedstawia dokładny proces implementacji programu \emph{DBLatexRaport,}  który ma na celu spełnienia wymagań oraz celów zawartych w rozdziale 1.  Osoba po przeanalizowaniu poniższego materiału, będzie w stanie w przyszłości ulepszyć o nowe funkcję istniejący już program lub stworzyć nowy, podobny program w innym języku programowania, który będzie w stanie obsłużyć istniejące już szablony. 
+
 \section{Algorytm działania systemu raportowania}
-\section{Wybór języka programowania}
-\section{Wybór środowiska programistycznego}
+
+W poprzednim rozdziale przedstawiony został proces tworzenia samych szablonów, natomiast w tej sekcji skupiona uwaga zostanie na tym jak zaprojektować system uzupełniania tych szablonów. Między innymi właśnie o tym jak umieszczać informacje w szablonie na temat selekcjonowania danych czy też jak wygenerować odpowiednią strukturę danych.
+
+\subsection{Algorytm parsowania}
+Aby szablon raportu został uzupełniony o potrzebne dane, musi on posiadać pewną informację o tym, co i w jakiej formie należy w nim zapisać.  Program musi przeszukać szablon w celu znalezienia tej informacji i przeanalizowanie jej, aby wywołać odpowiednie procedury na rzecz danego szablonu. Jako, że informacja ta przeznaczona jest tylko dla programu przeszukującego, idealnym było by, gdyby zapis tej informacji byłby ignorowany przez środowisko kompilacji raportów.  W wybranym wcześniej środowisku \emph{Latex} znajduje się komenda \emph{iffalse} oraz jej zamknięcie \emph{fi} dzięki której wszystko pomiędzy zostanie zignorowane w czasie kompilacji dokumentów. Daje nam to taki zapis gdzie nasza informacja może zajmować wiele linii:
+\begin{lstlisting}
+\iffalse 
+...
+...
+\fi
+\end{lstlisting}
+Jeśli polecenie jest w stanie zmieścić się w jednej linii, można użyć \% aby za komentować tę linię, co przyniesie dokładnie taki sam efekt.
+\par
+Kolejnym krokiem jest ustalenie struktury informacji, która powinna zawierać instrukcje do stworzenia wywołań środowisk z danymi przesłanymi jako parametry. Instrukcjami tymi są po kolei: nazwa środowiska, grupowanie pól oraz selekcja danych. Utworzony został więc na potrzeby tego programu standardowy zapis w różnych wariantach z wykorzystaniem znaków \emph{@} jako separatorów oraz informacji o zakończeniu instrukcji \emph{@END@}:\vspace{5mm}
+\begin{enumerate}
+\item Pusty - Polecenie do bazy danych, które nie zwraca żadnych danych.
+\begin{lstlisting}
+\iffalse 
+@@@@Polecenie do bazy danych@END@
+\fi
+\end{lstlisting}
+
+\item Prosty - Polecenie do bazy danych, zwracające wyselekcjonowane dane pod daną nazwą środowiska
+\begin{lstlisting}
+\iffalse 
+@@Nazwa środowiska@@Selekcja danych@END@
+\fi
+\end{lstlisting}
+
+\item Z grupowaniem - Polecenie do bazy danych, zwracające wyselekcjonowane dane pod daną nazwą środowiska dodatkowo z informacją o grupowaniu, która składa się z cyfr oraz przecinków.
+\begin{lstlisting}
+\iffalse 
+@@Nazwa środowiska@Grupowanie@@Selekcja danych@END@
+\fi
+\end{lstlisting}
+\end{enumerate}
+
+\subsection{Selekcjonowanie danych}
+
+Wybieranie danych z bazy odbywać się będzie na poziomie połączenia z wybranym silnikiem bazodanowym. Oznacza to ze zapytania o dane muszą zostać napisane tak, by interpreter poleceń SQL danego silnika był w stanie je przetworzyć i wykonać, zwracając przy tym potrzebne dane. Oznacza to, że zapytanie zapisane w danej instrukcji wywoływane jest bez żadnych zmian na bazie danych z którą połączona jest aplikacja.
+
+\subsection{Struktura uzupełnianych danych}
+
+Środowiska utworzone w szablonach są w stanie same, za pomocą argumentów, uzupełnić dane miejsca, o daną wartość. Zadaniem programu jest utworzyć z wyselekcjonowanych danych, wywołania tego środowiska jednorazowo dla każdego rekordu pobranego z bazy danych. Wywołanie środowiska odbywa się poprzez polecenie:
+\begin{lstlisting}
+\nazwasrodowiska{parametr1}{parametr2}{parametr3} ...
+\end{lstlisting}
+
+Taka struktura może być wynikiem prostego wariantu polecenia:
+\begin{lstlisting}
+\iffalse@@parametrRekrutacyjny@@
+SELECT klucz,wartosc FROM setup_aligeza
+@END@\fi
+\end{lstlisting}
+Gdzie wynikiem takiego polecenia będzie właśnie:
+\begin{lstlisting}
+\parametrRekrutacyjny{rokAkademicki}{2014/2015}
+\parametrRekrutacyjny{czyUwzglednicDateWydaniaDecyzji}{N}
+\parametrRekrutacyjny{instytutNazwa}{Instytut Techniczny}
+\end{lstlisting}
+
+Na potrzeby systemu rekrutacji, musiała zostać stworzona dodatkowa struktura, pełniąca funkcję grupowania. Wykorzystana może być także w przypadku gdy rekordy zwrócone z bazy danych zawierają więcej niż 9 pól, ze względu na to, że środowiska mogą być wywoływane maksymalnie od 9 argumentów. Poniżej przedstawiona zostanie tylko struktura z krótkim wprowadzeniem. Dokładny opis jej tworzenia znajduje się w implementacji.
+\par
+Strukturę grupowania odzwierciedla struktura drzewa. Wywołanie środowiska z dodaną dużą literą alfabetu łacińskiego na końcu nazwy rozpoczyna grupę, natomiast wywołanie środowiska z dodaną frazą "end" na początku nazwy, kończy daną grupę. Uwagę należy zwrócić na fakt, iż w alfabecie łacińskim jest 26 znaków, co ogranicza ilość grup do 26. Na przykładzie drzewa może wyglądać to następująco:
+
+\dirtree{%
+ .1 \textbackslash NazwaA.
+ .2 \textbackslash NazwaB.
+ .3 \textbackslash Nazwa.
+ .3 \textbackslash Nazwa.
+ .3 \ldots.
+ .2 \textbackslash endNazwaB.
+ .2 \textbackslash NazwaB.
+ .3 \textbackslash Nazwa.
+ .3 \textbackslash Nazwa.
+ .2 \textbackslash endNazwaB.
+ .1 \textbackslash endNazwaA.
+}
+\vspace{5mm}
+Od każde grupujące środowisko wymaga co najmniej 1 parametru, który zabierany jest z pól rekordów pobranych z bazy danych. Pole dla wszystkich rekordów w danej grupie jest takie samo dlatego jest ono właśnie przerzucane do wywołania środowiska grupy.
+Poniżej prosty przykład ukazujący dane zachowanie:
+\begin{lstlisting}
+\nazwasrodowiskaA{pole1}
+\nazwasrodowiska{pole2}{pole3}{pole4}...
+\nazwasrodowiska{pole2}{pole3}{pole4}...
+...
+\endnazwasrodowiskaA
+\end{lstlisting}
+
+\subsection{Wywołanie kompilacji szablonu}
+
+Ostatecznie aby wytworzyć dokument w \emph{PDF} należy go skompilować wybranym kompilatorem. Do tego posłuży polecenie powłoki systemu Windows. Poniżej przykładowe wywołanie kompilatora LaTeX:
+\begin{lstlisting}
+cmd /c start texlive\2010min\bin\win32\pdflatex.exe 
+--output-directory=output/ output/main.tex
+\end{lstlisting}
+
+
+\section{Wybór języka oraz środowiska programistycznego }
+
+Pierwszym podstawowym kryterium wyboru języka programowania, w tym projekcie, jest fakt posiadania przez język gotowych bibliotek obsługujących połączenie z serwerem bazodanowym. Cała reszta wymagań takich jak obsługa operacji na plikach, operacje na łańcuchach tekstu, obiektowość języka czy też multiplatformowość schodzą na drugi plan, ze względu na to, że każdy współczesny język posiada większość podstawowych funkcjonalności. 
+\par Na uczelni wykorzystywany jest serwer bazodanowy o silniku \emph{Firebird 2.5}. Najpopularniejsze języki programowania, które obsługują połączenie z tym serwerem to:
+\begin{itemize}
+\item JAVA
+\item C++
+\item C\#
+\item Delphi
+\item Perl
+\item Python
+\item wszystkie języki obsługujące połączenie z \emph{ODBC (Open DataBase Connectivity)} 
+\end{itemize}
+\vspace{5mm}
+We wszystkich powyższych językach jest wstanie powstać potrzebny program, jednak najlepszym wyborem okazał się język \emph{\textbf{JAVA}}, ze względu na wiele zalet:
+\begin{itemize}
+\item prostota importu bibliotek połączenia z serwerem bazodanowym. Dodatkowo na jednym interfejsie można obsłużyć połączenia z innymi silnikami bazodanowymi.
+\item multiplatformowość
+\item obiektowość
+\item wiele zaimplementowanych już funkcji, które zostaną wykorzystane w programie.
+\item łatwość pisania kodu
+\item wystarczająca wydajność na potrzeby projektu
+\end{itemize}
+\vspace{5mm}
+\par
+Natomiast na środowisko w jakim powstanie projekt wybrany został program \emph{\textbf{NetBeans 8.0.2 }} ze względu wiele przydanych funkcjonalności oraz  prostotę obsługi. Dodatkowo posiada on pełną dokumentację jak i wiele samouczków w Internecie. 
+
 \section{Proces tworzenia programu}
-\subsection{Utworzenie projektu}
-\subsection{Wybór bibliotek zewnętrznych}
+
+W tej sekcji ukazany zostanie proces tworzenia aplikacji, a nie sama implementacja. Wyjaśnione będą decyzje oraz postępowania przy pisaniu danego kodu, aby w pełni oddać idee tworzenia tego programu. Sekcję tę, można więc potraktować jako pewien samouczek, który jednak wymaga minimalnej znajomości języka programowania \emph{JAVA}.
+
+\subsection{Utworzenie projektu i jego struktury}
+
+Środowisko \emph{NetBeans 8.0.2} posiada funkcję utworzenia projektu typu \emph{JAVA Application}. Automatycznie stworzony zostanie package o nazwie projektu \emph{DBLatexRaport} oraz klasa, o tej samej nazwie, zawierającą metodę \emph{main(String[] args)}. Od tej metody program zacznie swoje wykonanie. Tak więc, w metodzie tej, także będą umieszczane deklaracje wszystkich obiektów klas głównych oraz ich inicjalizacja. 
+\par 
+Aplikacja oprócz swojej głównej metody, będzie wymagała podziału na moduły, które będą odzwierciedlane poprzez odpowiednie klasy. Oczywistymi modułami będą:
+\begin{itemize}
+\item moduł obsługi pliku konfiguracyjnego.
+\item moduł obsługi połączenia z bazą danych.
+\item moduł obsługi szablonów.
+\item moduł obsługi wywoływania kompilatora szablonów.
+\end{itemize}
+\vspace{5mm}
+Podczas tworzenia programu może okazać się, że przydadzą się jeszcze dodatkowe klasy pomocnicze, przechowujące pewne dane w spójnej strukturze. Zastosowanie takich klas, znacznie ułatwi i przyspieszy pracę z danymi.Klasy te opisane zostaną w jednej z następnych podsekcji.
+
 \subsection{Zarządzanie konfiguracją}
+test
+\subsection{Biblioteka Java DataBase Connectivity}
+test
 \subsection{Obsługa połączenia z bazą danych}
+test
 \subsection{Wykorzystane klasy typu kontener}
+test
 \subsection{Zarządzanie szablonami}
+test
 \subsection{Uzupełnianie szablonów}
+test
 \subsection{Klasa zarządzająca kompilatorem Latex}
+test
 \section{ Kompilacja programu}
+test

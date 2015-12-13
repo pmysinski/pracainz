@@ -2,6 +2,9 @@
 
 Przed wdrożeniem programu do realnego systemu, program należy przetestować. Testy powinny być prowadzone na tymczasowej bazie danych, ponieważ idea testów jest taka, że po podmianie bazy danych na realną wszystko ma działać bez zmian. Zmienić się może tylko zapis połączenia z bazą danych w pliku konfiguracyjnym. Dzięki takiemu zabiegowi, będzie można być pewnym tego, że wszystko będzie działać na prawdziwej bazie danych.  Do przeprowadzenia testów potrzebne będzie odtworzyć przyszłe środowisko, w którym będzie działać program, przygotować szablony dokumentów, które są wytwarzane w procesie rekrutacji oraz wygenerować dokumenty. Ostatnim już krokiem będzie sprawdzenie czy podczas tego procesu nie ma żadnych komplikacji oraz czy wygenerowane dokumenty nie zawierają błędów.
 \section{Wstępne ustalenia}
+
+Przed rozpoczęciem jakichkolwiek działań należy przygotować podstawowe rzeczy do rozpoczęcia testów.
+
 \subsection{Specyfikacja maszyny do testów}
 Testy przeprowadzone będą na komputerze o następującej specyfikacji:
 \begin{lstlisting}
@@ -31,7 +34,7 @@ Java HotSpot(TM) 64-Bit Server VM (build 25.60-b23, mixed mode)
 
 Do przejrzystego przechowywania wszystkich rzeczy potrzebnych w systemie rekrutacji, potrzebna będzie odpowiednia struktura katalogów. Do przechowywania potrzebne będą: \\
 \begin{itemize}
-\item program: DBRaportLatex.jar
+\item program: DBLatexRaport.jar
 \item plik konfiguracyjny: dblatexraportconfig.bat
 \item środowisko kompilacji latex
 \item szablony dokumentów 
@@ -48,7 +51,7 @@ Proponowana struktura więc może wyglądać następująco:
  .2 output.
  .2 template.
  .2 texlive.
- .2 DBRaportLatex.jar.
+ .2 DBLatexRaport.jar.
  .2 dblatexraportconfig.bat.
  .2 rekrutacja.fdb.
 }
@@ -74,7 +77,7 @@ C:\Program Files\Firebird\bin>isql
 SQL>CREATE DATABASE 'D:\test systemu\rekrutacja.fdb'
 CON>user 'SYSDBA' password 'masterkey';
 \end{lstlisting}
-Po wykonaniu tego polecenia zostanie utworzona baza danych. Takie same dane należy teraz wpisać do pliku konfiguracyjnego programu czyli \emph{DBRaportLatex.bat} aby program mógł się połączyć z tą bazą:
+Po wykonaniu tego polecenia zostanie utworzona baza danych. Takie same dane należy teraz wpisać do pliku konfiguracyjnego programu czyli \emph{DBLatexRaport.bat} aby program mógł się połączyć z tą bazą:
 \begin{lstlisting}
 dbengine=firebirdsql
 hostname=//localhost
@@ -473,7 +476,7 @@ pdflatexpath=texlive\2010min\bin\win32\pdflatex.exe
 pdfcompilemainfile=main.tex,main.tex
 \end{lstlisting}
 \end{itemize}
-\section{Przebieg testów}
+\section{Przebieg testu}
 
 W bazie danych znajduje się 10001 kandydatów. Należy spodziewać się tyle samo wygenerowanych na listach.  Program został uruchomiony z pliku wsadowego \emph{dblatexraportconfig.bat}. Poniżej znajduje się wydruk z konsoli po uruchomieniu programu z krótkimi opisami poszczególnych procesów:
 
@@ -566,10 +569,11 @@ Saved to file: output/protokolprzekazania.tex
    \item Wywoływanie kompilatora Latex dla głównego pliku \emph{main.tex}, co spowoduje skompilowanie wszystkich szablonów:
  \begin{lstlisting}
 Executing shell command:
-cmd /c start texlive\2010min\bin\win32\pdflatex.exe --output-directory=output/ o
-utput/main.texExecuting shell command:
-cmd /c start texlive\2010min\bin\win32\pdflatex.exe --output-directory=output/ o
-utput/main.tex
+cmd /c start texlive\2010min\bin\win32\pdflatex.exe
+ --output-directory=output/ output/main.tex
+Executing shell command:
+cmd /c start texlive\2010min\bin\win32\pdflatex.exe
+ --output-directory=output/ output/main.tex
 
 WORK DONE!!!
 
