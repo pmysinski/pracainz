@@ -130,33 +130,183 @@ Natomiast na środowisko w jakim powstanie projekt wybrany został program \emph
 
 \section{Proces tworzenia programu}
 
-W tej sekcji ukazany zostanie proces tworzenia aplikacji, a nie sama implementacja. Wyjaśnione będą decyzje oraz postępowania przy pisaniu danego kodu, aby w pełni oddać idee tworzenia tego programu. Sekcję tę, można więc potraktować jako pewien samouczek, który jednak wymaga minimalnej znajomości języka programowania \emph{JAVA}.
+W tej sekcji ukazany zostanie proces tworzenia aplikacji, a nie sama implementacja. Wyjaśnione będą decyzje oraz postępowania przy pisaniu danego kodu, aby w pełni oddać idee tworzenia tego programu. Sekcję tę, można więc potraktować jako pewien samouczek, który jednak wymaga minimalnej znajomości języka programowania \emph{JAVA}. Pominięte też zostaną kwestie związane z importem podstawowych bibliotek, czy też wszelkie obsługi wyjątków, które mogą zaistnieć przy złej obsłudze programu. Cała uwaga zostanie skupiona tylko i wyłącznie na kodzie, przy poprawnym wykonaniu. W razie potrzeby dokładnej analizy cały kod znajduje się w załączniku.
 
 \subsection{Utworzenie projektu i jego struktury}
 
 Środowisko \emph{NetBeans 8.0.2} posiada funkcję utworzenia projektu typu \emph{JAVA Application}. Automatycznie stworzony zostanie package o nazwie projektu \emph{DBLatexRaport} oraz klasa, o tej samej nazwie, zawierającą metodę \emph{main(String[] args)}. Od tej metody program zacznie swoje wykonanie. Tak więc, w metodzie tej, także będą umieszczane deklaracje wszystkich obiektów klas głównych oraz ich inicjalizacja. 
 \par 
-Aplikacja oprócz swojej głównej metody, będzie wymagała podziału na moduły, które będą odzwierciedlane poprzez odpowiednie klasy. Oczywistymi modułami będą:
+Aplikacja oprócz swojej głównej metody, będzie wymagała podziału na moduły, które będą odzwierciedlane poprzez odpowiednie klasy. Wymagane do działania będą:
 \begin{itemize}
-\item moduł obsługi pliku konfiguracyjnego.
-\item moduł obsługi połączenia z bazą danych.
-\item moduł obsługi szablonów.
-\item moduł obsługi wywoływania kompilatora szablonów.
+\item klasa Config - moduł obsługi pliku konfiguracyjnego 
+\item klasa DBHandle - moduł obsługi połączenia z bazą danych.
+\item klasa Templates - moduł obsługi szablonów.
+\item klasa LatexCompiler -  moduł obsługi wywoływania kompilatora szablonów.
 \end{itemize}
 \vspace{5mm}
 Podczas tworzenia programu może okazać się, że przydadzą się jeszcze dodatkowe klasy pomocnicze, przechowujące pewne dane w spójnej strukturze. Zastosowanie takich klas, znacznie ułatwi i przyspieszy pracę z danymi.Klasy te opisane zostaną w jednej z następnych podsekcji.
 
 \subsection{Zarządzanie konfiguracją}
-test
-\subsection{Biblioteka Java DataBase Connectivity}
-test
+
+Większość programów przed uruchomieniem wymaga konfiguracji. Konfiguracje można przeprowadzić na wiele sposobów jednak najodpowiedniejszym sposobem do tej aplikacji będzie plik konfiguracyjny wczytywany przed uruchomieniem programu. Taki plik powinien posiadać informacje, z których skorzysta program, przypisane do zmiennych nazwany w stały sposób.  Dobrym zwyczajem jest aby plik konfiguracyjny posiadał też możliwość pisania komentarzy. Dzięki komentarzom, łatwiej jest skonfigurować dany program.
+\par
+Autorskim pomysłem jest dodatkowa funkcja pliku konfiguracyjnego, jaką jest aby plik ten był jednocześnie plikiem wsadowym. Polecenia powłoki systemu rozpoczynają plik, i kończą się na poleceniu \emph{EXIT}. Następnie od lini \emph{\#dbLatexRaportConfig} rozpoczyna się zapis zmiennych konfiguracyjnych.
+\par
+Klasa ta została tak zaprojektowana by mogła przyjąć wszelkie nazwy zmiennych oraz ich wartości w postaci łańcuchów znakowych, a następnie za pomocą odpowiedniej metody można było w środku programu odwołać się do wartości danej zmiennej po jej nazwie. Dla przykładu zdeklarowanie zmiennej za pomocą jej nazwy oraz zaraz po znaku "\emph{=}"  jej wartości:
+\begin{lstlisting}
+user=SYSDBA
+\end{lstlisting}
+Następnie po utworzeniu się obiektu klasy Config i załadowaniu poprawnie pliku konfiguracyjnego powinniśmy móc pobrać wartość  zmiennej \emph{user} poprzez wywołanie odpowiedniej metody. Oczywiście dla braku zmiennej, powinna zwracać pustą wartość i informować o tym użytkownika.
+\begin{lstlisting}
+Config cfg = new Config("dblatexraportconfig.bat");
+System.out.println(cfg.getString("user"));
+\end{lstlisting}
+
+Podejściem do zaprojektowania tej klasy można uznać za metodę od ogółu do szczegółu.Na początek potrzeba zaimportować odpowiednie pakiety do obsługi plików, a następnie pozostaje już tylko ustalić składowe, zaimplementować sparametryzowany konstruktor klasy oraz metodę zwracającą daną zmienną. Składowe klasy muszą przede wszystkim przechowywać załadowane zmienne z pliku w pamięci. Łatwym sposobem realizacji tego jest użycie zmiennych tablicowych o typie \emph{String} czyli łańcuchów znaków. Dla każdego indeksu przechowywana będzie informacja o nazwie oraz wartości zmiennej. 
+\begin{lstlisting}
+String[] strindex;
+String[] value; 
+\end{lstlisting}
+
+Następnie konstruktor klasy z jednym parametrem posłuży jako metoda otwarcia pliku i załadowania wszystkich zmiennych. Parametrem będzie nazwa pliku konfiguracyjnego. Konstruktor klasy w \emph{JAVA}'e musi nazywać się tak jak klasa. Po uruchomieniu konstruktora otwieramy plik wykorzystując dostępne klasy obsługi plików.
+\begin{lstlisting}
+public Config(String path){
+ File cfg = new File(path);
+ BufferedReader in = new BufferedReader(
+ new InputStreamReader(
+ new FileInputStream(cfg), "UTF-8"));
+\end{lstlisting}
+Do odczytu przygotować należy pewien bufor oraz zmienne pomocnicze:
+\begin{lstlisting}
+ String tmp;
+ String[] strindextmp = new String[50];
+ String[] valuetmp = new String[50];
+ int count=0;
+ int flag = 0;
+\end{lstlisting}
+
+Następnie potrzebna jest pętla odczytująca plik linia po linii. Pętla zakończy się po odczytaniu całego pliku, przekazując odczytaną linie do jednej iteracji w pętli. Wewnątrz pętli pierwszym krokiem jest sprawdzenie czy linia zawiera flagę \emph{\#dbLatexRaportConfig} by móc zacząć odczytywać zmienne poprzez ustawienie zmiennej flag na wartość 1. Pozostaje już tylko sprawdzić czy linia nie jest pusta oraz czy nie jest komentarzem, aby móc zapisać zmienne poprzez wyłączenie z linii nazwy (cała linia do znaku "=") oraz wartości zmiennej (cała linia od znaku "=") do aktualnego indeksu bufora. Ostatecznie potrzeba zwiększyć indeks bufora o 1 i zakończyć iteracje.
+\begin{lstlisting}
+while ((tmp = in.readLine()) != null) {
+ if(flag == 0 && tmp.equals("#dbLatexRaportConfig"))
+  flag = 1;
+ if(flag == 1 && tmp.indexOf('#') != 0
+ && tmp.length() != 0 && tmp.indexOf('=') != -1){
+  strindextmp[count] = tmp.substring(0,tmp.indexOf('='));
+  valuetmp[count] = tmp.substring(tmp.indexOf('=')+
+  1,tmp.length());
+  count++;
+ }
+}
+\end{lstlisting}
+
+Na koniec zamykany jest plik i alokowana jest pamięć o dokładnie \emph{count} elementów dla składowych klasy. Ostatecznie przepisywany jest cały bufor do tych składowych.
+\begin{lstlisting}
+in.close();
+        
+strindex = new String[count];
+value = new String[count];
+                  
+for(int i=0;i < count; i++){
+ strindex[i] = strindextmp[i];
+ value[i] = valuetmp[i];
+}
+\end{lstlisting}
+
+Pozostaje zaimplementowanie metody zawracającej wartość zapamiętanej zmiennej. Do tego posłuży metoda o nazwie \emph{getString} i parametrze \emph{String name}. Parametr jest kluczem do wartości zmiennej, która zostanie zwrócona.  Aby znaleźć tą wartość należy przejrzeć tablicę nazw zmiennych i porównać każdą wartość z nazwą szukanej zmiennej. Jeśli znajdziemy odpowiednik oznaczać to będzie, że pod tym samym indeksem w tablicy wartości znajduje się szukana zmienna, którą zwróci metoda. W przypadku braku zmiennej metoda zwróci pustą wartość i wyświetli informacje o jej braku.
+
+\begin{lstlisting}
+public  String getString(String name){
+ for(int i=0;i < value.length; i++){
+   if(strindex[i].indexOf(name) == 0)
+    return(value[i]);
+  }
+ System.out.print("CONFIG VARIABLE ERROR: " + name + "\n");
+ return("");
+}
+\end{lstlisting}
+
+\subsection{Klasy typu kontener}
+
+Przed przystąpieniem do tworzenia reszty głównych klas programu, potrzebne będzie stworzenie dwóch klas pomocniczych zawierających pewną strukturę danych oraz interfejs. Posłużą one do zapewnienia łatwej wymiany danych pomiędzy modułami. Pierwszą taką klasą będzie struktura reprezentująca informację o selekcji danych, wczytaną z szablonu. Klasa zostanie nazwana \emph{ParsedSQLInfo} i zawierać będzie następujące składowe wyczerpujące wszelkie informacje na temat selekcji:
+
+\begin{lstlisting}
+public class ParsedSQLInfo {
+ String query;
+ String name;
+ String group;
+ int index;
+ String data;
+\end{lstlisting}
+Odpowiednio:
+    \begin{itemize}
+    \item \emph{query} - polecenie SQL
+    \item \emph{name} - nazwa środowiska.
+    \item \emph{group} - grupowanie
+    \item \emph{index} - miejsce zapisu do pliku
+    \item \emph{data} - wygenerowane dane dla tego zapytania.
+    \end{itemize}
+
+Do klasy został stworzony konstruktor sparametryzowany, który przyda się przy tworzeniu obiektu:
+   
+\begin{lstlisting}
+public ParsedSQLInfo(String query, String name,
+String group, int index) {
+ this.query = query;
+ this.name = name;
+ this.group = group;
+ this.index = index;
+ this.data = "";
+}
+\end{lstlisting}
+
+Oraz podstawowy interfejs do pobierania zmiany lub pobrania danych:
+\begin{lstlisting}
+public int getIndex() {return index;}
+public String getQuery() {return query;}
+public String getName() {return name;}
+public String getGroup() {return group;}
+public String getData() {return data;}
+public void setIndex(int index) {this.index = index;}
+public void setQuery(String query) {this.query = query;}
+public void setName(String name) {this.name = name;}
+public void setGroup(String group) {this.group = group;}
+public void setData(String data) {this.data = data;}
+\end{lstlisting}
+
+
+Druga klasa typu kontener (\emph{RecordSet}) przechowywać będzie wyniki zapytań SQL w postaci listy rekordów. Każdy rekord natomiast będzie reprezentowany jako tablica zmiennych typu String o danej długości. Składowe wyczerpujące wszelkie informacje wyglądać będą następująco:
+
+\begin{lstlisting}
+ArrayList<String[]> val;
+int m;
+\end{lstlisting}
+
+Jak w poprzedniej klasie, zaimplementowany został interfejs oraz konstruktor służący do zainicjowania obiektu ilością kolumn w rekordach:
+ \begin{lstlisting}
+RecordSet(int columncount){
+val = new ArrayList<String[]>();
+m = columncount;
+}
+ \end{lstlisting}
+
+Interfejs wymagał by łatwo można było nadpisać daną wartość oraz pobrać w zależności od numeru rekordu oraz numeru pola. Zwrócić uwagę należy na to iż przy zapisie nowych rekordów, lista automatycznie się poszerzy. Dodatkowo dodana jest możliwość pobrania ilości rekordów czy też pól w 1 rekordzie.
+ \begin{lstlisting}
+void setVal(String str,int i, int j){
+ while(val.size() <= i)
+  val.add(new String[m]);
+ val.get(i)[j]=str;
+}
+String getVal(int i, int j){return(val.get(i)[j]);}   
+
+int get_rows(){return(val.size());}
+int get_cols(){return(m);}
+\end{lstlisting}
+
 \subsection{Obsługa połączenia z bazą danych}
 test
-\subsection{Wykorzystane klasy typu kontener}
-test
+
 \subsection{Zarządzanie szablonami}
-test
-\subsection{Uzupełnianie szablonów}
 test
 \subsection{Klasa zarządzająca kompilatorem Latex}
 test
