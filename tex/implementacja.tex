@@ -304,7 +304,96 @@ int get_cols(){return(m);}
 \end{lstlisting}
 
 \subsection{Obsługa połączenia z bazą danych}
-test
+
+Stworzenie klasy obsługującej połączenie z bazą danych oraz wywołania poleceń na tej bazie. wymagało będzie zaimportowania dodatkowych bibliotek. W języku \emph{Java} znajduje się moduł \emph{ JDBC(TM) Database Access}, w którym dostępna jest klasa \emph{java.sql.DriverManager} pozwalająca załadować odpowiednią bibliotekę dla wybranego silnika bazodanowego, zwracając obiekt z takim samym interfejsem dla każdej możliwej bazy danych.   Obiekt z tym interfejsem pozwala podłączyć do się do źródła danych, takie jak bazy danych. Możliwe jest wysyłanie zapytań i poleceń aktualizacji do bazy danych. Ostatecznie obsługuje też pobieranie i przetwarzanie wyników otrzymanych z bazy danych w odpowiedzi na zapytania. 
+\par
+W przypadku pracy z serwerem \emph{Firebird 2.5} potrzebne będzie zaimportowanie do projektu odpowiedniego pliku \emph{jaybird-full-2.2.9.jar}, który został specjalnie przygotowany dla połączeń z tym serwerem. Jest on do pobrania z oficjalnej strony "\emph{http://www.firebirdsql.org/}". W razie potrzeby połączenie z innym rodzajem bazy danych, wystarczy w analogiczny sposób zaimportować biblioteki przygotowane przez twórców danego serwera a następnie tylko wywołać je poprzez klasę \emph{java.sql.DriverManager}.
+\par
+Posiadając zaimportowaną odpowiednią bibliotekę można rozpocząć implementację. Klasa obsługująca połączenie powinna posiadać metody do połączenia się z serwerem oraz metodę do wysłania zapytania i pobrania danych, które zwróci dane polecenie. Do przechowywania zwróconych danych użyta zostanie wcześniej stworzona klasa kontener \emph{RecordSet}. Próba nawiązania połączenia będzie odbywała się w czasie tworzenia obiektu w konstruktorze sparametryzowanym, zawierające parametry dotyczące połączenia, takie jak użytkownik, hasło, adres czy port.
+\par
+Składowe klasy powinny przechowywać obiekt obsługujący aktualne połączenie oraz obiekt obsługujący wysyłanie zapytań do serwera:
+ \begin{lstlisting}
+public class DBHandle {
+ Connection con;
+ Statement stmt; 
+ \end{lstlisting}
+  Zgodnie ze wcześniejszymi ustaleniami, nawiązanie połączenia odbywać się będzie w konstruktorze klasy. Do konstruktora przekazaną zostaną wszystkie informacje możliwe informacje na temat połączenia w postaci parametrów:
+   \begin{lstlisting}
+   public DBHandle(String engine,String hostname,
+   String port, String dbpath,String encoding,
+    String user,  String password){
+   \end{lstlisting}
+Odpowiednio:
+    \begin{itemize}
+    \item \emph{engine} - Nazwa silnika bazodanowego
+    \item \emph{hostname} - adres serwera
+    \item \emph{port} - port serwera
+    \item \emph{dbpath} - ścieżka do bazy danych lub po prostu nazwa
+    \item \emph{encoding} - Kodowanie po stronie serwera łańcuchów znakowych.
+    \item \emph{user} - Nazwa użytkownika
+    \item \emph{password} - hasło
+    \end{itemize}
+
+Następnie w ciele konstruktora nawiążemy połączenie poprzez stworzenie tak zwanego \emph{Connection String}, czyli łańcucha znaków w odpowiednim formacie zawierającego informacje na temat połączenia, które ma zinterpretować klasa \emph{java.sql.DriverManager} i spróbować nawiązać połączenie. \emph{Connection String} przyjmuje wiele zmiennych także w zależności od rodzaju połączenia. Poniżej pokazany zostanie przypadek nawiązania połączenia z serwerem \emph{Firebird 2.5} po adresie IP lub nazwie hosta. Najpierw ładowny jest sterownik \emph{org.firebirdsql.jdbc.FBDriver}, następnie tworzony jest \emph{Connection String} z parametrów przekazanych do konstruktora i ostatecznie wywoływana jest próba połączenia przez metodę \emph{getConnection()}:
+   \begin{lstlisting}
+if(engine.equals("firebirdsql")){
+ try {
+  Class.forName("org.firebirdsql.jdbc.FBDriver");
+ } catch (ClassNotFoundException ex) {
+  System.out.println( "Data Base connection driver error for 
+  Firebird \nEXCEPTION: " + ex.getMessage( ) );
+ }
+  constr = "jdbc:" + engine + ":" + hostname + ":" + port + "/"
+   + dbpath + "?encoding=" + encoding;
+  con = DriverManager.getConnection(constr,user,password);
+}
+\end{lstlisting}
+
+Na koniec jeśli połączenie się powiedzie tworzymy obiekt odpowiedzialny za wywoływanie zapytań na danym połączeniu i referencję do niego zapisujemy pod składową \emph{stmt}.
+\begin{lstlisting}
+stmt = con.createStatement(
+ResultSet.TYPE_FORWARD_ONLY,
+ResultSet.CONCUR_READ_ONLY);
+System.out.println( "Connection to database: OK" );
+}
+\end{lstlisting}
+
+Pozostaje zaimplementować metodę odpowiedzialną za wysyłanie zapytania i pobieranie danych na obecnym połączeniu. Metoda będzie przyjmować parametr w postaci zapytania SQL i zwracać obiekt klasy \emph{RecordSet} uzupełniony o wszystkie rekordy zwrócone przez zapytanie.
+\begin{lstlisting}
+public  RecordSet executeSQL2(String SQL){
+\end{lstlisting}
+
+Następnie deklaracje potrzebnych zmiennych oraz wywołanie polecenia na bazie danych. Wyniki zapytania zwracane są do klasy \emph{ResultSet}. Dodatkowo uzyskane zostaną jeszcze meta dane na temat ilości kolumn w pobranych rekordach. 
+\begin{lstlisting}
+int n=0,m=0,i=0,j=0;
+String tmp;
+RecordSet ret = null;
+ResultSet rs = stmt.executeQuery( SQL );
+rsmd = rs.getMetaData();
+m=rsmd.getColumnCount();
+\end{lstlisting}
+
+Ze względu na brak odpowiedniego interfejsu ze strony obiektu klasy ResultSet na potrzeby dalszych manipulacji danymi, wszystkie rekordy zostaną przepisane do obiektu klasy \emph{RecordSet}. W razie wartości  \emph{null} jakiegoś pola w rekordzie, zastąpiona ona będzie łańcuchem znaków:
+\begin{lstlisting}
+while(rs.next()) {
+ for(j=0;j < m; j++){
+  tmp = rs.getString(j+1);
+  if(tmp != null){
+   ret.setVal(tmp, i, j);
+  }
+  else
+   ret.setVal("null", i, j);
+  }
+ i++;
+}   
+rs.close();
+return(ret);
+}
+\end{lstlisting}
+
+
+
+
 
 \subsection{Zarządzanie szablonami}
 test
