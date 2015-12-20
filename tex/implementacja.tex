@@ -1,6 +1,12 @@
 \chapter{Projekt programu i implementacja}
 
+
+
 Ten rozdział przedstawia dokładny proces implementacji programu \emph{DBLatexRaport,}  który ma na celu spełnienia wymagań oraz celów zawartych w rozdziale 1.  Osoba po przeanalizowaniu poniższego materiału, będzie w stanie w przyszłości ulepszyć o nowe funkcję istniejący już program lub stworzyć nowy, podobny program w innym języku programowania, który będzie w stanie obsłużyć istniejące już szablony. 
+\par
+ Wyjaśnione będą decyzje oraz postępowania przy pisaniu danego kodu, aby w pełni oddać idee tworzenia tego programu. Sekcję tę, można więc potraktować jako pewien samouczek, który jednak wymaga minimalnej znajomości języka programowania \emph{JAVA}. Pominięte też zostaną kwestie związane z importem podstawowych bibliotek, czy też wszelkie obsługi wyjątków, które mogą zaistnieć przy złej obsłudze programu. Cała uwaga zostanie skupiona tylko i wyłącznie na kodzie, przy poprawnym wykonaniu. W razie potrzeby dokładnej analizy cały kod programu znajduje się w załączniku.
+ \par
+ Wszelki kod przedstawiony tutaj zawierający obok linie, znajduje się w programie. Numery linii odzwierciedlają dokładne położenie danego kodu w programie.
 
 \section{Algorytm działania systemu raportowania}
 
@@ -128,15 +134,11 @@ We wszystkich powyższych językach jest wstanie powstać potrzebny program, jed
 \par
 Natomiast na środowisko w jakim powstanie projekt wybrany został program \emph{\textbf{NetBeans 8.0.2 }} ze względu wiele przydanych funkcjonalności oraz  prostotę obsługi. Dodatkowo posiada on pełną dokumentację jak i wiele samouczków w Internecie. 
 
-\section{Proces tworzenia programu}
-
-W tej sekcji ukazany zostanie proces tworzenia aplikacji, a nie sama implementacja. Wyjaśnione będą decyzje oraz postępowania przy pisaniu danego kodu, aby w pełni oddać idee tworzenia tego programu. Sekcję tę, można więc potraktować jako pewien samouczek, który jednak wymaga minimalnej znajomości języka programowania \emph{JAVA}. Pominięte też zostaną kwestie związane z importem podstawowych bibliotek, czy też wszelkie obsługi wyjątków, które mogą zaistnieć przy złej obsłudze programu. Cała uwaga zostanie skupiona tylko i wyłącznie na kodzie, przy poprawnym wykonaniu. W razie potrzeby dokładnej analizy cały kod znajduje się w załączniku.
-
-\subsection{Utworzenie projektu i jego struktury}
+\section{Utworzenie projektu i jego struktury}
 
 Środowisko \emph{NetBeans 8.0.2} posiada funkcję utworzenia projektu typu \emph{JAVA Application}. Automatycznie stworzony zostanie package o nazwie projektu \emph{DBLatexRaport} oraz klasa, o tej samej nazwie, zawierającą metodę \emph{main(String[] args)}. Od tej metody program zacznie swoje wykonanie. Tak więc, w metodzie tej, także będą umieszczane deklaracje wszystkich obiektów klas głównych oraz ich inicjalizacja. 
 \par 
-Aplikacja oprócz swojej głównej metody, będzie wymagała podziału na moduły, które będą odzwierciedlane poprzez odpowiednie klasy. Wymagane do działania będą:
+Aplikacja, oprócz swojej głównej klasy zawierającej metodę main(), będzie wymagała podziału na moduły, które będą odzwierciedlane poprzez odpowiednie klasy. Wymagane do działania będą:
 \begin{itemize}
 \item klasa Config - moduł obsługi pliku konfiguracyjnego 
 \item klasa DBHandle - moduł obsługi połączenia z bazą danych.
@@ -144,11 +146,15 @@ Aplikacja oprócz swojej głównej metody, będzie wymagała podziału na moduł
 \item klasa LatexCompiler -  moduł obsługi wywoływania kompilatora szablonów.
 \end{itemize}
 \vspace{5mm}
-Podczas tworzenia programu może okazać się, że przydadzą się jeszcze dodatkowe klasy pomocnicze, przechowujące pewne dane w spójnej strukturze. Zastosowanie takich klas, znacznie ułatwi i przyspieszy pracę z danymi.Klasy te opisane zostaną w jednej z następnych podsekcji.
+Podczas tworzenia programu może okazać się, że przydadzą się jeszcze dodatkowe klasy pomocnicze, przechowujące pewne dane w spójnej strukturze. Zastosowanie takich klas, znacznie ułatwi i przyspieszy pracę z danymi.Klasy te dokładnie opisane zostaną w jednej z następnych podsekcji:
+\begin{itemize}
+\item klasa ParsedSQLInfo - do przechowywania informacji o selekcji danych
+\item klasa RecordSet - do przechowywania pobranych danych z bazy.
+\end{itemize}
 
-\subsection{Zarządzanie konfiguracją}
+\section{Zarządzanie konfiguracją - klasa Config}
 
-Większość programów przed uruchomieniem wymaga konfiguracji. Konfiguracje można przeprowadzić na wiele sposobów jednak najodpowiedniejszym sposobem do tej aplikacji będzie plik konfiguracyjny wczytywany przed uruchomieniem programu. Taki plik powinien posiadać informacje, z których skorzysta program, przypisane do zmiennych nazwany w stały sposób.  Dobrym zwyczajem jest aby plik konfiguracyjny posiadał też możliwość pisania komentarzy. Dzięki komentarzom, łatwiej jest skonfigurować dany program.
+Większość programów przed uruchomieniem wymaga konfiguracji. Konfiguracje można przeprowadzić na wiele sposobów jednak najodpowiedniejszym sposobem do tej aplikacji będzie plik konfiguracyjny, wczytywany przed uruchomieniem programu. Taki plik powinien posiadać informacje, z których skorzysta program, przypisane do zmiennych nazwanych w stały sposób.  Dobrym zwyczajem jest, aby plik konfiguracyjny posiadał też możliwość pisania komentarzy. Dzięki komentarzom, łatwiej jest skonfigurować dany program.
 \par
 Autorskim pomysłem jest dodatkowa funkcja pliku konfiguracyjnego, jaką jest aby plik ten był jednocześnie plikiem wsadowym. Polecenia powłoki systemu rozpoczynają plik, i kończą się na poleceniu \emph{EXIT}. Następnie od lini \emph{\#dbLatexRaportConfig} rozpoczyna się zapis zmiennych konfiguracyjnych.
 \par
@@ -163,13 +169,15 @@ System.out.println(cfg.getString("user"));
 \end{lstlisting}
 
 Podejściem do zaprojektowania tej klasy można uznać za metodę od ogółu do szczegółu.Na początek potrzeba zaimportować odpowiednie pakiety do obsługi plików, a następnie pozostaje już tylko ustalić składowe, zaimplementować sparametryzowany konstruktor klasy oraz metodę zwracającą daną zmienną. Składowe klasy muszą przede wszystkim przechowywać załadowane zmienne z pliku w pamięci. Łatwym sposobem realizacji tego jest użycie zmiennych tablicowych o typie \emph{String} czyli łańcuchów znaków. Dla każdego indeksu przechowywana będzie informacja o nazwie oraz wartości zmiennej. 
-\begin{lstlisting}
-String[] strindex;
-String[] value; 
+\begin{lstlisting}[numbers=left,firstnumber=23]
+public  class Config {
+
+      String[] strindex;
+      String[] value; 
 \end{lstlisting}
 
 Następnie konstruktor klasy z jednym parametrem posłuży jako metoda otwarcia pliku i załadowania wszystkich zmiennych. Parametrem będzie nazwa pliku konfiguracyjnego. Konstruktor klasy w \emph{JAVA}'e musi nazywać się tak jak klasa. Po uruchomieniu konstruktora otwieramy plik wykorzystując dostępne klasy obsługi plików.
-\begin{lstlisting}
+\begin{lstlisting}[numbers=left,firstnumber=39]
 public Config(String path){
  File cfg = new File(path);
  BufferedReader in = new BufferedReader(
@@ -177,7 +185,7 @@ public Config(String path){
  new FileInputStream(cfg), "UTF-8"));
 \end{lstlisting}
 Do odczytu przygotować należy pewien bufor oraz zmienne pomocnicze:
-\begin{lstlisting}
+\begin{lstlisting}[numbers=left,firstnumber=55]
  String tmp;
  String[] strindextmp = new String[50];
  String[] valuetmp = new String[50];
@@ -186,22 +194,21 @@ Do odczytu przygotować należy pewien bufor oraz zmienne pomocnicze:
 \end{lstlisting}
 
 Następnie potrzebna jest pętla odczytująca plik linia po linii. Pętla zakończy się po odczytaniu całego pliku, przekazując odczytaną linie do jednej iteracji w pętli. Wewnątrz pętli pierwszym krokiem jest sprawdzenie czy linia zawiera flagę \emph{\#dbLatexRaportConfig} by móc zacząć odczytywać zmienne poprzez ustawienie zmiennej flag na wartość 1. Pozostaje już tylko sprawdzić czy linia nie jest pusta oraz czy nie jest komentarzem, aby móc zapisać zmienne poprzez wyłączenie z linii nazwy (cała linia do znaku "=") oraz wartości zmiennej (cała linia od znaku "=") do aktualnego indeksu bufora. Ostatecznie potrzeba zwiększyć indeks bufora o 1 i zakończyć iteracje.
-\begin{lstlisting}
+\begin{lstlisting}[numbers=left,firstnumber=60]
 while ((tmp = in.readLine()) != null) {
  if(flag == 0 && tmp.equals("#dbLatexRaportConfig"))
   flag = 1;
  if(flag == 1 && tmp.indexOf('#') != 0
  && tmp.length() != 0 && tmp.indexOf('=') != -1){
   strindextmp[count] = tmp.substring(0,tmp.indexOf('='));
-  valuetmp[count] = tmp.substring(tmp.indexOf('=')+
-  1,tmp.length());
+  valuetmp[count] = tmp.substring(tmp.indexOf('=')+ 1,tmp.length());
   count++;
  }
 }
 \end{lstlisting}
 
 Na koniec zamykany jest plik i alokowana jest pamięć o dokładnie \emph{count} elementów dla składowych klasy. Ostatecznie przepisywany jest cały bufor do tych składowych.
-\begin{lstlisting}
+\begin{lstlisting}[numbers=left,firstnumber=70]
 in.close();
         
 strindex = new String[count];
@@ -215,7 +222,7 @@ for(int i=0;i < count; i++){
 
 Pozostaje zaimplementowanie metody zawracającej wartość zapamiętanej zmiennej. Do tego posłuży metoda o nazwie \emph{getString} i parametrze \emph{String name}. Parametr jest kluczem do wartości zmiennej, która zostanie zwrócona.  Aby znaleźć tą wartość należy przejrzeć tablicę nazw zmiennych i porównać każdą wartość z nazwą szukanej zmiennej. Jeśli znajdziemy odpowiednik oznaczać to będzie, że pod tym samym indeksem w tablicy wartości znajduje się szukana zmienna, którą zwróci metoda. W przypadku braku zmiennej metoda zwróci pustą wartość i wyświetli informacje o jej braku.
 
-\begin{lstlisting}
+\begin{lstlisting}[numbers=left,firstnumber=169]
 public  String getString(String name){
  for(int i=0;i < value.length; i++){
    if(strindex[i].indexOf(name) == 0)
@@ -226,11 +233,15 @@ public  String getString(String name){
 }
 \end{lstlisting}
 
-\subsection{Klasy typu kontener}
+\section{Klasy typu kontener}
 
-Przed przystąpieniem do tworzenia reszty głównych klas programu, potrzebne będzie stworzenie dwóch klas pomocniczych zawierających pewną strukturę danych oraz interfejs. Posłużą one do zapewnienia łatwej wymiany danych pomiędzy modułami. Pierwszą taką klasą będzie struktura reprezentująca informację o selekcji danych, wczytaną z szablonu. Klasa zostanie nazwana \emph{ParsedSQLInfo} i zawierać będzie następujące składowe wyczerpujące wszelkie informacje na temat selekcji:
+Przed przystąpieniem do tworzenia reszty głównych klas programu, potrzebne będzie stworzenie dwóch klas pomocniczych zawierających pewną strukturę danych oraz interfejs. Posłużą one do zapewnienia łatwej wymiany danych pomiędzy modułami. 
 
-\begin{lstlisting}
+\subsection{Klasa ParsedSQLInfo}
+
+Pierwszą taką klasą będzie struktura reprezentująca informację o selekcji danych, wczytaną z szablonu. Klasa zostanie nazwana \emph{ParsedSQLInfo} i zawierać będzie następujące składowe wyczerpujące wszelkie informacje na temat selekcji:
+
+\begin{lstlisting}[numbers=left,firstnumber=11]
 public class ParsedSQLInfo {
  String query;
  String name;
@@ -249,9 +260,8 @@ Odpowiednio:
 
 Do klasy został stworzony konstruktor sparametryzowany, który przyda się przy tworzeniu obiektu:
    
-\begin{lstlisting}
-public ParsedSQLInfo(String query, String name,
-String group, int index) {
+\begin{lstlisting}[numbers=left,firstnumber=21]
+public ParsedSQLInfo(String query, String name,String group, int index) {
  this.query = query;
  this.name = name;
  this.group = group;
@@ -261,7 +271,7 @@ String group, int index) {
 \end{lstlisting}
 
 Oraz podstawowy interfejs do pobierania zmiany lub pobrania danych:
-\begin{lstlisting}
+\begin{lstlisting}[numbers=left,firstnumber=30]
 public int getIndex() {return index;}
 public String getQuery() {return query;}
 public String getName() {return name;}
@@ -274,16 +284,18 @@ public void setGroup(String group) {this.group = group;}
 public void setData(String data) {this.data = data;}
 \end{lstlisting}
 
-
+\subsection{Klasa RecordSet}
 Druga klasa typu kontener (\emph{RecordSet}) przechowywać będzie wyniki zapytań SQL w postaci listy rekordów. Każdy rekord natomiast będzie reprezentowany jako tablica zmiennych typu String o danej długości. Składowe wyczerpujące wszelkie informacje wyglądać będą następująco:
 
-\begin{lstlisting}
+\begin{lstlisting}[numbers=left,firstnumber=13]
+public class RecordSet {
+
 ArrayList<String[]> val;
 int m;
 \end{lstlisting}
 
 Jak w poprzedniej klasie, zaimplementowany został interfejs oraz konstruktor służący do zainicjowania obiektu ilością kolumn w rekordach:
- \begin{lstlisting}
+ \begin{lstlisting}[numbers=left,firstnumber=18]
 RecordSet(int columncount){
 val = new ArrayList<String[]>();
 m = columncount;
@@ -291,7 +303,7 @@ m = columncount;
  \end{lstlisting}
 
 Interfejs wymagał by łatwo można było nadpisać daną wartość oraz pobrać w zależności od numeru rekordu oraz numeru pola. Zwrócić uwagę należy na to iż przy zapisie nowych rekordów, lista automatycznie się poszerzy. Dodatkowo dodana jest możliwość pobrania ilości rekordów czy też pól w 1 rekordzie.
- \begin{lstlisting}
+ \begin{lstlisting}[numbers=left,firstnumber=23]
 void setVal(String str,int i, int j){
  while(val.size() <= i)
   val.add(new String[m]);
@@ -303,22 +315,27 @@ int get_rows(){return(val.size());}
 int get_cols(){return(m);}
 \end{lstlisting}
 
-\subsection{Obsługa połączenia z bazą danych}
+\section{Obsługa połączenia z bazą danych - klasa DBHandle}
 
-Stworzenie klasy obsługującej połączenie z bazą danych oraz wywołania poleceń na tej bazie. wymagało będzie zaimportowania dodatkowych bibliotek. W języku \emph{Java} znajduje się moduł \emph{ JDBC(TM) Database Access}, w którym dostępna jest klasa \emph{java.sql.DriverManager} pozwalająca załadować odpowiednią bibliotekę dla wybranego silnika bazodanowego, zwracając obiekt z takim samym interfejsem dla każdej możliwej bazy danych.   Obiekt z tym interfejsem pozwala podłączyć do się do źródła danych, takie jak bazy danych. Możliwe jest wysyłanie zapytań i poleceń aktualizacji do bazy danych. Ostatecznie obsługuje też pobieranie i przetwarzanie wyników otrzymanych z bazy danych w odpowiedzi na zapytania. 
+Stworzenie klasy obsługującej połączenie z bazą danych oraz wywołania poleceń na tej bazie. wymagało będzie zaimportowania dodatkowych bibliotek. W języku \emph{Java} znajduje się moduł \emph{ JDBC(TM) Database Access}, który zostanie wykorzystany w implementacji tej klasy. Dokładna dokumentacja tego modułu znajduje się na stronie \emph{http://www.cs.mun.ca/~michael/java/jdk1.1.5-docs/guide/jdbc/index.html}. Poniżej przedstawiona zostanie jedynie idea zastosowanie tego rozwiązania oraz implementacja wykorzystująca ten moduł.
+\subsection{Wykorzystanie JDBC(TM) Database Access}
+
+Dzięki wykorzystaniu \emph{ JDBC(TM) Database Access} obsługa połączeń z wieloma rodzajami baz danych staje się prosta. Idea tego rozwiązania jest taka aby dla każdego rodzaju bazy danych interfejs połączenia był dokładnie taki sam. Interfejs ten dostępny jest przez klasę \emph{java.sql.DriverManager}, pozwalającą załadować odpowiednią bibliotekę dla wybranego silnika bazodanowego, zwracając obiekt z takim samym interfejsem dla każdej możliwej bazy danych. 
 \par
-W przypadku pracy z serwerem \emph{Firebird 2.5} potrzebne będzie zaimportowanie do projektu odpowiedniego pliku \emph{jaybird-full-2.2.9.jar}, który został specjalnie przygotowany dla połączeń z tym serwerem. Jest on do pobrania z oficjalnej strony "\emph{http://www.firebirdsql.org/}". W razie potrzeby połączenie z innym rodzajem bazy danych, wystarczy w analogiczny sposób zaimportować biblioteki przygotowane przez twórców danego serwera a następnie tylko wywołać je poprzez klasę \emph{java.sql.DriverManager}.
-\par
+W przypadku pracy z serwerem \emph{Firebird 2.5} potrzebne będzie jeszcze zaimportowanie do projektu odpowiedniego pliku \emph{jaybird-full-2.2.9.jar}, który został specjalnie przygotowany dla połączeń z tym serwerem. Jest on do pobrania z oficjalnej strony "\emph{http://www.firebirdsql.org/}". W razie potrzeby połączenie z innym rodzajem bazy danych, wystarczy w analogiczny sposób zaimportować biblioteki przygotowane przez twórców danego serwera a następnie tylko wywołać je poprzez klasę \emph{java.sql.DriverManager} bez większej ingerencji w kod źródłowy programu.
+
+\subsection{Implementacja klasy}
+
 Posiadając zaimportowaną odpowiednią bibliotekę można rozpocząć implementację. Klasa obsługująca połączenie powinna posiadać metody do połączenia się z serwerem oraz metodę do wysłania zapytania i pobrania danych, które zwróci dane polecenie. Do przechowywania zwróconych danych użyta zostanie wcześniej stworzona klasa kontener \emph{RecordSet}. Próba nawiązania połączenia będzie odbywała się w czasie tworzenia obiektu w konstruktorze sparametryzowanym, zawierające parametry dotyczące połączenia, takie jak użytkownik, hasło, adres czy port.
 \par
 Składowe klasy powinny przechowywać obiekt obsługujący aktualne połączenie oraz obiekt obsługujący wysyłanie zapytań do serwera:
- \begin{lstlisting}
+ \begin{lstlisting}[numbers=left,firstnumber=19]
 public class DBHandle {
  Connection con;
  Statement stmt; 
- \end{lstlisting}
+  \end{lstlisting}
   Zgodnie ze wcześniejszymi ustaleniami, nawiązanie połączenia odbywać się będzie w konstruktorze klasy. Do konstruktora przekazaną zostaną wszystkie informacje możliwe informacje na temat połączenia w postaci parametrów:
-   \begin{lstlisting}
+   \begin{lstlisting}[numbers=left,firstnumber=44]
    public DBHandle(String engine,String hostname,
    String port, String dbpath,String encoding,
     String user,  String password){
@@ -335,7 +352,7 @@ Odpowiednio:
     \end{itemize}
 
 Następnie w ciele konstruktora nawiążemy połączenie poprzez stworzenie tak zwanego \emph{Connection String}, czyli łańcucha znaków w odpowiednim formacie zawierającego informacje na temat połączenia, które ma zinterpretować klasa \emph{java.sql.DriverManager} i spróbować nawiązać połączenie. \emph{Connection String} przyjmuje wiele zmiennych także w zależności od rodzaju połączenia. Poniżej pokazany zostanie przypadek nawiązania połączenia z serwerem \emph{Firebird 2.5} po adresie IP lub nazwie hosta. Najpierw ładowny jest sterownik \emph{org.firebirdsql.jdbc.FBDriver}, następnie tworzony jest \emph{Connection String} z parametrów przekazanych do konstruktora i ostatecznie wywoływana jest próba połączenia przez metodę \emph{getConnection()}:
-   \begin{lstlisting}
+   \begin{lstlisting}[numbers=left,firstnumber=61]
 if(engine.equals("firebirdsql")){
  try {
   Class.forName("org.firebirdsql.jdbc.FBDriver");
@@ -350,7 +367,7 @@ if(engine.equals("firebirdsql")){
 \end{lstlisting}
 
 Na koniec jeśli połączenie się powiedzie tworzymy obiekt odpowiedzialny za wywoływanie zapytań na danym połączeniu i referencję do niego zapisujemy pod składową \emph{stmt}.
-\begin{lstlisting}
+\begin{lstlisting}[numbers=left,firstnumber=94]
 stmt = con.createStatement(
 ResultSet.TYPE_FORWARD_ONLY,
 ResultSet.CONCUR_READ_ONLY);
@@ -359,12 +376,12 @@ System.out.println( "Connection to database: OK" );
 \end{lstlisting}
 
 Pozostaje zaimplementować metodę odpowiedzialną za wysyłanie zapytania i pobieranie danych na obecnym połączeniu. Metoda będzie przyjmować parametr w postaci zapytania SQL i zwracać obiekt klasy \emph{RecordSet} uzupełniony o wszystkie rekordy zwrócone przez zapytanie.
-\begin{lstlisting}
+\begin{lstlisting}[numbers=left,firstnumber=122]
 public  RecordSet executeSQL2(String SQL){
 \end{lstlisting}
 
 Następnie deklaracje potrzebnych zmiennych oraz wywołanie polecenia na bazie danych. Wyniki zapytania zwracane są do klasy \emph{ResultSet}. Dodatkowo uzyskane zostaną jeszcze meta dane na temat ilości kolumn w pobranych rekordach. 
-\begin{lstlisting}
+\begin{lstlisting}[numbers=left,firstnumber=123]
 int n=0,m=0,i=0,j=0;
 String tmp;
 RecordSet ret = null;
@@ -374,7 +391,7 @@ m=rsmd.getColumnCount();
 \end{lstlisting}
 
 Ze względu na brak odpowiedniego interfejsu ze strony obiektu klasy ResultSet na potrzeby dalszych manipulacji danymi, wszystkie rekordy zostaną przepisane do obiektu klasy \emph{RecordSet}. W razie wartości  \emph{null} jakiegoś pola w rekordzie, zastąpiona ona będzie łańcuchem znaków:
-\begin{lstlisting}
+\begin{lstlisting}[numbers=left,firstnumber=135]
 while(rs.next()) {
  for(j=0;j < m; j++){
   tmp = rs.getString(j+1);
@@ -392,12 +409,244 @@ return(ret);
 \end{lstlisting}
 
 
+\section{Zarządzanie szablonami - klasa Templates}
+
+Wielkość i złożoność tej klasy wymaga podzielenia jej opisu na kilka podsekcji. Należy także dodać, że jest to jedyna klasa w której dochodzi do jakichkolwiek manipulacji danymi. Proces działania tej klasy można pokazać na krótkiej liście:
+\vspace{5mm}
+    \begin{enumerate}
+    \item Przeszukanie wprowadzonych ścieżek pod kątem istnienia szablonów, czyli plików z rozszerzeniem \emph{.tex}
+    \item Załadowanie do pamięci wszystkich znalezionych szablonów pod podaną ścieżką.
+    \item Przeszukanie załadowanych szablonów pod kątem informacji o selekcji danych, które mają zastać dodane do danego szablonu.
+    \item Przetworzenie odpowiednio rekordów z bazy danych zgodnie z informacją zawartą w szablonach.
+    \item Zapisanie wygenerowanych danych do szablonów w odpowiednich miejscach.
+    \item Utworzenie i zapisanie uzupełnionych szablonów do plików o tej samej nazwie w innej podanej lokalizacji.
+     \end{enumerate}
+\vspace{5mm}
+Cała implementacja tego procesu znajduje się w podsekcjach poniżej. 
+\subsection{Składowe klasy}
+
+Klasa powinna przechowywać podstawowe informacje takie jak:
+    \begin{enumerate}
+    \item \emph{path} - Ścieżka do szablonów
+    \item \emph{pathoutput}  - Ścieżka do zapisania nowych uzupełnionych szablonów o dane.
+    \item \emph{encoding} - Kodowanie zapisu szablonów.
+     \end{enumerate}
+
+\begin{lstlisting}[numbers=left,firstnumber=30]
+public class Templates {
+    
+ String path; 
+ String pathoutput;
+ String encoding;
+  \end{lstlisting}
+  
+Deklaracje składowych tablicowych, przechowujących o plikach:
+    \begin{enumerate}
+    \item \emph{listOfFiles} - Lista plików w podanej lokalizacji z rozszerzeniem \emph{.tex}
+    \item \emph{data}  - Sczytana zawartość pliku, gdzie indeks w tablicy odpowiada indeksowi w składowej \emph{listOfFiles}
+    \item \emph{compileable} - Zmienna informująca czy plik szablonu o danym indeksie ma możliwość kompilacji.
+     \end{enumerate}
+  
+  \begin{lstlisting}[numbers=left,firstnumber=36]
+ File[] listOfFiles;
+ String[] data;
+ int[] compileable;
+  \end{lstlisting}
+  
+\subsection{Konstruktor klasy}
+
+Konstruktor klasy będzie miał ze zadanie zainicjowanie obiektu. Powinien przyjmować więc parametry o ścieżkach odczytu i zapisu szablonów jak i ich kodowania:
+
+  \begin{lstlisting}[numbers=left,firstnumber=51]
+ public Templates(String pathin, String pathout, String enc){
+  \end{lstlisting}
+  
+  Następnie zapisanie parametrów pod składowe obiektu i sprawdzenie ich poprawności. Tworzony jest obiekt \emph{File} ze ścieżki wynikowej, który pozwala na sprawdzenie, czy istnieje podany katalog i w razie braku tworzony jest nowy o tej nazwie.
+  
+  \begin{lstlisting}[numbers=left,firstnumber=54]
+ path = pathin;
+ pathoutput = pathout;
+ encoding = enc;
+ int n;
+ if(path.indexOf("\\",path.length()-1) < 0 && 
+  path.indexOf("/",path.length()-1) < 0){
+   path = path + "\\";
+  }
+ if(pathoutput.indexOf("\\",pathoutput.length()-1) < 0 &&
+ pathoutput.indexOf("/",pathoutput.length()-1) < 0){
+  pathoutput = pathoutput + "\\";
+ }
+ File tmp = new File(pathoutput);
+ if (!tmp.exists()) {
+  tmp.mkdirs();
+  }
+    \end{lstlisting}
+    
+    
+    Kolejnym krokiem będzie sprawdzenie i sporządzanie listy plików zawierających szablony znajdujących się pod ścieżką \emph{path}. Listę tą zapiszemy pod tymczasową tablicą  \emph{files}.
+ \begin{lstlisting}[numbers=left,firstnumber=74]
+ File folder = new File(path);
+ File[] listOfFilestmp = folder.listFiles(); 
+ n = listOfFilestmp.length;
+ String[] files = new String[n];
+ for (int i = 0; i < n; i++) 
+ {
+  if (listOfFilestmp[i].isFile()) 
+  {
+   test = listOfFilestmp[i].getName().indexOf(".tex");
+    if(test != -1 && listOfFilestmp[i].getName().length()
+    -".tex".length()-test == 0){
+     files[k] = listOfFilestmp[i].getName();
+     k++;
+     }
+    }
+   }
+\end{lstlisting}
 
 
+Na koniec konstruktora pod składową \emph{listOfFiles} przypisywana jest tablica o dokładnej ilości elementów, którą jest liczba szablonów. Tworzona jest także dynamiczna macierz obiektów typu \emph{ParsedSQLInfo} do przechowywania sparsowanych informacji z szablonów. Ostatecznie tworzone są obiekty typu \emph{File} ze ścieżki przechowującej szablony oraz całej tablicy \emph{files} posiadającej nazwę pliku ze szablonem.
+    
+ \begin{lstlisting}[numbers=left,firstnumber=90]
+ listOfFiles = new File[k];
+ sqlinfo = new ArrayList<ArrayList<ParsedSQLInfo>>();
+ for(int i=0;i < listOfFiles.length; i++)
+  sqlinfo.add(new ArrayList<ParsedSQLInfo>());
+ compileable = new int[k];
+ data = new String[k];
+ for (int i = 0; i < listOfFiles.length; i++){
+  listOfFiles[i] = new File(path + files[i]);
+ }
+\end{lstlisting}
+  
+  W ten sposób dostajemy zainicjalizowany obiekt, w którym należy wywołać metody załadowujące szablony do pamięci.
+  
+  
+\subsection{Metody zarządzające operacjami na plikach}
 
-\subsection{Zarządzanie szablonami}
+Do zaimplementowania potrzeba metody odczytującej oraz metody zapisującej szablon. Dodatkowo przydatnym byłoby napisanie metod wywołujących te metody dla wszystkich szablonów. Informacje o istniejących szablonach znajdują się w tablicy \emph{listOfFiles}. \\
+\par
+\subsubsection*{Ładowanie szablonu}
+Potrzebne więc będzie odczytać pojedynczy szablon o indeksie k i zapisać go w pamięci pod składową \emph{data} z tym samym indeksem. 
+Dodatkowo po załadowaniu szablonu wywołamy metodę  \emph{isCompilable(k)}, która sprawdzi czy jest możliwość kompilacji danego szablonu. Jest to jedna z dodatkowych funkcji programu. Metoda ta opisana została w podsekcji metod parsujących. 
+ \begin{lstlisting}[numbers=left,firstnumber=121]
+public void loadTemplate(int k){
+       
+try {
+ BufferedReader in = new BufferedReader(
+  new InputStreamReader(
+   new FileInputStream(listOfFiles[k]), encoding));
+ 
+  StringBuilder str = new StringBuilder();;
+  String tmp;
+  while ((tmp = in.readLine()) != null) {
+   str.append(tmp+"\n");
+   }
+  in.close();
+  in = null;
+  data[k]=str.toString();
+  System.out.println( "Loaded file: " +  listOfFiles[k].getPath());
+  
+ isCompilable(k);
+\end{lstlisting}
+
+\subsubsection*{Zapisywanie uzupełnionego szablonu}
+
+Szablon zapisany pod indeksem \emph{k} powinien zostać zapisany w miejscu zapisanym w składowej \emph{pathoutput} pod nazwą taką samą jak nazwa szablonu czyli \emph{listOfFiles[k].getName()}. Dodatkowym parametrem klasy \emph{PrintWriter} przy otwarciu pliku do zapisu jest kodowanie, które trzymane jest w składowej \emph{encoding}. Po otwarciu pliku potrzeba zapisać zawartość składowej \emph{data} o indeksie \emph{k} do pliku.
+
+ \begin{lstlisting}[numbers=left,firstnumber=171]
+public void saveTemplate(int k){
+      
+ try {
+  PrintWriter output = new PrintWriter(pathoutput + listOfFiles[k].getName(),encoding);
+  output.print(data[k]);
+  output.close();
+  output = null;
+  System.out.println( "Saved to file: "  + pathoutput +  listOfFiles[k].getName() );
+}
+\end{lstlisting}
+
+\subsubsection*{Wczytanie wszystkich szablonów}
+
+Wywołanie metody \emph{loadTemplate(i)} dla wszystkich znalezionych szablonów.
+
+ \begin{lstlisting}[numbers=left,firstnumber=188]
+public void loadAllTemplates(){
+      
+ for (int i = 0; i < listOfFiles.length; i++){
+  this.loadTemplate(i);
+ }
+}
+\end{lstlisting}
+
+\subsubsection*{Zapisanie wszystkich szablonów}
+
+Wywołanie metody \emph{saveTemplate(i)} dla wszystkich znalezionych szablonów.
+
+ \begin{lstlisting}[numbers=left,firstnumber=200]
+public void saveAllTemplates(){
+      
+ for (int i = 0; i < listOfFiles.length; i++){
+  this.saveTemplate(i);
+ }
+       
+}
+\end{lstlisting}
+
+\subsection{Metody parsujące zawartość szablonów}
+
+\subsubsection*{Sprawdzenie czy szablon jest zdolny do kompilacji}
+ \begin{lstlisting}[numbers=left,firstnumber=155]
+    private void isCompilable(int k) {
+        String start = "\\begin{document}";
+        String end = "\\end{document}";
+        int from = data[k].indexOf(start);
+        int to = data[k].indexOf(end);
+        
+        if(from == -1 || to == -1)
+            compileable[k] = 0;
+        else
+            compileable[k] = 1;
+    }
+  \end{lstlisting}
+
+
+\subsubsection*{Znajdowanie informacji o selekcji we wszystkich szablonach za pomocą wzorca}
+ \begin{lstlisting}[numbers=left,firstnumber=214]
+public void parseSqlStatements(String pat)
+{
+
+ if(pat.equals(""))
+  pat = "@@(?:([a-zA-Z]+)(?:@([0-9, ]+))?)?@@(.+?)@END@(.*?\\n|.*)";
+    
+ Pattern localPattern = Pattern.compile(pat, Pattern.DOTALL | Pattern.MULTILINE);
+ Matcher localMatcher;
+ for(int k=0;k < this.getLenght();k++){
+
+  localMatcher = localPattern.matcher(this.data[k]);
+  while (localMatcher.find())
+  {
+    sqlinfo.get(k).add(new ParsedSQLInfo(localMatcher.group(3),
+    localMatcher.group(1), localMatcher.group(2), localMatcher.end()));
+   }
+  }
+}
+  \end{lstlisting}
+
+\subsection{Metody prostego przetwarzania danych z bazy}
+
 test
-\subsection{Klasa zarządzająca kompilatorem Latex}
+\subsection{Metody grupujące dane z bazy}
+
 test
-\section{ Kompilacja programu}
+\subsection{Metody get}
+
+test
+
+
+
+\section{Zarządzanie kompilatorem Latex - klasa LatexCompiler}
+test
+\section{Metoda main() - klasa DBRaportLatex }
+test
+\section{Kompilacja programu}
 test
