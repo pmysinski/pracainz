@@ -1,7 +1,5 @@
 \chapter{Projekt programu i implementacja}
 
-
-
 Ten rozdział przedstawia dokładny proces implementacji programu \emph{DBLatexRaport,}  który ma na celu spełnienia wymagań oraz celów zawartych w rozdziale 1.  Osoba po przeanalizowaniu poniższego materiału, będzie w stanie w przyszłości ulepszyć o nowe funkcję istniejący już program lub stworzyć nowy, podobny program w innym języku programowania, który będzie w stanie obsłużyć istniejące już szablony. 
 \par
  Wyjaśnione będą decyzje oraz postępowania przy pisaniu danego kodu, aby w pełni oddać idee tworzenia tego programu. Sekcję tę, można więc potraktować jako pewien samouczek, który jednak wymaga minimalnej znajomości języka programowania \emph{JAVA}. Pominięte też zostaną kwestie związane z importem podstawowych bibliotek, czy też wszelkie obsługi wyjątków, które mogą zaistnieć przy złej obsłudze programu. Cała uwaga zostanie skupiona tylko i wyłącznie na kodzie, przy poprawnym wykonaniu. W razie potrzeby dokładnej analizy cały kod programu znajduje się w załączniku.
@@ -168,7 +166,7 @@ Config cfg = new Config("dblatexraportconfig.bat");
 System.out.println(cfg.getString("user"));
 \end{lstlisting}
 
-Podejściem do zaprojektowania tej klasy można uznać za metodę od ogółu do szczegółu.Na początek potrzeba zaimportować odpowiednie pakiety do obsługi plików, a następnie pozostaje już tylko ustalić składowe, zaimplementować sparametryzowany konstruktor klasy oraz metodę zwracającą daną zmienną. Składowe klasy muszą przede wszystkim przechowywać załadowane zmienne z pliku w pamięci. Łatwym sposobem realizacji tego jest użycie zmiennych tablicowych o typie \emph{String} czyli łańcuchów znaków. Dla każdego indeksu przechowywana będzie informacja o nazwie oraz wartości zmiennej. 
+Podejściem do zaprojektowania tej klasy można uznać za metodę od ogółu do szczegółu. Na początek potrzeba zaimportować odpowiednie pakiety do obsługi plików, a następnie pozostaje już tylko ustalić składowe, zaimplementować sparametryzowany konstruktor klasy oraz metodę zwracającą daną zmienną. Składowe klasy muszą przede wszystkim przechowywać załadowane zmienne z pliku w pamięci. Łatwym sposobem realizacji tego jest użycie zmiennych tablicowych o typie \emph{String} czyli łańcuchów znaków. Dla każdego indeksu przechowywana będzie informacja o nazwie oraz wartości zmiennej. 
 \begin{lstlisting}[numbers=left,firstnumber=23]
 public  class Config {
 
@@ -594,23 +592,31 @@ public void saveAllTemplates(){
 
 \subsection{Metody parsujące zawartość szablonów}
 
-\subsubsection*{Sprawdzenie czy szablon jest zdolny do kompilacji}
- \begin{lstlisting}[numbers=left,firstnumber=155]
-    private void isCompilable(int k) {
-        String start = "\\begin{document}";
-        String end = "\\end{document}";
-        int from = data[k].indexOf(start);
-        int to = data[k].indexOf(end);
-        
-        if(from == -1 || to == -1)
-            compileable[k] = 0;
-        else
-            compileable[k] = 1;
-    }
-  \end{lstlisting}
+Parsowanie czyli inaczej analiza zawartości jest podstawową funkcją tego systemu. W szablonach zgodnie z wcześniej ustalonym algorytmem, znajdować się będą informacje o selekcji danych, które należy znaleźć oraz zapisać w odpowiedniej strukturze. Dodatkowo zaimplementowana zostanie także funkcja, sprawdzająca czy dany szablon może zostać skompilowany samodzielnie. 
 
+\subsubsection*{Metoda wyszukująca informacje o selekcji we wszystkich szablonach za pomocą wzorca}
 
-\subsubsection*{Znajdowanie informacji o selekcji we wszystkich szablonach za pomocą wzorca}
+Celem metody jest przeszukanie wszystkich szablonów, używając do tego dostarczonego wzorca, pod kątem znalezienia informacji o selekcji. Następnie informacje te powinny zostać zapisane do przygotowanej składowej klasy, która może przyjąć te dane. 
+Metoda przyjmować będzie za parametr wzorzec wyrażeń regularnych w celu możliwości łatwej zmiany w przyszłości w pliku konfiguracyjnym. 
+Najważniejszym elementem tej metody jest właśnie zapisany w niej wzorzec (linia 218), za pomocą którego można znaleźć selekcje danych. Podzielony on został grupy, dzięki czemu będzie można oddzielić od siebie informacje i zapisać je w przygotowanej strukturze. Na rysunku \ref{fig:Wzorzec} przedstawiony został wzorzec. Jeżeli nie podany zostanie żaden wzorzec, użyty zostanie standardowy. 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{rys/implementacja/regex.png}
+    \caption{Graf przedstawiający wzorzec przechwytujący informacje o selekcji w szablonach}
+    \label{fig:Wzorzec}
+\end{figure}
+\par
+Grupy przechwytujące:
+\begin{itemize}
+\item Grupa 1: Nazwa środowiska
+\item Grupa 2: Grupowanie
+\item Grupa 3: Zapytanie SQL
+\item Grupa 4: Przechwycenie pozostałości (wykorzystane tylko w celu znalezienia końca informacji)
+\end{itemize}
+\vspace{5mm}
+ \par
+W języku JAVA zaimplementowana została już obsługa wyrażeń regularnych. Wystarczy więc wykorzystać dostępne klasy \emph{Pattern} oraz \emph{Matcher}. Przez wywołanie statycznej metody \emph{compile} z flagami \emph{Pattern.DOTALL | Pattern.MULTILINE} uzyskamy odpowiednio skompilowane wyrażenie regularne. Zewnętrzna pętla wykorzystana będzie do iterowania szablonów, natomiast wewnętrzna pętla do zapisu znalezionych selekcji dla danego szablonu. Składowa \emph{sqlinfo} po jednorazowym wywołaniu tej metody przechowywać będzie dla k-tego szablonu wszystkie znalezione selekcje.
+
  \begin{lstlisting}[numbers=left,firstnumber=214]
 public void parseSqlStatements(String pat)
 {
@@ -631,16 +637,227 @@ public void parseSqlStatements(String pat)
   }
 }
   \end{lstlisting}
+   
+\subsubsection*{Metoda sprawdzająca zdolność szablonu do kompilacji}
 
+W czasie tworzenia projektu wynikła potrzeba wprowadzenia dodatkowej funkcji, która jest dodatkową funkcjonalnością wykorzystywaną w klasie odpowiadającej za kompilacje szablonów. Poniższa metoda sprawdza każdy szablon czy jest możliwe skompilowanie go, poprzez sprawdzenie czy wewnątrz szablonu znajduje się początek i koniec środowiska \emph{document}. Informacje te zapisywane są odpowiednie dla k-tego szablonu w składowej klasy, która jest tablicą. Dla kompilowanych szablonów zapisywana jest odpowiednio jedynka, natomiast dla braku możliwości kompilacji jest to zero. Wywoływana jest ona w metodzie ładowania szablonu(138 linia).
+
+ \begin{lstlisting}[numbers=left,firstnumber=155]
+ private void isCompilable(int k) {
+  String start = "\\begin{document}";
+  String end = "\\end{document}";
+  int from = data[k].indexOf(start);
+  int to = data[k].indexOf(end);
+        
+  if(from == -1 || to == -1)
+   compileable[k] = 0;
+  else
+   compileable[k] = 1;
+ }
+  \end{lstlisting}
+  
 \subsection{Metody prostego przetwarzania danych z bazy}
 
-test
-\subsection{Metody grupujące dane z bazy}
+opis podsekcji
 
-test
+\subsubsection*{Metoda przygotowująca i wybierająca rodzaj przetwarzania danych}
+opis
+
+ \begin{lstlisting}[numbers=left,firstnumber=246]
+public int prepareValues(int k,int c,String env,String grouping,RecordSet rs){
+ if(rs == null)
+   return(0);
+
+  char l = (char) ('A' + (char)c);
+  String prefix;
+  if(env == null)
+   prefix =  listOfFiles[k].getName().substring(0,listOfFiles[k].getName().indexOf('.')) + l;
+  else
+   prefix = env;
+      
+  if(grouping == null){
+   prepareValuesSimple(k,c, prefix, rs);
+   System.out.println(  rs.get_rows() + " records SQL" + (c+1));  
+  }
+  else{
+   String[] groupstmp = grouping.split(",");
+   int[] group = new int[groupstmp.length];
+   for(int i=0;i<groupstmp.length;i++)
+    group[i] = Integer.parseInt(groupstmp[i]);
+           
+   sqlinfo.get(k).get(c).setData(prepareValuesGrouping(group, 0,0,rs.get_rows(),  rs, prefix)); 
+          
+   groupstmp = null;
+   group = null;
+   System.out.println(  rs.get_rows() + " records SQL" + (c+1));   
+   rs = null;
+   }
+  return(0);  
+ }
+  \end{lstlisting}
+
+
+\subsubsection*{Przetworzenie danych  do szablonu}
+
+opis
+ \begin{lstlisting}[numbers=left,firstnumber=289]
+ public int prepareValuesSimple(int k,int c, String prefix, RecordSet rs){
+  String temp1 = "";
+  String temp2 = "";
+
+  StringBuilder result = new StringBuilder(); 
+       
+  for(int i=0; i < rs.get_rows(); i++){
+   temp1 = "\\" + prefix;
+   for(int j=0; j < rs.get_cols(); j++)
+    temp1 += "{" + rs.getVal(i, j) + "}";
+        
+   result.append(temp1 + "\n");
+  }
+
+  temp2 = result.toString();
+  sqlinfo.get(k).get(c).setData(temp2); 
+  return(0);
+}
+  \end{lstlisting}
+
+
+
+
+
+\subsection{Metody grupujące dane z bazy}
+opis subsekcji
+
+\subsubsection*{Metoda rekurencyjna generująca grupy}
+opis metody
+ \begin{lstlisting}[numbers=left,firstnumber=322]
+ public String prepareValuesGrouping(int[] group, int gid,int s, int e, RecordSet rs, String prefix){
+
+  if(gid == group.length){
+   int sc=0;
+   for(int i=0;i<gid;i++)
+    sc += group[i];
+   return(prepareInjectValues(prefix, rs,s,e,sc));
+   }
+  if(gid < group.length){
+   StringBuilder result = new StringBuilder(); 
+   char x;
+   String strreturn="";
+   String strtmp="";
+   String endin;
+   int index1=s;
+   int index2=s;
+   int check=0;
+
+   int col =0;
+   for(int i=0;i<gid;i++)
+    col += group[i];
+          
+   index2++;
+   while(index2 <= rs.get_rows() && index2 <= e){
+    if(index2 == rs.get_rows() || index2 == e)
+     check = 2;
+    else{
+     for(int i=0;i<group[gid];i++)
+      if(!rs.getVal(index1,i+col).equals(rs.getVal(index2,i+col)))check = 1;
+    }
+           
+    if(check >= 1){
+
+     x = (char) ('A' + (char)gid);
+     strtmp= "\\" + prefix+x;
+               
+               
+     for(int i=0;i<group[gid];i++)
+      strtmp += "{" + rs.getVal(index1,i+col)+ "}";
+               
+     strtmp += "\n"; 
+     strtmp += prepareValuesGrouping(group, gid+1,index1, index2, rs, prefix);
+     endin =  "\\end" + prefix + x + "\n";
+
+     result.append(strtmp.concat(endin));
+
+     index1 = index2;
+     check = 0;
+    }
+    index2++;
+   }
+  return(result.toString());    
+  }
+return("");
+}
+\end{lstlisting}
+
+
+\subsubsection*{Metoda przetwarzająca dane po zgrupowaniu}
+opis metody
+ \begin{lstlisting}[numbers=left,firstnumber=380]
+ private String prepareInjectValues(String prefix,RecordSet rs,int s, int e,int sc){
+  String temp1 = "";
+  String temp2 = "";
+
+  StringBuilder result = new StringBuilder();
+
+  for(int i=s; i < e; i++){
+   temp1 = "\\" + prefix;
+   for(int j=sc; j < rs.get_cols(); j++)
+    temp1 += "{" + rs.getVal(i, j) + "}";
+
+   temp1 += "\n";
+   result.append(temp1);
+
+      }
+
+  return(result.toString());
+}    
+\end{lstlisting}
+
+
+\subsection{Metoda uzupełnienia szablonu o przetworzone dane}
+
+opis metody
+ \begin{lstlisting}[numbers=left,firstnumber=402]
+ public void InjectValues(int k){
+  int to;
+  for(int i=sqlinfo.get(k).size()-1; i >= 0; i--){
+    to = sqlinfo.get(k).get(i).getIndex();
+    data[k] = data[k].substring(0,to) + sqlinfo.get(k).get(i).getData() + data[k].substring(to,data[k].length());
+   }
+        
+ }
+\end{lstlisting}
+
+
 \subsection{Metody get}
 
-test
+
+
+ \begin{lstlisting}[numbers=left,firstnumber=414]
+ public int getLenght(){return data.length;}
+ \end{lstlisting}
+ 
+ \begin{lstlisting}[numbers=left,firstnumber=419]
+ public String getSavedPath(int k){return (pathoutput + listOfFiles[k].getName());}
+     \end{lstlisting}
+     
+ \begin{lstlisting}[numbers=left,firstnumber=423]
+ public String getOutputPath(){return (pathoutput);}
+     \end{lstlisting}
+     
+ \begin{lstlisting}[numbers=left,firstnumber=443]
+ public int compileCheck(int k){return(compileable[k]);}
+     \end{lstlisting}
+     
+ \begin{lstlisting}[numbers=left,firstnumber=402]
+ public ArrayList<ParsedSQLInfo> getStmts(int k){return sqlinfo.get(k);}
+     \end{lstlisting}
+     
+ \begin{lstlisting}[numbers=left,firstnumber=402]
+ public String getFileName(int k ){ return(listOfFiles[k].getName());}
+     \end{lstlisting}
+
+
+
 
 
 
