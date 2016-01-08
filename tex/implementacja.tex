@@ -857,13 +857,171 @@ opis metody
      \end{lstlisting}
 
 
-
-
-
-
 \section{Zarządzanie kompilatorem Latex - klasa LatexCompiler}
-test
+
+Uzupełnione szablony przez klasę Templates, należy następnie skompilować przy pomocy wywołania kompilatora który został podany w konfiguracji.
+Do tego posłuży właśnie klasa LatexCompiler, która wywoła polecenie w konsoli systemowej, uruchamiające kompilator od odpowiednich parametrów.
+W składowych zapamiętane zostaną informacje o ścieżce do kompilatora oraz ścieżka plików wynikowych.
+
+ \begin{lstlisting}[numbers=left,firstnumber=18]
+public class LatexCompiler {
+    
+ String latexcompilerpath;
+ String pdfoutput;
+     \end{lstlisting}
+
+
+ \begin{lstlisting}[numbers=left,firstnumber=31]
+public LatexCompiler(String latexcompilerpathh,String pdfoutputt){
+ latexcompilerpath = latexcompilerpathh;
+ pdfoutput = pdfoutputt;
+
+ File tmp = new File(pdfoutput);
+ if (!tmp.exists()) {
+  tmp.mkdirs();
+ }
+    
+ }
+\end{lstlisting}
+
+
+ \begin{lstlisting}[numbers=left,firstnumber=46]
+public int compileTemplate(String filetexpath){
+ System.out.print( executeCommand(latexcompilerpath + " --output-directory=" + pdfoutput + " " + filetexpath));
+ return(0);
+ }
+\end{lstlisting}
+
+ \begin{lstlisting}[numbers=left,firstnumber=56]
+private String executeCommand(String command) {
+ 
+ StringBuffer output = new StringBuffer();
+ System.out.print("Executing shell command: \n" + "cmd /c start " + command);
+ Process p;
+ try {
+  p = Runtime.getRuntime().exec("cmd /c start " + command);
+  p.waitFor();
+                       
+  BufferedReader reader = 
+   new BufferedReader(new InputStreamReader(p.getInputStream()));
+ 
+  String line = "";			
+  while ((line = reader.readLine())!= null) {
+   output.append(line + "\n");
+   }
+ 
+  } catch (Exception e) {
+   e.printStackTrace();
+   }
+ 
+ return output.toString();
+ 
+}
+
+\end{lstlisting}
+
 \section{Metoda main() - klasa DBRaportLatex }
-test
+
+
+
+ \begin{lstlisting}[numbers=left,firstnumber=38]
+public static void main(String[] args) throws IOException, SQLException {
+\end{lstlisting}
+
+ \begin{lstlisting}[numbers=left,firstnumber=44]
+ Config cfg;
+        
+ if(args.length == 0)
+  cfg = new Config("dblatexraportconfig.bat");
+ else{
+  System.out.print(args[0] + "\n");
+  cfg = new Config(args[0]);
+ }
+\end{lstlisting}
+
+
+
+
+ \begin{lstlisting}[numbers=left,firstnumber=60]
+ System.out.print(cfg.toString()+ "\n");
+ DBHandle FBH = new DBHandle(cfg.getString("dbengine"),cfg.getString("hostname"),
+  cfg.getString("port"), cfg.getString("dbpath"),
+  cfg.getString("dbencoding"), cfg.getString("user"),
+  cfg.getString("password"));
+\end{lstlisting}
+
+
+ \begin{lstlisting}[numbers=left,firstnumber=67]
+ LatexCompiler comp = new LatexCompiler(cfg.getString("pdflatexpath"),cfg.getString("output"));
+\end{lstlisting}
+
+ \begin{lstlisting}[numbers=left,firstnumber=72]
+ Templates temps = new Templates(cfg.getString("templatepath"),cfg.getString("output"), cfg.getString("encodingtex"));
+\end{lstlisting}
+
+ \begin{lstlisting}[numbers=left,firstnumber=85]
+ temps.loadAllTemplates();
+\end{lstlisting}
+ \begin{lstlisting}[numbers=left,firstnumber=91]
+ String pattern;
+ pattern = cfg.getString("pattern");
+ ArrayList<ParsedSQLInfo>  SQLSt;
+
+ temps.parseSqlStatements(pattern);
+\end{lstlisting}
+
+ \begin{lstlisting}[numbers=left,firstnumber=98]
+ for(int i=0; i < temps.getLenght(); i++){
+  System.out.print("\n");
+  SQLSt = temps.getStmts(i);
+      
+  if(SQLSt != null){
+   System.out.println(temps.getFileName(i) + " - processing SQL statements");
+   for(int j=0; j < SQLSt.size(); j++){
+
+                
+    if(SQLSt.get(j).getName() == null){
+     System.out.println("no returns SQL" + (j+1)); 
+                 
+     FBH.executeSQL2(SQLSt.get(j).getQuery());
+                
+     }
+     else
+                  
+      temps.prepareValues(i,j,SQLSt.get(j).getName(),SQLSt.get(j).getGroup(),FBH.executeSQL2(SQLSt.get(j).getQuery()));
+    }
+   }
+ temps.InjectValues(i);
+ SQLSt = null;
+ } 
+\end{lstlisting}
+
+ \begin{lstlisting}[numbers=left,firstnumber=124]
+ temps.saveAllTemplates();
+       \end{lstlisting}
+       
+        \begin{lstlisting}[numbers=left,firstnumber=126]
+       
+ if(cfg.getString("pdfcompilemainfile").equals("ALL"))
+  for(int i=0; i < temps.getLenght(); i++){
+   comp.compileTemplate(temps.getSavedPath(i));
+   }
+ if(cfg.getString("pdfcompilemainfile").equals("ONLYBEGDOC"))
+  for(int i=0; i < temps.getLenght(); i++){
+   if(temps.compileCheck(i)==1)
+    comp.compileTemplate(temps.getSavedPath(i));
+    }
+      
+ else if(cfg.getString("pdfcompilemainfile").equals("NONE"));
+ else{
+          
+  String[] tmpfiles = cfg.getString("pdfcompilemainfile").split(",");
+          
+  for(int i=0;i < tmpfiles.length; i++)
+    comp.compileTemplate(temps.getOutputPath() + tmpfiles[i].trim());
+  
+ }
+\end{lstlisting}
+
 \section{Kompilacja programu}
 test
