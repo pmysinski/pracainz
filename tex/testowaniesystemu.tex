@@ -258,7 +258,7 @@ Stworzone szablony w poprzednim rozdziale nie zawierają zapytań, które odzwie
 \par 
 Potrzebnych jest 9 zapytań, za pomocą których wyciągnięte zostaną dane do szablonów. Poniżej opisane zostały każde z zapytań oraz przykład jakie dane zostaną wyselekcjonowane z bazy przez to zapytanie. Ta sekcja skupia się tylko i wyłącznie na uzyskaniu potrzebnych danych do środowisk latexu, a nie jak one zostaną wykorzystane. Dokładny opis jak wygląda wykorzystanie takiego zapisu znajduje się w rozdziale \ref{ch:szablonyraportowwsystemielatex}. Dodać jeszcze należy ze poniższe zapytania znajdują się pod koniec każdego szablonu, zaraz po zdefiniowaniu środowisk. Takie umiejscowienie tych zapytań sprawi, że dane zostaną uzupełnione zaraz pod tymi zapytaniami.
 \par 
-\subsection*{Szablon z ustawieniami - aaasetup.tex}
+\subsubsection*{Szablon z ustawieniami - aaasetup.tex}
 Pierwsze zapytanie które zostanie omówione jest to  zapytanie o podstawowe parametry, informacje na temat rekrutacji. Znajduje się ono w pliku aaasetup.tex. Plik posiada 3 litery a w nazwie ponieważ program parsujący, otwiera pliki alfabetycznie a zapytanie to musi zostać wykonane jako pierwsze.  Poniżej mamy przykład danych do zapisania:
  \begin{lstlisting}
 \parametrRekrutacyjny{dataWydaniaDecyzji}{09.10.2015}
@@ -276,7 +276,7 @@ Po wywołaniu go faktycznie otrzymamy dane potrzebne nam dane. Jednak aby progra
 SELECT klucz,wartosc FROM setup_aligeza
 @END@\fi
 \end{lstlisting}
-\subsection*{Szablon protokołu przekazania -  protokolprzekazania.tex}
+\subsubsection*{Szablon protokołu przekazania -  protokolprzekazania.tex}
 Następnie zapytanie zawarte w pliku \emph{protokolprzekazania.tex}. Występuje tu nowy problem otworzenia środowiska na początku oraz zamknięcia na końcu. Pokazane jest to na przykładowych danych poniżej:
  \begin{lstlisting}
 \protokolprzekazaniaA{1}
@@ -312,7 +312,7 @@ GROUP BY tok
 @END@\fi
 \end{lstlisting}
 
-\subsection*{Szablon z nadrukami na koperty- pocztex.tex}
+\subsubsection*{Szablon z nadrukami na koperty- pocztex.tex}
 Dla szablonu 'pocztex.tex' potrzebujemy prostą listę z adresami każdego kandydata z danej rekrutacji:
 
 
@@ -330,7 +330,7 @@ ORDER BY ka.kierunek_forma_skrot_my, ka.nazwiskoimiona
 @END@\fi
 \end{lstlisting}
 
-\subsection*{Szablon z listami kandydatów do sekretariatu - listasekretariat.tex}
+\subsubsection*{Szablon z listami kandydatów do sekretariatu - listasekretariat.tex}
 W kolejnym szablonie \emph{listasekretariat.tex} potrzebne jest utworzenie list kandydatów dla każdego toku nauki. Przez tok nauki rozumie się każdą kombinację kierunku, formy oraz stopnia studiów. W szablonie zostało to rozwiązane tak, że każda lista otwiera się poprzez wywołanie komendy \emph{listarsekretariatA} z trzema parametrami, którymi są właśnie kierunek, forma oraz stopień studiów. Na przykładowych danych wygląda to następująco:
  \begin{lstlisting}
 \listarsekretariatA{drugiego stopnia}{Informatyka}{stacjonarne}
@@ -360,7 +360,7 @@ ORDER BY kierunek_forma_skrot_my, nazwiskoimiona
 @END@\fi
 \end{lstlisting}
 
-\subsection*{Szablony z listami listaprzyjetych.tex, listanieprzyjetych.tex, listawysylkowa.tex, listarankingowa.tex}
+\subsubsection*{Szablony z listami listaprzyjetych.tex, listanieprzyjetych.tex, listawysylkowa.tex, listarankingowa.tex}
 W szablonach znajdują się jeszcze 4 kolejne podobne listy: przyjętych, nieprzyjętych,wysyłkowa oraz rankingowa. Zasada utworzenia zapytań do tych list jest identyczna jak w liście do sekretariatu. Różnią się one będą jedynie pewnymi warunkami wewnątrz zapytań SQL czy też polami po których będą sortowane dane.
 
 \par Lista przyjętych:
@@ -414,7 +414,7 @@ ORDER BY kierunek_forma_skrot_my, STUD_ILPUNKTOW desc
 @END@\fi
 \end{lstlisting}
 \par 
-\subsection*{Szablon z decyzją odnośnie przyjęcia kandydata - decyzja.tex}
+\subsubsection*{Szablon z decyzją odnośnie przyjęcia kandydata - decyzja.tex}
 W ostatnim szablonie wystąpił problem ilości parametrów jakie trzeba przekazać do poprawnego działania szablonu. W latex'ie można stworzyć środowisko o maksymalnie 9 parametrach, natomiast w szablonie \emph{decyzja.tex} dla każdego kandydata potrzeba 12 różnych informacji. Rozwiązaniem tego problemu także było grupowanie przez program uzupełniania raportów. Grupowanie wytnie 3 pierwsze pola i wstawi je do nowego środowiska. W zapytaniu SQL wyświetlanie daty musi posiadać dodatkowe 0 przy datach typu 01.02.2015 gdzie właśnie liczby dni lub miesięcy są mniejsze od 10:
  \begin{lstlisting}
 \iffalse@@decyzja@3@@

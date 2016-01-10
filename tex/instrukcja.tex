@@ -1,75 +1,209 @@
 \chapter{Instrukcja obsługi}
-DBRaportLatex jest programem napisanym w JAVA'ie służącym do tworzenia raportów w środowisku latex z informacji przechowywanych w bazie danych.
-Program ten został przygotowany specjalnie w celu obsługi tworzenia dokumentów potrzebnych do rekrutacji na uczelni PWSZ Nowy Sącz.
+DBRaportLatex jest programem napisanym w JAVA'ie służącym do tworzenia raportów w środowisku latex z informacji przechowywanych w bazie danych.Program ten został przygotowany specjalnie w celu obsługi tworzenia dokumentów potrzebnych do rekrutacji na uczelni PWSZ Nowy Sącz.
 Program oparty jest głównie o wcześniej przygotowane szablony w środowisku latex, które w czasie tworzenia raportów są uzupełniane informacjami pobranymi przez program z bazy danych.
 Środowisko kompilacji szablonów zostało także przygotowane razem z programem. Kompilacja szablonów jest uruchamiana zaraz po uzupełnieniu szablonów i wynikiem jej jest plik pdf gotowy do wydruku.
 \section{Wymagania systemowe}
-Program do uruchomienia wymaga zainstalowanego pakietu JAVA 1.8.
+Program do uruchomienia wymaga systemu operacyjnego z zainstalowanym pakietem \emph{Java SE Runtime Environment 8}.
 \section{Przygotowanie pliku konfiguracyjnego}
-zmienne Wprowadza się  za pomocą nazwy zmiennej oraz jej wartości po znaku "=".
-Poniżej są opisane wszystkie zmienne:
+Plik konfiguracyjny powinien mieć nazwę \texttt{dblatexraportconfig.bat}. Plik konfiguracyjny jest jednocześnie plikiem wsadowym który uruchamia program. Polecania wsadowe rozpoczynają plik i kończą się przy fladze \texttt{\#dbLatexRaportConfig}. Przykładowy początek pliku konfiguracyjnego:
+\begin{lstlisting}
+@echo off
+java dblatexraport.jar
+exit
+#dbLatexRaportConfig
+\end{lstlisting}
+Po fladze \texttt{\#dbLatexRaportConfig} wprowadzane są zmienne. Wprowadza się  za pomocą nazwy zmiennej oraz jej wartości po znaku "=". Linie zaczynające się od \# zostaną zignorowane przez parser i mogą służyć jako komentarze. Na przykład:
+\begin{lstlisting}
+#Ścieżka do katalogu z szablonami
+templatepath=template/
 
-templatepath - ścieżka do szablonów.
-templateoutput - ścieżka do uzupełnionych szablonów(tam zostaną zapisane)
-encodingtex - kodowanie zapisu pliku *.tex
+#Ścieżka do katalogu wynikowego: szablonami uzupełnionymi
+# o dane z bazy danych oraz plików pdf
+output=output/
+\end{lstlisting}
+Poniżej opisane są wszystkie zmienne:\vspace{5mm}
+\begin{itemize}
 
-dbengine - nazwa sterowników do obsługi danego silnika bazy danych (obsługiwane firebirdsql, mysql)
-hostname - IP lub nazwa hosta serwera bazy danych ( //192.168.1.2 lub //Komputer-PC )
-port - port serwera bazy danych
-dbpath - ścieżka do bazy danych w przypadku firebirda lub nazwa bazy danych w przypadku mysql
-user - nazwa użytkownika
-password - haslo
-dbencoding - kodowanie znaków w bazie danych (może być puste)
+\item templatepath - ścieżka do szablonów.
+\item output - ścieżka do zapisu wyników pracy programu
+\item  encodingtex - kodowanie zapisu szablonów tex
+\item pattern - opcjonalnie, wyrażenie regularne przechwytujące polecania w szablonach.
+\item  dbengine - nazwa sterowników do obsługi danego silnika bazy danych (obsługiwane firebirdsql, mysql, sqlite)
+\item  hostname - IP lub nazwa hosta serwera bazy danych ( \texttt{//192.168.1.2 lub} \texttt{//Komputer-PC} ) lub dla lokalnego pliku firebird'a \texttt{embedded}.
+\item  port - port serwera bazy danych
+\item  dbpath - ścieżka do bazy danych w przypadku firebirda lub nazwa bazy danych w przypadku MySQL
+\item  user - nazwa użytkownika
+\item  password - hasło
+\item  dbencoding - kodowanie znaków w bazie danych  (np. \texttt{dbencoding=WIN1250}  . Jeśli puste, nastąpi automatyczne wykrycie kodowania)
+\item  pdflatexpath - ścieżka do kompilatora latex
+\item  pdfcompilemainfile - zmienna określająca jakie pliki kompilować za pomocą kompilatora latex. Można tutaj użyć wartości \texttt{ALL} (wszystkie), \texttt{ONLYBEGDOC} (skompilowane zostaną dokumenty tylko z begindoc), \texttt{NONE} (żadne) lub wymienić nazwy plików po przecinku (\texttt{main.tex,setup.tex ...})
 
-pdflatexpath - ścieżka do kompilatora latex
-pdflatexpathoutputfolder - ścieżka do skompilowanych plików (PDF)
-pdfcompilemainfile - zmienna określająca jakie pliki kompilować za pomocą kompilatora latex. Można tutaj użyć wartości ALL (wszystkie), ONLYBEGDOC (skompilowane zostaną dokumenty tylko z begindoc), NONE (żadne) lub wymienić nazwy plików po przecinku (main.tex,setup.tex ...)
-\section{Przygotowanie prostego szablonu}
+\end{itemize}
+
 
 \section{Polecenia w szablonach}
-Uzupelnianie raportow polega na pobraniu przez program z bazy danych rekordow za pomoca przygotowanych wczesniej zapytan SQL zawartych w szablonyach.
-Zapytania te nalezy umieszczac na poczatku szablonu w pliku *.tex. Kazde zapytanie to jedna linijka zaczynajaca sie od znaku procetów "%". 
-Kazda kolejna linijka ze znakiem "%" bedzie traktowana jako zapytanie do bazy danych az do momentu nowej lini z innym znakiem.
-Po tym znaku Piszemy nasze zapytanie z ktorego kazdy rekord bedzie wpisany do szablonu wg metody uzupelnienia ktora jest opisana ponizej.
-Kazdy rekord wpisany pod koniec pliku lub miedzy znaczynikami startu i konca dokumentu jezeli one wystepuja w pliku bedzie wpisany wg szablonu:
 
-'\' + nazwa pliku + duza litera numer 1(numer zapytania) + '{' + 1 pole rekordu 1 '}' + '{' + 2 pole rekordu 1  '}' + .. + '{' + n pole rekordu 1 '}'
-'\' + nazwa pliku + duza litera numer 1(numer zapytania) + '{' + 1 pole rekordu 2 '}' + '{' + 2 pole rekordu 2  '}' + .. + '{' + n pole rekordu 2 '}'
-...
-'\' + nazwa pliku + duza litera numer 1(numer zapytania) + '{' + 1 pole rekordu m '}' + '{' + 2 pole rekordu m  '}' + .. + '{' + n pole rekordu m '}'
+Informacje zawarte w poleceniach do programu mają na celu wyselekcjonowanie danych z bazy danych i uzupełnienie szablonu zaraz po poleceniu o te pobrane dane. Proste polecenie zawiera w sobie:
+\begin{itemize}
+\item nazwę generowanego wywołania środowiska
+\item zapytanie SQL
+\end{itemize}
+Specjalnie dla tego programu został opracowany zapis polecenia tak aby kompilator dokumentów LaTeX ignorował to polecenie ale program mógł go przechwycić (w zapytaniu jest możliwość łamania linii):
+\begin{lstlisting}
+\iffalse 
+@@Nazwa środowiska@@Zapytanie
+SQL
+do bazy danych@END@
+\fi
+\end{lstlisting}
+Wynikiem takiego polecenia będzie następująca struktura dla każdego rekordu pobranego przez zapytanie SQL:
+\begin{lstlisting}
+\nazwasrodowiska{pole1}{pole2}{pole3}...
+\end{lstlisting}
+Ograniczenie parametrów przyjmowanych przez środowisko niestety powoduje iż w zapytaniu może być maksymalnie 9 zwracanych wartości.
 
-Dla kolejnych zapytan w jednym szablonie bedzie nadawana kolejna duza litera z alfabetu. Nalezy zauwazyc ze ilosc pól w zapytaniach moze sie roznic.
-
-Przykladowo dla pliku o nazwie szablon(w tabeli vkandydat jest 6 pol i 2 rekordy, w setup 3 pola i 1 rekord):
-%SELECT * FROM  vkandydat
-%SELECT * FROM  setup
-
-%\szablonA{Pawel}{Mysinski}{Przyjety}{1000}{STACJONARNE}{INFORMATYKA}
-%\szablonA{Mateusz}{Mroz}{Przyjety}{1000}{STACJONARNE}{INFORMATYKA}
-
-%\szablonB{2014}{jakis_text}{blablabla}
-
-
-Ograniczenie zapytan w jednym szablonie jest jak widac do 26 tyle ile liter w alfabecie.
-Ograniczenie pol dla zapytania jest narzucone przez Latex i jest to 9 pol natomiast program wyrzuci wiecej i moze to spowodowac problem przy kompilacji szablonu.
 \subsection{Polecenie puste}
+Polecenie puste jest jedynie wywoływane na bazie danych i nie zwraca ono żadnych danych. Nawet jeżeli umieścimy w nim jakąś selekcje zwracającą dane to i tak nie zostaną one wpisane do szablonu. Polecenia tego można użyć do uaktualnienia np. daty w której przeprowadzamy generowanie dokumentów.
+\par
+Zapis polecenia pustego:
+\begin{lstlisting}
+\iffalse 
+@@@@UPDATE .....@END@
+\fi
+\end{lstlisting}
 
 \subsection{Grupowanie}
-Istnieje takze mozliwosc w programie grupowania po polach od ktorych zaczyna sie zapytanie. Zapis grupowania jest niezalezne od zapisu grupwania, natomiast dzialanie wymaga pewnego dodatku do zapytania jakim jest ordering.
+W programie istnieje także możliwość grupowania po polach, które zwraca zapytanie. Zapis grupowania jest niezależny od zapisu grupowania, natomiast działanie wymaga pewnego dodatku do zapytania jakim jest dodanie sortowania po tych polach(w SQL polecenie ORDER BY).\\
 Zapis grupowania:
-%`a,b,c,d,...`SELECT ........ ORDER BY ....
-'`' - nie mylic z apostrofem (tylda bez shift'a)
-a,b,c,d,... - to liczby naturalne, ktore oznaczaja na ilu polach bedzie oparta grupa. grup moze byc od 1 do 26 i oparta maksymalnie na 9 polach.
-ORDER BY .... - Zaznaczyc trzeba ze przed grupowaniem nalezy uporzatkowac rekordy wedlug pol po ktorych grupujemy inaczej grupy moga sie powtorzyc co zpowoduje zly wydruk danych.
-Grupowanie dziala wedlug zasad:
-Z pobranych rekordow z bazy danych zabierane sa te pola ktore sa grupowane i wrzucane do danej grupy o unikalnych swoich wartosciach. 
-Ostateczne rekordy beda mialy tylko te wartosci pol ktore nie byly grupowane.
-Kazda grupa bedzie otwarta i zamknieta.
-Grupy nie przeplataja sie.
-Zapytania z grupowaniem sa niezalezne tak samo jak kazde inne zapytanie i mozna je mieszac z innymi zapytaniami.
+\begin{lstlisting}
+\iffalse 
+@@Nazwa środowiska@Grupowanie@@Selekcja danych@END@
+\fi
+\end{lstlisting}
+W miejscu \texttt{Grupowanie} należy wpisać liczby oddzielone przecinkami, gdzie każda liczba będzie oznaczać grupę i ilość pobranych pól do tej grupy w zależności od wpisanej liczby. Poniżej przykład zapisu grupowania:
+\begin{lstlisting}
+\iffalse 
+@@lista@1,2@@SELECT pole1, pole2, pole3, pole4@END@
+\fi
+\end{lstlisting}
+\par 
+Grupowanie działa według zasad:\\
+\begin{itemize}
+\item Z pobranych rekordów z bazy danych od lewej strony zabierane sa te pola, które sa grupowane i stwarzane są z nich grupy ze wszystkich ich możliwych kombinacji ich wartości. 
+\item Ostatecznie wywołania środowisk będą miały tylko te wartości pól które nie były grupowane.
+\item Każda grupa będzie otwarta i zamknięta poprzez dodanie do nazwy środowiska end na początku.
+\item Grupy nie przeplatają się.
+\item Wszystkie rekordy objęte są wszystkimi grupami.
+\item Nazwa grupy tworzona jest poprzez dodanie na końcu nazwy środowiska dużej litery łacińskiego alfabetu, w zależności która jest to grupa(Grupa pierwsza A, druga B ...). 
+\item Ograniczenie ilości grup to 24.
+\item Dla grupowanych pól wymagane jest dodanie sortowania (w SQL ORDER BY).
+\end{itemize}
 
-Struktura odnosnie nazewnictwa odnosnie ktore z kolei jest to zapytanie jest zachowana. Dodana jest natomiast struktura grup:
-%nazwy dla poczatku grupy: '\' + nazwapliku + duza litera (wg numer zapytania)+ duza litera wg nr grupy +  "{" + wartosc 1 po zgrupwaniu + "}" + ... +"{" + wartosc n po zgrupwaniu + "}"
-%Snazwy dla konca grupy: '\' + "end" + nazwapliku + duza litera (wg numer zapytania) + duza litera wg nr grupy +  "{" + wartosc 1 po_zgrupwaniu + "}" + ... +"{" + wartosc n po zgrupwaniu + "}" 
+Struktura przykładowego grupowania:
+\begin{lstlisting}
+\listaA{pole1}{pole2}
+\listaB{pole3}
+\lista{pole4}
+\lista{pole4}
+...
+\endlistaB
+\listaB{pole3}
+\lista{pole4}
+\lista{pole4}
+...
+\endlistaB
+\endlistaA
+...
+\end{lstlisting}
+
+
+\section{Przygotowanie prostego szablonu}
+
+Uwaga: Do tworzenia szablonów wymagana jest minimalna znajomość pracy w środowisku Latex, dlatego też przedstawiony zostanie proces tworzenia prostego szablonu bez wyjaśniania znaczenia i działania poszczególnych komend.
+\vspace{5mm}
+\par Program generuje z otrzymanych danych, wywołania komend w Latex'ie. Dlatego też, aby wykorzystać te dane należy stworzyć nową komendę lub środowisko, które przetworzy dane parametry.\\ Na przykład polecenie przyjmujące dwa argumenty, wyświetlające jeden wiersz w tablicy, dodatkowo posiadające licznik i wyświetlające licznik w pierwszej kolumnie a następnie oba argumenty w dwóch kolejnych kolumnach:
+\begin{lstlisting}
+\newcommand{\wiersz}[2]{\stepcounter{lp}\thelp&{\tiny #1}&#2\\}
+\end{lstlisting}
+
+Przykładowe dane wywołujące to polecenie będą wyglądać następująco:
+\begin{lstlisting}
+\lista{Przykładowy tekst}{Przykładowy  tekst w kolumnie 3}
+\lista{Przykładowy tekst pojawi się w 2 wierszu}{Przykładowy tekst w kolumnie 3 wiersz 2}
+\end{lstlisting}
+
+Posiadając skonfigurowane polecenie należy utworzyć prosty szablon rozpoczynający tablicę:
+\begin{lstlisting}
+\begin{center}
+\textbf{Przykładowa lista:} 
+\end{center}
+
+Poniżej powinna być tabela z wartościami numerowana od 1:
+\begin{center}
+\begin{tabular}{clc}
+\hline
+Lp.&\multicolumn{1}{c}{Nagłówek 2 kolumny}&Nagłówek 3 kolumny\\
+\hline
+\end{lstlisting}
+
+Następnie w tym miejscu należy umieścić polecenie uzupełniające dane. Jak napisać takie polecenie opisane jest w następnej sekcji. Teraz użyte zostanie proste polecenie pobierające 2 pola z bazy danych, zapisujące pod nazwą wywołania komendy lista:
+\begin{lstlisting}
+\iffalse @@lista@@
+SELECT pole1, pole2
+FROM tabela
+@END@\fi
+\end{lstlisting}
+Polecenie to podczas kompilacji dokumentu zostanie zignorowane, wywołane zostaną tylko komendy które ów polecenie zwróciło podczas uzupełniania szablonów przez program.
+\par
+Ostatecznie należy zamknąć tabelę:
+\begin{lstlisting}
+\hline\end{tabular}\end{center}
+\end{lstlisting}
+
+W ten sposób otrzymany został prosty szablon tablicy uzupełnianej poprzez zapytanie do bazy danych i uzupełniane rekordami posiadającymi 2 pola z danej tabeli. Wynik uruchomienia programu i przeprowadzenia uzupełnienia szablonu wygląda następująco:
+\begin{lstlisting}
+\newcommand{\lista}[2]{\stepcounter{lp}\thelp&{\tiny #1}&#2\\}
+
+\begin{center}
+\textbf{Przykładowa lista:} 
+\end{center}
+
+Poniżej powinna być tabela z wartościami numerowana od 1:
+\begin{center}
+\begin{tabular}{clc}
+\hline
+Lp.&\multicolumn{1}{c}{Nagłówek 2 kolumny}&Nagłówek 3 kolumny\\
+\hline
+\iffalse @@lista@@
+SELECT pole1, pole2
+FROM tabela
+@END@\fi
+\lista{testtest}{123}
+\lista{tekest teskt}{5555}
+\lista{przykladowy tekst}{1111}
+
+\hline\end{tabular}\end{center}
+\end{lstlisting}
+
+Natomiast wynik kompilacji powyższego szablonu przedstawiony został na rysunku poniżej.
+\begin{figure}[h]
+    \centering
+    \label{fig:przykladszablon}
+    \includegraphics[width=1\textwidth]{rys/instrukcja/szablon.png}
+    \caption{Wynik kompilacji przykładowego szablonu przedstawiającego tabelę pobraną z bazy danych}
+\end{figure}
+
 \section{Uruchomienie programu}
-\section{Rozwiązywanie problemów}
+
+Program można uruchomić za pomocą polecenia, które jednak najlepiej jest umieścić w pliku konfiguracyjnym (dblatexraport.bat):
+\begin{lstlisting}
+java -jar dblatexraport.jar
+\end{lstlisting}
+
+\subsection{Uruchomienie programu dla wersji embedded Firebird}
+
+Wersja embedded dla silnika Firebird wymaga dodatkowego polecenia przy starcie programu:
+\begin{lstlisting}
+java -Djava.library.path=.\firebird -jar dblatexraport.jar
+\end{lstlisting}
+gdzie jako parametr \texttt{Djava.library.path} podajemy ścieżkę do rozpakowanej paczki zawierającej wszelkie potrzebne biblioteki pobranej ze strony \emph{http://www.firebirdsql.org/} dla wersji embedded.
