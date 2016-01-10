@@ -1,5 +1,4 @@
 \chapter{Uruchomienie oraz testowanie systemu}
-
 Przed wdrożeniem programu do realnego systemu, program należy przetestować. Testy powinny być prowadzone na tymczasowej bazie danych, ponieważ idea testów jest taka, że po podmianie bazy danych na realną wszystko ma działać bez zmian. Zmienić się może tylko zapis połączenia z bazą danych w pliku konfiguracyjnym. Dzięki takiemu zabiegowi, będzie można być pewnym tego, że wszystko będzie działać na prawdziwej bazie danych.  Do przeprowadzenia testów potrzebne będzie odtworzyć przyszłe środowisko, w którym będzie działać program, przygotować szablony dokumentów, które są wytwarzane w procesie rekrutacji oraz wygenerować dokumenty. Ostatnim już krokiem będzie sprawdzenie czy podczas tego procesu nie ma żadnych komplikacji oraz czy wygenerowane dokumenty nie zawierają błędów.
 \section{Wstępne ustalenia}
 
@@ -22,7 +21,7 @@ Available Virtual Memory	3,75 GB
 Page File Space	2,00 GB
 \end{lstlisting}
 
-Do działania programu DBRaportlatex zainstalowana została JAVA w wersji:
+Do działania programu \emph{DBRaportlatex} zainstalowana została JAVA w wersji:
 \begin{lstlisting}
 C:\Users\Pawlos>java -version
 java version "1.8.0_60"
@@ -34,8 +33,8 @@ Java HotSpot(TM) 64-Bit Server VM (build 25.60-b23, mixed mode)
 
 Do przejrzystego przechowywania wszystkich rzeczy potrzebnych w systemie rekrutacji, potrzebna będzie odpowiednia struktura katalogów. Do przechowywania potrzebne będą: \\
 \begin{itemize}
-\item program: DBLatexRaport.jar
-\item plik konfiguracyjny: dblatexraportconfig.bat
+\item program: \texttt{DBLatexRaport.jar}
+\item plik konfiguracyjny: \texttt{dblatexraportconfig.bat}
 \item środowisko kompilacji latex
 \item szablony dokumentów 
 \item plik bazy danych(tylko w testach)
@@ -75,13 +74,13 @@ Po wykonaniu tych kroków, powinna powstać baza danych do której bez problem p
 
 \subsection{ Tworzenie bazy danych }
 
-Do stworzenia pliku bazy danych na silniku firebird’a posłużyć się można narzędziem dostępnym w katalogu bin zainstalowanego serwera firebird.  Narzędzie to pozwala z linii komend tworzyć i łączyć się z bazami danych. W tym przypadku użyta zostanie komenda \emph{CREATE DATABASE}
+Do stworzenia pliku bazy danych na silniku firebird’a posłużyć się można narzędziem dostępnym w katalogu bin zainstalowanego serwera firebird.  Narzędzie to pozwala z linii komend tworzyć i łączyć się z bazami danych. W tym przypadku użyta zostanie komenda \texttt{CREATE DATABASE}
 \begin{lstlisting}
 C:\Program Files\Firebird\bin>isql
 SQL>CREATE DATABASE 'D:\test systemu\rekrutacja.fdb'
 CON>user 'SYSDBA' password 'masterkey';
 \end{lstlisting}
-Po wykonaniu tego polecenia zostanie utworzona baza danych. Takie same dane należy teraz wpisać do pliku konfiguracyjnego programu czyli \emph{DBLatexRaport.bat} aby program mógł się połączyć z tą bazą:
+Po wykonaniu tego polecenia zostanie utworzona baza danych. Takie same dane należy teraz wpisać do pliku konfiguracyjnego programu czyli \texttt{DBLatexRaport.bat} aby program mógł się połączyć z tą bazą:
 \begin{lstlisting}
 dbengine=firebirdsql
 hostname=//localhost
@@ -166,7 +165,7 @@ Struktura pliku:
 
 \end{lstlisting}
 
-Tak sformatowany plik \emph{CSV},  łatwo zaimportować do bazy danych do tabeli \emph{dane} ze względu na identyczną kolejność danych w kolumnach. Do importu wykorzystana została funkcja programu \emph{IBExpert}, \emph{import data}. Jedna linijka w pliku zostaje zaimportowana jako jeden rekord, w którym każde pole po kolei odpowiada wartościom między średnikami. Zaimportowanych w ten sposób zostało 10001 rekordów (osób) do tabeli \emph{dane} do dalszych manipulacji, co całkowicie wyczerpuje ilość kandydatów potrzebnych do testów. Ze statystyk wynika, że na uczelni średnio na rekrutacje przypada około trzystu kandydatów.
+Tak sformatowany plik \emph{CSV},  łatwo zaimportować do bazy danych do tabeli \texttt{dane} ze względu na identyczną kolejność danych w kolumnach. Do importu wykorzystana została funkcja programu \emph{IBExpert}, \texttt{import data}. Jedna linijka w pliku zostaje zaimportowana jako jeden rekord, w którym każde pole po kolei odpowiada wartościom między średnikami. Zaimportowanych w ten sposób zostało 10001 rekordów (osób) do tabeli \texttt{dane} do dalszych manipulacji, co całkowicie wyczerpuje ilość kandydatów potrzebnych do testów. Ze statystyk wynika, że na uczelni średnio na rekrutacje przypada około trzystu kandydatów.
 
 \subsection{Generowanie kandydatów na studentów}
 
@@ -178,7 +177,7 @@ Kolejnym krokiem jest uzupełnienie tabeli z tokami studiów. W testach dodanych
 3 Mechatronika	stacjonarne	pierwszego stopnia	MT-s				
 ...
 \end{lstlisting}
-Uzupełnienia wymaga także tabela z dodatkowymi informacjami \emph{setup\_aligeza} przykładowymi danymi:
+Uzupełnienia wymaga także tabela z dodatkowymi informacjami \texttt{setup\_aligeza} przykładowymi danymi:
 \begin{lstlisting}
 dataWydaniaDecyzji	09.10.2015
 miejsceWydaniaDecyzji	Nowy Sącz
@@ -250,27 +249,27 @@ test = :licznik;
 suspend;
 end
 \end{lstlisting}
-Powyższa procedura z jednej osoby z tabeli \emph{dane} tworzy jednego kandydata, losując mu tok nauki, ilość punktów oraz czy zostanie przyjęty lub nie. Dodawane są także pewne stałe wartości, podobne do tych w oryginalnej bazie danych, które nie wymagają uzmiennienia. Procedura ta, po jednorazowym wywołaniu, wygenerowała 10001 rekordów w tabeli \emph{kandydat\_aligeza}. Daje to wystarczającą ilość testowych kandydatów do przeprowadzenia testów. Baza danych z przeprowadzonych testów znajduje się w załączniku.
+Powyższa procedura z jednej osoby z tabeli \texttt{dane} tworzy jednego kandydata, losując mu tok nauki, ilość punktów oraz czy zostanie przyjęty lub nie. Dodawane są także pewne stałe wartości, podobne do tych w oryginalnej bazie danych, które nie wymagają uzmiennienia. Procedura ta, po jednorazowym wywołaniu, wygenerowała 10001 rekordów w tabeli \texttt{kandydat\_aligeza}. Daje to wystarczającą ilość testowych kandydatów do przeprowadzenia testów. Baza danych z przeprowadzonych testów znajduje się w załączniku.
 
 \section{Dodanie zapytań SQL do szablonów}
 
-Stworzone szablony w poprzednim rozdziale nie zawierają zapytań, które odzwierciedlały by wyselekcjonowanie danych z istniejącej struktury bazy. Zawierają tylko sztywne dane testujące środowiska latexowe. Aby szablony podczas procesu tworzenia dokumentów zostały uzupełnione poprawnymi danymi potrzeba je uzupełnić o odpowiednia zapytania SQL w odpowiedniej formie tak aby parser zawarty w programie był wstanie je znaleźć i wykonań.
+Stworzone szablony w poprzednim rozdziale nie zawierają zapytań, które odzwierciedlały by wyselekcjonowanie danych z istniejącej struktury bazy. Zawierają tylko sztywne dane testujące środowiska LaTeX'owe. Aby szablony podczas procesu tworzenia dokumentów zostały uzupełnione poprawnymi danymi potrzeba je uzupełnić o odpowiednia zapytania SQL w odpowiedniej formie tak aby parser zawarty w programie był wstanie je znaleźć i wykonań.
 \par 
-Potrzebnych jest 9 zapytań, za pomocą których wyciągnięte zostaną dane do szablonów. Poniżej opisane zostały każde z zapytań oraz przykład jakie dane zostaną wyselekcjonowane z bazy przez to zapytanie. Ta sekcja skupia się tylko i wyłącznie na uzyskaniu potrzebnych danych do środowisk latexu, a nie jak one zostaną wykorzystane. Dokładny opis jak wygląda wykorzystanie takiego zapisu znajduje się w rozdziale \ref{ch:szablonyraportowwsystemielatex}. Dodać jeszcze należy ze poniższe zapytania znajdują się pod koniec każdego szablonu, zaraz po zdefiniowaniu środowisk. Takie umiejscowienie tych zapytań sprawi, że dane zostaną uzupełnione zaraz pod tymi zapytaniami.
+Potrzebnych jest 9 zapytań, za pomocą których wyciągnięte zostaną dane do szablonów. Poniżej opisane zostały każde z zapytań oraz przykład jakie dane zostaną wyselekcjonowane z bazy przez to zapytanie. Ta sekcja skupia się tylko i wyłącznie na uzyskaniu potrzebnych danych do środowisk LaTeX'a, a nie jak one zostaną wykorzystane. Dokładny opis jak wygląda wykorzystanie takiego zapisu znajduje się w rozdziale \ref{ch:szablonyraportowwsystemielatex}. Dodać jeszcze należy ze poniższe zapytania znajdują się pod koniec każdego szablonu, zaraz po zdefiniowaniu środowisk. Takie umiejscowienie tych zapytań sprawi, że dane zostaną uzupełnione zaraz pod tymi zapytaniami.
 \par 
 \subsubsection*{Szablon z ustawieniami - aaasetup.tex}
-Pierwsze zapytanie które zostanie omówione jest to  zapytanie o podstawowe parametry, informacje na temat rekrutacji. Znajduje się ono w pliku aaasetup.tex. Plik posiada 3 litery a w nazwie ponieważ program parsujący, otwiera pliki alfabetycznie a zapytanie to musi zostać wykonane jako pierwsze.  Poniżej mamy przykład danych do zapisania:
+Pierwsze zapytanie które zostanie omówione jest to  zapytanie o podstawowe parametry, informacje na temat rekrutacji. Znajduje się ono w pliku \emph{aaasetup.tex}. Plik posiada 3 litery a w nazwie ponieważ program parsujący, otwiera pliki alfabetycznie a zapytanie to musi zostać wykonane jako pierwsze.  Poniżej mamy przykład danych do zapisania:
  \begin{lstlisting}
 \parametrRekrutacyjny{dataWydaniaDecyzji}{09.10.2015}
 \parametrRekrutacyjny{miejsceWydaniaDecyzji}{Nowy Sącz}
 \parametrRekrutacyjny{rokAkademicki}{2015/2016}
 ...
 \end{lstlisting}
-Aby uzyskać takie dane, potrzeba będzie pobrać wszystkie rekordy z tabeli \emph{setup\_aligeza} (struktura tabeli znajduje się w poprzedniej sekcji) klucz oraz wartość. Zapytanie nie będzie więc zbyt skomplikowane:
+Aby uzyskać takie dane, potrzeba będzie pobrać wszystkie rekordy z tabeli \texttt{setup\_aligeza} (struktura tabeli znajduje się w poprzedniej sekcji) klucz oraz wartość. Zapytanie nie będzie więc zbyt skomplikowane:
  \begin{lstlisting}
 SELECT klucz,wartosc FROM setup_aligeza
 \end{lstlisting}
-Po wywołaniu go faktycznie otrzymamy dane potrzebne nam dane. Jednak aby program parsujący był wstanie znaleźć takie zapytanie w szablonie potrzeba je obudować w odpowiednią konstrukcję, która będzie odpowiadać wyrażeniu regularnemu zapisanemu w parserze. Należy także wpisać nazwę środowiska w odpowiednie miejsce między znakami @@. Dodatkowo musimy jeszcze postarać się aby kompilator latex'a zignorował nasz zapis i go nie wyświetlał. Do tego celu zastosowana została komenda iffalse.
+Po wywołaniu go faktycznie otrzymamy dane potrzebne nam dane. Jednak aby program parsujący był wstanie znaleźć takie zapytanie w szablonie potrzeba je obudować w odpowiednią konstrukcję, która będzie odpowiadać wyrażeniu regularnemu zapisanemu w parserze. Należy także wpisać nazwę środowiska w odpowiednie miejsce między znakami @@. Dodatkowo musimy jeszcze postarać się aby kompilator LaTeX'a zignorował nasz zapis i go nie wyświetlał. Do tego celu zastosowana została komenda \texttt{iffalse}.
  \begin{lstlisting}
 \iffalse@@parametrRekrutacyjny@@
 SELECT klucz,wartosc FROM setup_aligeza
@@ -289,7 +288,7 @@ Następnie zapytanie zawarte w pliku \emph{protokolprzekazania.tex}. Występuje 
 ...
 \endprotokolprzekazaniaA        
 \end{lstlisting}
-Pomijając na razie otwarcie środowiska \emph{protokolprzekazaniaA\{1\} }oraz zamkniecie \emph{endprotokolprzekazaniaA}, w zapytaniu potrzebujemy wyświetlić każdy tok nauczania oraz z agregowaną liczbę kandydatów na tym toku. Do agregacji użyjemy polecenia \emph{group}  na polu tok by móc otrzymać liczbę kandydatów używając funkcji count(*). Dodatkowo potrzeba także wybrać kandydatów tylko posiadającą daną datę decyzji. Do tego posłuży podzapytanie, które pobierze datę decyzji z aktualnej rekrutacji i porówna ją z datą decyzji dla danego kandydata. 
+Pomijając na razie otwarcie środowiska \texttt{protokolprzekazaniaA\{1\} }oraz zamkniecie \texttt{endprotokolprzekazaniaA}, w zapytaniu potrzebujemy wyświetlić każdy tok nauczania oraz z agregowaną liczbę kandydatów na tym toku. Do agregacji użyjemy polecenia \texttt{group}  na polu tok by móc otrzymać liczbę kandydatów używając funkcji count(*). Dodatkowo potrzeba także wybrać kandydatów tylko posiadającą daną datę decyzji. Do tego posłuży podzapytanie, które pobierze datę decyzji z aktualnej rekrutacji i porówna ją z datą decyzji dla danego kandydata. 
  \begin{lstlisting}
 SELECT  k.kierunek_my||' --- '||k.forma_studiow_my||
 ' STUDIA '||k.stopien_studiow_my AS tok, count(*) AS ile
@@ -331,7 +330,7 @@ ORDER BY ka.kierunek_forma_skrot_my, ka.nazwiskoimiona
 \end{lstlisting}
 
 \subsubsection*{Szablon z listami kandydatów do sekretariatu - listasekretariat.tex}
-W kolejnym szablonie \emph{listasekretariat.tex} potrzebne jest utworzenie list kandydatów dla każdego toku nauki. Przez tok nauki rozumie się każdą kombinację kierunku, formy oraz stopnia studiów. W szablonie zostało to rozwiązane tak, że każda lista otwiera się poprzez wywołanie komendy \emph{listarsekretariatA} z trzema parametrami, którymi są właśnie kierunek, forma oraz stopień studiów. Na przykładowych danych wygląda to następująco:
+W kolejnym szablonie \emph{listasekretariat.tex} potrzebne jest utworzenie list kandydatów dla każdego toku nauki. Przez tok nauki rozumie się każdą kombinację kierunku, formy oraz stopnia studiów. W szablonie zostało to rozwiązane tak, że każda lista otwiera się poprzez wywołanie komendy \texttt{listarsekretariatA} z trzema parametrami, którymi są właśnie kierunek, forma oraz stopień studiów. Na przykładowych danych wygląda to następująco:
  \begin{lstlisting}
 \listarsekretariatA{drugiego stopnia}{Informatyka}{stacjonarne}
 \listarsekretariat{ Ablewicz Monika}{39}
@@ -347,7 +346,7 @@ W kolejnym szablonie \emph{listasekretariat.tex} potrzebne jest utworzenie list 
 ...
 \end{lstlisting}
 
-W zapytaniu więc potrzebne będzie wybrać wszystkich kandydatów z datą decyzji aktualnej rekrutacji, a następnie wyświetlić kierunek, formę, stopień studiów, imię, nazwisko oraz numer teczki. W zapytaniu także potrzebne będzie sortowanie po polach, które będą grupowane w programie uzupełniającym szablon. Każde na tych polach w zapytaniu SQL użyjemy polecenia \emph{ORDER BY}. Ostatecznie poinformujemy program, aby otrzymane dane grupował po 3 pierwszych polach:
+W zapytaniu więc potrzebne będzie wybrać wszystkich kandydatów z datą decyzji aktualnej rekrutacji, a następnie wyświetlić kierunek, formę, stopień studiów, imię, nazwisko oraz numer teczki. W zapytaniu także potrzebne będzie sortowanie po polach, które będą grupowane w programie uzupełniającym szablon. Każde na tych polach w zapytaniu SQL użyjemy polecenia \texttt{ORDER BY}. Ostatecznie poinformujemy program, aby otrzymane dane grupował po 3 pierwszych polach:
  \begin{lstlisting}
 \iffalse@@listarsekretariat@3@@
 SELECT stopien_studiow_my,kierunek_my,forma_studiow_my,
@@ -415,7 +414,7 @@ ORDER BY kierunek_forma_skrot_my, STUD_ILPUNKTOW desc
 \end{lstlisting}
 \par 
 \subsubsection*{Szablon z decyzją odnośnie przyjęcia kandydata - decyzja.tex}
-W ostatnim szablonie wystąpił problem ilości parametrów jakie trzeba przekazać do poprawnego działania szablonu. W latex'ie można stworzyć środowisko o maksymalnie 9 parametrach, natomiast w szablonie \emph{decyzja.tex} dla każdego kandydata potrzeba 12 różnych informacji. Rozwiązaniem tego problemu także było grupowanie przez program uzupełniania raportów. Grupowanie wytnie 3 pierwsze pola i wstawi je do nowego środowiska. W zapytaniu SQL wyświetlanie daty musi posiadać dodatkowe 0 przy datach typu 01.02.2015 gdzie właśnie liczby dni lub miesięcy są mniejsze od 10:
+W ostatnim szablonie wystąpił problem ilości parametrów jakie trzeba przekazać do poprawnego działania szablonu. W LaTeX'ie można stworzyć środowisko o maksymalnie 9 parametrach, natomiast w szablonie \emph{decyzja.tex} dla każdego kandydata potrzeba 12 różnych informacji. Rozwiązaniem tego problemu także było grupowanie przez program uzupełniania raportów. Grupowanie wytnie 3 pierwsze pola i wstawi je do nowego środowiska. W zapytaniu SQL wyświetlanie daty musi posiadać dodatkowe 0 przy datach typu 01.02.2015 gdzie właśnie liczby dni lub miesięcy są mniejsze od 10:
  \begin{lstlisting}
 \iffalse@@decyzja@3@@
 SELECT ka.stopien_studiow_my,ka.kierunek_my,ka.forma_studiow_my,
@@ -433,7 +432,7 @@ ORDER BY ka.kierunek_forma_skrot_my, ka.nazwiskoimiona
 
 \section{Konfiguracja programu}
 
-W głównym katalogu znajduje się plik konfiguracyjny programu o nazwie  \emph{dblatexraportconfig.bat}. Plik ten jest jednocześnie plikiem wsadowym oraz zawiera konfiguracje programu \emph{DBRaportlatex.jar}. Część kodu batch uruchamia program DBraportlatex razem z odpowiednimi parametrami do uruchomienia embedded firebird:
+W głównym katalogu znajduje się plik konfiguracyjny programu o nazwie  \emph{dblatexraportconfig.bat}. Plik ten jest jednocześnie plikiem wsadowym oraz zawiera konfiguracje programu \emph{DBRaportlatex.jar}. Część kodu batch uruchamia program DBraportlatex razem z odpowiednimi parametrami do uruchomienia \emph{embedded firebird}:
  \begin{lstlisting}
 @echo off
 java -Djava.library.path=.\firebird -jar dbraportlatex.jar
@@ -441,21 +440,21 @@ pause
 exit
 \end{lstlisting}
 
-Następnie od linijki zawierającej \emph{\#dbLatexRaportConfig} zaczynają się zmienne konfiguracyjne:
+Następnie od linijki zawierającej \texttt{\#dbLatexRaportConfig} zaczynają się zmienne konfiguracyjne:
   \begin{itemize}
-  \item Ścieżka do szablonów latex
+  \item Ścieżka do szablonów LaTeX
    \begin{lstlisting}
 templatepath=template/
   \end{lstlisting}
-  \item Ścieżka do uzupełnionych szablonów latex oraz skompilowanego pliku pdf
+  \item Ścieżka do uzupełnionych szablonów LaTeX oraz skompilowanego pliku PDF
   \begin{lstlisting}
 output=output/
  \end{lstlisting}
- \item Ścieżka do uzupełnionych szablonów latex oraz skompilowanego pliku pdf
+ \item Ścieżka do uzupełnionych szablonów LaTeX oraz skompilowanego pliku PDF
   \begin{lstlisting}
 output=output/
  \end{lstlisting}
-  \item Kodowanie szablonów latex
+  \item Kodowanie szablonów LaTeX
    \begin{lstlisting}
 encodingtex=UTF-8
   \end{lstlisting}
@@ -468,7 +467,7 @@ user=SYSDBA
 password=
 dbencoding=WIN1250
    \end{lstlisting}
-  \item Ścieżka do komilatora latex
+  \item Ścieżka do komilatora LaTeX
    \begin{lstlisting}
 pdflatexpath=texlive\2010min\bin\win32\pdflatex.exe
   \end{lstlisting}
@@ -567,7 +566,7 @@ Saved to file: output/protokolprzekazania.tex
 
  \end{lstlisting}
  
-   \item Wywoływanie kompilatora Latex dla głównego pliku \emph{main.tex}, co spowoduje skompilowanie wszystkich szablonów:
+   \item Wywoływanie kompilatora LaTeX dla głównego pliku \emph{main.tex}, co spowoduje skompilowanie wszystkich szablonów:
  \begin{lstlisting}
 Executing shell command:
 cmd /c start texlive\2010min\bin\win32\pdflatex.exe
@@ -584,7 +583,6 @@ Directory pdf results output: output/
 Program wykonał się bez żadnych błędów i wykonał swoje zadanie. Uzupełnienie szablonów trwało poniżej 1 sekundy, natomiast podwójna kompilacja wszystkich szablonów około jednej minuty, co spełnia założenia projektu. 
 
 \section{Wyniki testu}
-s
-Wszystkie szablony zostały uzupełnione poprawnie danymi z bazy danych oraz kompilacja systemu Latex przebiegła bezproblemowo. W pliku wynikowym PDF ze wszystkimi dokumentami gotowymi do druku wszystko jest zgodnie z oczekiwaniami. Wygenerowany plik PDF z testów dołączony jest w załączniku.
+Wszystkie szablony zostały uzupełnione poprawnie danymi z bazy danych oraz kompilacja systemu LaTeX przebiegła bezproblemowo. W pliku wynikowym PDF ze wszystkimi dokumentami gotowymi do druku wszystko jest zgodnie z oczekiwaniami. Wygenerowany plik PDF z testów dołączony jest w załączniku.
 
 
