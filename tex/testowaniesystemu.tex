@@ -231,22 +231,18 @@ select wartosc FROM setup_aligeza
 WHERE klucz='dataWydaniaDecyzji'
 INTO :data_dec;
 
-INSERT INTO kandydat_aligeza
-(stud_id,osoba_id,stud_nrteczki,nazwisko,imie,
-nazwiskoimiona,adr_ulica_miejscowosc_nr_domu,
-adr_kod_pocztowy_poczta,osoba_pesel,panpani,
-studia_nazwa,toknauki_nazwatoku,kierunek,
-kierunek_my,forma_studiow_my,stopien_studiow_my,
-kierunek_forma_skrot_my,    stud_ilpunktow,
-stud_ilpunktowkrem,ile_punktow,czy_przyjety,
-data_decyzji,nr_decyzji,dataprzyjeciapodania)
+INSERT INTO kandydat_aligeza (stud_id,osoba_id,stud_nrteczki,nazwisko,imie,
+	nazwiskoimiona,adr_ulica_miejscowosc_nr_domu,adr_kod_pocztowy_poczta,
+	osoba_pesel,panpani, studia_nazwa,toknauki_nazwatoku,kierunek, 
+	kierunek_my,forma_studiow_my,stopien_studiow_my,
+	kierunek_forma_skrot_my,    stud_ilpunktow,stud_ilpunktowkrem,
+	ile_punktow,czy_przyjety,data_decyzji,nr_decyzji,dataprzyjeciapodania)
 VALUES (:licznik,:licznik,cast(round(rand()*200+1) as integer),
-:naz,:imie,:imienaz,:adres, 
-cast( 'Nowy Sacz 33-300' as varchar(100)),
-:pesel,cast( 'M' as char(1)),    :forma,:kierunek || 
-' N inz. 3.50 2015/2016 zimowy',:kierunek,:kierunek,:forma,
-:stopien,:skrot,    :punkty,:punkty,:punkty,:czy_przyjety,
-cast(:data_dec as DATE),'328/2015','2015-08-14');
+	:naz,:imie,:imienaz,:adres, cast( 'Nowy Sacz 33-300' as varchar(100)),
+	:pesel,cast( 'M' as char(1)),    :forma,:kierunek || 
+	' N inz. 3.50 2015/2016 zimowy',:kierunek,:kierunek,:forma,
+	:stopien,:skrot,    :punkty,:punkty,:punkty,:czy_przyjety,
+	cast(:data_dec as DATE),'328/2015','2015-08-14');
 
 licznik = :licznik + 1;
 end
@@ -422,17 +418,12 @@ ORDER BY kierunek_forma_skrot_my, STUD_ILPUNKTOW desc
 W ostatnim szablonie wystąpił problem ilości parametrów jakie trzeba przekazać do poprawnego działania szablonu. W latex'ie można stworzyć środowisko o maksymalnie 9 parametrach, natomiast w szablonie \emph{decyzja.tex} dla każdego kandydata potrzeba 12 różnych informacji. Rozwiązaniem tego problemu także było grupowanie przez program uzupełniania raportów. Grupowanie wytnie 3 pierwsze pola i wstawi je do nowego środowiska. W zapytaniu SQL wyświetlanie daty musi posiadać dodatkowe 0 przy datach typu 01.02.2015 gdzie właśnie liczby dni lub miesięcy są mniejsze od 10:
  \begin{lstlisting}
 \iffalse@@decyzja@3@@
-SELECT ka.stopien_studiow_my,ka.kierunek_my
-,ka.forma_studiow_my,
-ka.stud_ilpunktow,ka.nr_decyzji,ka.nazwiskoimiona,
-ka.adr_ulica_miejscowosc_nr_domu,
-ka.adr_kod_pocztowy_poczta,
-ka.stud_nrteczki||' '||ka.kierunek_forma_skrot_my||
-' '||ka.stud_id,czy_przyjety,
-extract(day from ka.dataprzyjeciapodania)||'.'||
-substring(100+extract(month from ka.dataprzyjeciapodania)
-from 2 for 2)||'.'||
-extract(year from ka.dataprzyjeciapodania),panpani
+SELECT ka.stopien_studiow_my,ka.kierunek_my,ka.forma_studiow_my,
+	ka.stud_ilpunktow,ka.nr_decyzji,ka.nazwiskoimiona,ka.adr_ulica_miejscowosc_nr_domu,
+	ka.adr_kod_pocztowy_poczta,ka.stud_nrteczki||' '||ka.kierunek_forma_skrot_my||
+	' '||ka.stud_id,czy_przyjety,extract(day from ka.dataprzyjeciapodania)||'.'||
+	substring(100+extract(month from ka.dataprzyjeciapodania) from 2 for 2)||'.'||
+	extract(year from ka.dataprzyjeciapodania), panpani
 FROM kandydat_aligeza ka 
 WHERE  ka.data_decyzji=(select wartosc from setup_aligeza 
 where klucz='dataWydaniaDecyzji')
@@ -590,10 +581,10 @@ WORK DONE!!!
 Directory pdf results output: output/
  \end{lstlisting}
 \end{enumerate}
-Program wykonał się bez żadnych błędów i wykonał swoje zadanie. Uzupełnienie szablonów trwało niżej 1 sekundy, natomiast podwójna kompilacja wszystkich szablonów około jednej minuty, co spełnia założenia projektu. 
+Program wykonał się bez żadnych błędów i wykonał swoje zadanie. Uzupełnienie szablonów trwało poniżej 1 sekundy, natomiast podwójna kompilacja wszystkich szablonów około jednej minuty, co spełnia założenia projektu. 
 
 \section{Wyniki testu}
-
+s
 Wszystkie szablony zostały uzupełnione poprawnie danymi z bazy danych oraz kompilacja systemu Latex przebiegła bezproblemowo. W pliku wynikowym PDF ze wszystkimi dokumentami gotowymi do druku wszystko jest zgodnie z oczekiwaniami. Wygenerowany plik PDF z testów dołączony jest w załączniku.
 
 
