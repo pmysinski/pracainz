@@ -726,7 +726,7 @@ opis
 
 
 \subsection{Metody grupujące dane z bazy}
-opis subsekcji
+opis podsekcji
 
 \subsubsection*{Metoda rekurencyjna generująca grupy}
 opis metody
@@ -857,7 +857,7 @@ opis metody
      \end{lstlisting}
 
 
-\section{Zarządzanie kompilatorem Latex - klasa LatexCompiler}
+\section{Zarządzanie kompilatorem LaTeX - klasa LatexCompiler}
 
 Uzupełnione szablony przez klasę Templates, należy następnie skompilować przy pomocy wywołania kompilatora który został podany w konfiguracji.
 Do tego posłuży właśnie klasa LatexCompiler, która wywoła polecenie w konsoli systemowej, uruchamiające kompilator od odpowiednich parametrów.
@@ -870,7 +870,8 @@ public class LatexCompiler {
  String pdfoutput;
 \end{lstlisting}
 
-
+\subsubsection*{Konstruktor}
+Konstruktor z 2 parametrami przekazującymi ścieżkę do kompilatora oraz katalog wynikowy, będzie miał za zadanie zapisać te parametry do składowych oraz sprawdzić czy katalog wynikowy istnieje. W razie jego braku, utworzy go.
 
  \begin{lstlisting}[numbers=left,firstnumber=31]
 public LatexCompiler(String latexcompilerpathh,String pdfoutputt){
@@ -885,6 +886,9 @@ public LatexCompiler(String latexcompilerpathh,String pdfoutputt){
  }
 \end{lstlisting}
 
+\subsubsection*{Metoda wywołująca kompilacje pliku LaTeX}
+
+Parametrem metody jest nazwa pliku, który zostanie poddany kompilacji.  Następnie aby skompilować dany plik należy uruchomić kompilator, do którego ścieżka zapisana jest w składowej \texttt{latexcompilerpath} z parametrem \texttt{--output-directory} w którym przekażemy katalog wynikowy oraz z parametrem którym jest ścieżka pliku do kompilacji. Wygenerowane polecenie zostanie wywołane w powłoce systemowej za pomocą metody \texttt{lexecuteCommand} opisanej w podsekcji niżej.
 
  \begin{lstlisting}[numbers=left,firstnumber=46]
 public int compileTemplate(String filetexpath){
@@ -892,6 +896,9 @@ public int compileTemplate(String filetexpath){
  return(0);
  }
 \end{lstlisting}
+
+\subsubsection*{Metoda wywołująca polecenie powłoki systemu}
+
 
  \begin{lstlisting}[numbers=left,firstnumber=56]
 private String executeCommand(String command) {
