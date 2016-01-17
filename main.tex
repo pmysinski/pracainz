@@ -63,26 +63,6 @@
 % \setlength{\evensidemargin}{0.3cm}
 \usepackage[sort, compress]{cite}
 
-%\usepackage{multibib}
-%\newcites{bk,st,doc,web}{Książki i~artykuły,Standardy i~zalecenia,Dokumentacja produktów,Publikacje i~serwisy internetowe}
-
-\theoremstyle{definition}
-\newtheorem{defn}{Definicja}[section]
-\newtheorem{conj}{Teza}[section]
-\newtheorem{conjmain}{Teza}
-\newtheorem{exmp}{Przykład}[section]
-
-\theoremstyle{plain}% default
-\newtheorem{thm}{Twierdzenie}[section]
-\newtheorem{lem}[thm]{Lemat}
-\newtheorem{prop}[thm]{Hipoteza}
-\newtheorem*{cor}{Wniosek}
-
-\theoremstyle{remark}
-\newtheorem*{rem}{Uwaga}
-\newtheorem*{note}{Uwaga}
-\newtheorem{case}{Przypadek}
-
 \definecolor{ListingBackground}{rgb}{0.95,0.95,0.95}
 
 \lstset{
@@ -123,9 +103,19 @@
 \input{tex/tytul.tex}
 
 \newpage
+
+\makeatletter
+\def\ps@plain{%
+  \let\@mkboth\@gobbletwo
+  \let\ps@normal\hf@plain
+  \let\ps@opening\hf@plain
+  \let\ps@closing\hf@plain
+  \let\ps@blank\hf@empty
+  \ps@normal}
+\makeatother
 \pagenumbering{arabic}
 \setcounter{page}{3}
-
+\pagestyle{plain}
 \tableofcontents
 % \addcontentsline{toc}{chapter}{{Przedmowa1}{vii}}{vii}
 
@@ -145,12 +135,28 @@
 \input{tex/podsumowanie.tex}
 \input{bibrystab.tex}
 \listoffigures
-\appendix
+\chapter*{Załączniki}
+%\addcontentsline{toc}{chapter}{Introduction}
+%\appendix
+\hspace{3mm} Wszystkie załączniki umieszczono na dołączonej do pracy płycie DVD. Symbol
+„$\Xi$” jest początkiem drzewa katalogów, umieszczonego na
+płycie DVD. Ścieżki zostały oznaczone przy pomocy znaku slasha(/).
+\section{1. \hspace{1mm}Tekst pracy}
+
+\hspace{3mm} Tytułowy załącznik umieszczono w pliku: \texttt{$\Xi$/20747.pdf}
+
+\section{2. \hspace{1mm}Kod programu w postaci projektu programu NetBeans}
+
+\hspace{3mm} Katalog  \texttt{$\Xi$/DBLatexRaport/} zawiera kod programu DBLatexRaport, w formacie projektu JAVA w NetBeans.
+
+\section{3. \hspace{1mm}Środowisko stworzone do testów projektu}
+\hspace{3mm}  Folder \texttt{$\Xi$/RekrutacjaTest/} zawiera wszystkie szablony, bazę danych potrzebną do przeprowadzenia testów oraz  skonfigurowany program DBRaportLatex gotowy do uruchomienia. Dodatkowo znajdują się wygenerowane dokumenty podczas testów.
+
 
 % tutaj załączniki
 
 %\chapter*{Bibliografia}
-\nocite{*}
+%\nocite{*}
 %\bibliographystyle{plplain}
 %\bibliographystylebk{plplain}
 %\bibliographystylest{plplain}
