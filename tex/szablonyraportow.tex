@@ -1,9 +1,9 @@
-\chapter{Szablony raportów w systemie Latex}
+\chapter{Szablony raportów w systemie LaTeX}
 \label{ch:szablonyraportowwsystemielatex}
 
 W tym rozdziale przedstawiony zostanie proces przygotowania szablonów dokumentów potrzebnych przy rekrutacji na uczelni PWSZ Nowy Sącz. Opisane zostaną tylko problemy wynikające z tworzenia automatycznie uzupełnianych szablonów oraz ich rozwiązania.
 
-\section{Idea działania szablonów}
+\section{Idea tworzenia szablonów}
 
 Do wszystkich tych dokumentów potrzebny jest szablon w języku oprogramowania do zautomatyzowanego składu tekstu. W tej pracy został wybrany program LaTeX ze względu na jego możliwości automatyzacji procesu parsowania danych i uzupełniania nimi danych miejsc w tekście.
 \par Stworzenie szablonów polega, więc na wcześniejszym przygotowaniu plików tex, zawierających wcześniej strukturę danego dokumentu z "pustymi" miejscami do uzupełnienia przez program. Do uzupełnienia tych miejsc można wykorzystać funkcję LaTeXu jaką jest tworzenie nowych środowisk z parametrami, gdzie odpowiednio parametry te będą wartościami, które zostaną wpisane w dane miejsce w danym dokumencie. Następnie wystarczy wywołać dane środowisko z odpowiednimi wartościami aby otrzymać uzupełniony dokument. Dane środowisko możemy wywoływać wielokrotnie od różnych wartości tworząc w ten sposób wiele dokumentów tego samego typu o różnych zmiennych wartościach takich jak np imię i nazwisko. 
@@ -30,9 +30,23 @@ W rekrutacji na uczelnie wykorzystuje się dokumenty, które należało dokładn
 Przy tworzeniu szablonów wystąpiły problemy, które należało rozwiązać.  W dużej mierze problemy te powtarzają się,  opisane więc zostały tylko rozwiązania tych problemów a nie każdy szablon raportu. W poniższych podsekcjach znajdują się przedstawione problemy oraz ich rozwiązania.
 \subsection{Definiowanie zmiennych}
 
+Pewne dynamicznie pobrane z bazy danych informacje powtarzają się w szablonach w wielu miejscach, zaistniała więc potrzeba zapisania tych informacji jednorazowo do zmiennych, które można wywołać w każdym miejscu w dokumencie. 
+\par
+Do uzyskania takiego efektu wykorzystana została poniższa procedura:
+ \begin{lstlisting}
+\long\def\parametrRekrutacyjny#1#2{\expandafter\def\csname#1\endcsname{#2}}
+ \end{lstlisting}
+Każde wywołanie polecenia \texttt{parametrRekrutacyjny} utworzy zmienną, której nazwą będzie parametr pierwszy, natomiast wartością drugi.
+\par 
+Po wywołaniu przykładowych danych pokazanych poniżej:
+ \begin{lstlisting}
+\parametrRekrutacyjny{dataWydaniaDecyzji}{2015-03-06}
+\parametrRekrutacyjny{miejsceWydaniaDecyzji}{Nowy Sącz}
+\parametrRekrutacyjny{przewodniczacyIKR}{dr inż. Tomasz Kądziołka}
+ \end{lstlisting}
+będzie można pobrać te zmienne za pomocą wywołania komendy o nazwie 1 parametru. Wywołanie więc \texttt{ \textbackslash dataWydaniaDecyzji} zwróci wartość w danym miejscu \texttt{2015-03-06}.
 
-
-\subsection{Wyświetlanie listy}
+ \subsection{Wyświetlanie listy}
 Problem występujący w protokole przekazania oraz we wszystkich listach. Przykładowo potrzebujemy wyświetlić poniższą listę, gdzie oczywiście wartości pochodzą z bazy danych:
 \begin{lstlisting}
 Lp. Tok studiów Liczba kopert
@@ -43,4 +57,4 @@ Lp. Tok studiów Liczba kopert
 \end{lstlisting}
 
 \subsection{Grupowanie}
-\subsection{Aktualizacja daty}
+\subsection{Przekazanie informacji do bazy danych}

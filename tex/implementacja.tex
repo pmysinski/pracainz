@@ -658,11 +658,27 @@ W czasie tworzenia projektu wynikła potrzeba wprowadzenia dodatkowej funkcji, k
   
 \subsection{Metody prostego przetwarzania danych z bazy}
 
-opis podsekcji
+Podsekcja opisuje proces przetwarzania danych pobranych z bazy danych do formatu, który jest w stanie odczytać kompilator LaTeX.
 
-\subsubsection*{Metoda przygotowująca i wybierająca rodzaj przetwarzania danych}
-opis
+\subsubsection*{Metoda przygotowująca dane i wybierająca rodzaj przetwarzania}
 
+Do metody przekazywane są następujące parametry:
+\begin{itemize}
+\item \texttt{int k} - Indeks pliku zapisanego w składowej
+\item \texttt{int c} - Indeks selekcji ze znalezionych w danym pliku
+\item\texttt{String  env} - Znaleziona nazwa środowiska dla danej selekcji
+\item \texttt{String  grouping} - Znaleziona informacja o grupowaniu danych
+\item \texttt{RecordSet rs} - Dane pobrane z bazy danych
+\end{itemize}
+\vspace{5mm}
+Jeśli parametr \texttt{env} wygenerowana zostanie nazwa środowiska za pomocą nazwy pliku oraz dodany do tego postfiks, który będzie dużą literą alfabetu łacińskiego w zależności od numeru selekcji. 
+\par
+Jeśli parametr \texttt{grouping} jest pusty to znaczy ze wykorzystane zostanie proste przetwarzanie poprzez wywołanie metody \texttt{prepareValuesSimple(k,c, prefix, rs);}.
+\par
+ W przeciwnym wypadku przygotowana zostanie tablica \texttt{int group}, 
+ która zawierająca informację o ilości i wielkości wszystkich grup. Tablica ta zostanie przekazana przy wywołaniu metody
+ przetwarzającą grupowanie danych \texttt{prepareValuesGrouping(group, 0,0,rs.get\_rows(),  rs, prefix)}. Metoda ta potrzebuje pewnych inicjacji w postaci parametrów 0, dlatego że jest to metoda rekurencyjna. Dokładny opis znajduje się w późniejszej sekcji.
+ 
  \begin{lstlisting}[numbers=left,firstnumber=246]
 public int prepareValues(int k,int c,String env,String grouping,RecordSet rs){
  if(rs == null)
@@ -671,7 +687,8 @@ public int prepareValues(int k,int c,String env,String grouping,RecordSet rs){
   char l = (char) ('A' + (char)c);
   String prefix;
   if(env == null)
-   prefix =  listOfFiles[k].getName().substring(0,listOfFiles[k].getName().indexOf('.')) + l;
+   prefix =  listOfFiles[k].getName().substring(0,
+	   listOfFiles[k].getName().indexOf('.')) + l;
   else
    prefix = env;
       
@@ -685,7 +702,8 @@ public int prepareValues(int k,int c,String env,String grouping,RecordSet rs){
    for(int i=0;i<groupstmp.length;i++)
     group[i] = Integer.parseInt(groupstmp[i]);
            
-   sqlinfo.get(k).get(c).setData(prepareValuesGrouping(group, 0,0,rs.get_rows(),  rs, prefix)); 
+   sqlinfo.get(k).get(c).setData(prepareValuesGrouping(
+	   group, 0,0,rs.get_rows(),  rs, prefix)); 
           
    groupstmp = null;
    group = null;
@@ -697,9 +715,15 @@ public int prepareValues(int k,int c,String env,String grouping,RecordSet rs){
   \end{lstlisting}
 
 
-\subsubsection*{Przetworzenie danych  do szablonu}
+\subsubsection*{Metoda prostego przetworzenia danych}
 
-opis
+%bib Java. Kompendium programisty. Wydanie VIII
+Metoda ma na celu utworzenie dla każdego przekazanego rekordu w parametrze metody \texttt{RecordSet rs } utworzenie linii tekstu zawierającego wywołanie środowiska o nazwie przekazanej w parametrze metody \texttt{String prefix} i od parametrów, którymi będą kolejne pola w rekordach. 
+\par 
+Obiekt typu \texttt{RecordSet} jest macierzą typu \texttt{String}, którą należy połączyć w odpowiedni sposób. Do tego celu wykorzystana została klasa \texttt{StringBuilder}, która potrafi połączyć znaczą ilość obiektów typu \texttt{String} w optymalny sposób poprzez metodę \texttt{append} i utworzyć z nich jeden obiekt.
+\par
+W odpowiedni sposób przygotowane dane zapisane zostają pod  \texttt{sqlinfo.get(k).get(c).setData(temp2); } czyli k-tym plikiem oraz c-tym zapytaniem w składowej do tego przeznaczonej.
+
  \begin{lstlisting}[numbers=left,firstnumber=289]
  public int prepareValuesSimple(int k,int c, String prefix, RecordSet rs){
   String temp1 = "";
@@ -721,17 +745,31 @@ opis
 }
   \end{lstlisting}
 
-
-
-
-
 \subsection{Metody grupujące dane z bazy}
-opis podsekcji
 
-\subsubsection*{Metoda rekurencyjna generująca grupy}
-opis metody
+Do stworzenia drzewa grup, opisanego w sekcji działania algorytmu zaimplementowana została specjalnie do tego celu rekurencyjna metoda, która wywołuje samą siebie. Ze względu na czytelność, podzielona została ona na 2 metody opisane poniżej.
+
+\subsubsection*{Metoda rekurencyjnie generująca grupy}
+
+Metoda przyjmuje parametry:
+\begin{itemize}
+\item \texttt{int[] group} - tablica grup
+\item \texttt{int gid} - Indeks aktualnej grupy
+\item\texttt{int s} - Numer rekordu od którego rozpoczyna pracę w tym wywołaniu w \texttt{rs record}
+\item \texttt{int e} - Numer rekordu na którym kończy pracę w tym wywołaniu w \texttt{rs record}
+\item \texttt{RecordSet rs} - Dane pobrane z bazy danych
+\item \texttt{String prefix} - Nazwa środowiska
+\end{itemize}
+\vspace{5mm}
+Dla aktualnej grupy i zakresu działania metoda uruchamia proste przetwarzanie danych lub w razie istnienia niższych grup, wykonuje kolejny podział na kolejną grupę poprzez analizę zawartości pól po których jest ta grupa. Dla każdej unikatowej kombinacji tworzone jest wywołanie grupy z tymi wartościami, a następnie metoda wywołuje samą siebie od zakresu w którym występują dane unikatowe wartości. Wywołanie w ten sposób tej metody zwróci zawartość tej grupy która zostanie umiejscowiona pomiędzy wywołaniem grupy oraz wywołaniem zamknięcia grupy.
+\par 
+Do nazwy grupy zgodnie z algorytmem dodawane są litery alfabetu łacińskiego w zależności od numeru grupy.
+\par
+Jeśli skończą się grupy do tworzenia, wywoływana jest metoda \texttt{prepareInjectValues(prefix, rs,s,e,sc)} która zwróci dla danego zakresu rekordów i wyciętych odpowiednich pól, proste wywołania środowiska o przekazanej nazwie. Wywołanie tej metody, zwróci przetworzone odpowiednio wartości, które przekazane zostaną dalej do grupy z której została wywołana metoda grupująca.
+
  \begin{lstlisting}[numbers=left,firstnumber=322]
- public String prepareValuesGrouping(int[] group, int gid,int s, int e, RecordSet rs, String prefix){
+ public String prepareValuesGrouping(
+	 int[] group, int gid,int s, int e, RecordSet rs, String prefix){
 
   if(gid == group.length){
    int sc=0;
@@ -790,7 +828,21 @@ return("");
 
 
 \subsubsection*{Metoda przetwarzająca dane po zgrupowaniu}
-opis metody
+
+
+Metoda prostego już przetwarzania danych rozszerzona o dodatkowe rozróżnianie rekordów oraz pól, które ma zapisywać. 
+\par 
+W parametrach przekazywane są informacje:
+\begin{itemize}
+\item \texttt{int s} - rekord od którego rozpoczyna pracę w \texttt{rs record}
+\item \texttt{int c} - rekord na którym kończy pracę w \texttt{rs record}
+\item \texttt{int sc} - numer pole w rekordzie od którego ma dopiero pobierać dane, a wszystkie wcześniejsze pominąć
+\item\texttt{String  prefix} -  nazwa środowiska dla danej selekcji
+\item \texttt{RecordSet rs} - Dane pobrane z bazy danych
+\end{itemize}
+\vspace{5mm}
+Metoda ostatecznie zwraca przetworzone dane. Łączenie tych danych w całość odbędzie się w metodzie \texttt{ prepareValuesGrouping} opisanej wcześniej.
+
  \begin{lstlisting}[numbers=left,firstnumber=380]
  private String prepareInjectValues(String prefix,RecordSet rs,int s, int e,int sc){
   String temp1 = "";
@@ -815,44 +867,49 @@ opis metody
 
 \subsection{Metoda uzupełnienia szablonu o przetworzone dane}
 
-opis metody
+Metoda dodająca przetworzone wartości do zmiennej przechowującej zawartość szablonu. Dodawanie odbywa się od ostatniego zapytania do pierwszego, aby nie zmieniać dodatkowo zapamiętanych indeksów miejsc, w których znajdują się selekcje.
+
  \begin{lstlisting}[numbers=left,firstnumber=402]
  public void InjectValues(int k){
   int to;
   for(int i=sqlinfo.get(k).size()-1; i >= 0; i--){
     to = sqlinfo.get(k).get(i).getIndex();
-    data[k] = data[k].substring(0,to) + sqlinfo.get(k).get(i).getData() + data[k].substring(to,data[k].length());
+    data[k] = data[k].substring(0,to) + sqlinfo.get(k).get(i).getData() 
+    + data[k].substring(to,data[k].length());
    }
         
  }
 \end{lstlisting}
 
 
-\subsection{Metody get}
+\subsection{Akcesory}
+Akcesory (gettery i settery) to określenie metod jakie wykorzystuje obiekt do pobrania wartości i modyfikacji swoich atrybutów. Są one bardzo często dołączane do klas przez programistów Javy i nawet niektóre edytory (np. Eclipse) posiadają funkcjonalność automatycznego wygenerowania ich.
 
-
-
+\subsubsection*{Pobranie ilości szablonów:}
  \begin{lstlisting}[numbers=left,firstnumber=414]
  public int getLenght(){return data.length;}
  \end{lstlisting}
  
+ \subsubsection*{Pobranie ścieżki do pliku uzupełnionego szablonu w tex:}
  \begin{lstlisting}[numbers=left,firstnumber=419]
  public String getSavedPath(int k){return (pathoutput + listOfFiles[k].getName());}
      \end{lstlisting}
      
+\subsubsection*{Pobranie ścieżki wynikowej:}
  \begin{lstlisting}[numbers=left,firstnumber=423]
  public String getOutputPath(){return (pathoutput);}
      \end{lstlisting}
      
- \begin{lstlisting}[numbers=left,firstnumber=443]
+   \subsubsection*{Pobranie informacji o tym czy k-ty szablon może zostać skompilowany:}  
+ \begin{lstlisting}[numbers=left,firstnumber=429]
  public int compileCheck(int k){return(compileable[k]);}
      \end{lstlisting}
-     
- \begin{lstlisting}[numbers=left,firstnumber=402]
+ \subsubsection*{Pobranie wszystkich informacji o selekcji dla k-tego szablonu:}
+ \begin{lstlisting}[numbers=left,firstnumber=436]
  public ArrayList<ParsedSQLInfo> getStmts(int k){return sqlinfo.get(k);}
      \end{lstlisting}
-     
- \begin{lstlisting}[numbers=left,firstnumber=402]
+\subsubsection*{Pobranie nazwy pliku o indeksie k:}   
+ \begin{lstlisting}[numbers=left,firstnumber=443]
  public String getFileName(int k ){ return(listOfFiles[k].getName());}
      \end{lstlisting}
 
@@ -892,13 +949,16 @@ Parametrem metody jest nazwa pliku, który zostanie poddany kompilacji.  Następ
 
  \begin{lstlisting}[numbers=left,firstnumber=46]
 public int compileTemplate(String filetexpath){
- System.out.print( executeCommand(latexcompilerpath + " --output-directory=" + pdfoutput + " " + filetexpath));
+ System.out.print( executeCommand(latexcompilerpath
+  + " --output-directory=" + pdfoutput + " " + filetexpath));
  return(0);
  }
 \end{lstlisting}
 
 \subsubsection*{Metoda wywołująca polecenie powłoki systemu}
 
+
+Metoda ta ma na celu uruchomić nowy proces, którym będzie wywołanie komendy powłoki przesłanej przez parametr \texttt{String commmand}. \texttt{Runtime.getRuntime().exec("cmd /c start " + command);} Wywoła polecenie w nowym oknie i przypnie proces do zmiennej \texttt{Process p}. Następnie aby synchronicznie wywoływać polecenie jedno po drugim, program czeka na zakończenie procesu. 
 
  \begin{lstlisting}[numbers=left,firstnumber=56]
 private String executeCommand(String command) {
@@ -909,22 +969,6 @@ private String executeCommand(String command) {
  try {
   p = Runtime.getRuntime().exec("cmd /c start " + command);
   p.waitFor();
-                       
-  BufferedReader reader = 
-   new BufferedReader(new InputStreamReader(p.getInputStream()));
- 
-  String line = "";			
-  while ((line = reader.readLine())!= null) {
-   output.append(line + "\n");
-   }
- 
-  } catch (Exception e) {
-   e.printStackTrace();
-   }
- 
- return output.toString();
- 
-}
 
 \end{lstlisting}
 
