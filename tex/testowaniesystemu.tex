@@ -288,6 +288,7 @@ Następnie zapytanie zawarte w pliku \emph{protokolprzekazania.tex}. Występuje 
 ...
 \endprotokolprzekazaniaA        
 \end{lstlisting}
+\par
 Pomijając na razie otwarcie środowiska \texttt{protokolprzekazaniaA\{1\} }oraz zamkniecie \texttt{endprotokolprzekazaniaA}, w zapytaniu potrzebujemy wyświetlić każdy tok nauczania oraz z agregowaną liczbę kandydatów na tym toku. Do agregacji użyjemy polecenia \texttt{group}  na polu tok by móc otrzymać liczbę kandydatów używając funkcji count(*). Dodatkowo potrzeba także wybrać kandydatów tylko posiadającą daną datę decyzji. Do tego posłuży podzapytanie, które pobierze datę decyzji z aktualnej rekrutacji i porówna ją z datą decyzji dla danego kandydata. 
  \begin{lstlisting}
 SELECT  k.kierunek_my||' --- '||k.forma_studiow_my||
@@ -297,6 +298,7 @@ WHERE  k.data_decyzji=(SELECT wartosc FROM
  setup_aligeza WHERE klucz='dataWydaniaDecyzji') 
 GROUP BY tok
 \end{lstlisting}
+\par
 Takie zapytanie wyświetli nam dane pomiędzy tymi pominiętymi dotychczas komendami. 
 Rozwiązaniem wyświetlenia tych komend jest funkcja programu uzupełniającego szablony, a dokładnie funkcja grupowania. Dokładny opis tej funkcji znajduje się w rozdziale ref. Do zapytania dodamy jako pierwsze pole wartość 1, a następnie użyta zostanie funkcja grupowania po 1 polu wewnątrz szablonu:
  \begin{lstlisting}

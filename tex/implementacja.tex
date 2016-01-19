@@ -883,36 +883,39 @@ Metoda dodająca przetworzone wartości do zmiennej przechowującej zawartość 
 
 
 \subsection{Akcesory}
-Akcesory (gettery i settery) to określenie metod jakie wykorzystuje obiekt do pobrania wartości i modyfikacji swoich atrybutów. Są one bardzo często dołączane do klas przez programistów Javy i nawet niektóre edytory (np. Eclipse) posiadają funkcjonalność automatycznego wygenerowania ich.
+Akcesory (gettery i settery) to określenie metod jakie wykorzystuje obiekt do pobrania wartości i modyfikacji swoich atrybutów. Są one bardzo często dołączane do klas przez programistów Javy i nawet niektóre edytory (np. Eclipse) posiadają funkcjonalność automatycznego wygenerowania ich. Poniżej przedstawiony został każdy akcesor do klasy z krótką informacją co pobiera:
+\par
+\begin{itemize}
 
-\subsubsection*{Pobranie ilości szablonów:}
+\item Pobranie ilości szablonów:
  \begin{lstlisting}[numbers=left,firstnumber=414]
  public int getLenght(){return data.length;}
  \end{lstlisting}
  
- \subsubsection*{Pobranie ścieżki do pliku uzupełnionego szablonu w tex:}
+\item Pobranie ścieżki do pliku uzupełnionego szablonu w tex:
  \begin{lstlisting}[numbers=left,firstnumber=419]
  public String getSavedPath(int k){return (pathoutput + listOfFiles[k].getName());}
      \end{lstlisting}
      
-\subsubsection*{Pobranie ścieżki wynikowej:}
+\item Pobranie ścieżki wynikowej:
  \begin{lstlisting}[numbers=left,firstnumber=423]
  public String getOutputPath(){return (pathoutput);}
      \end{lstlisting}
      
-   \subsubsection*{Pobranie informacji o tym czy k-ty szablon może zostać skompilowany:}  
+\item Pobranie informacji o tym czy k-ty szablon może zostać skompilowany:
  \begin{lstlisting}[numbers=left,firstnumber=429]
  public int compileCheck(int k){return(compileable[k]);}
      \end{lstlisting}
- \subsubsection*{Pobranie wszystkich informacji o selekcji dla k-tego szablonu:}
+\item Pobranie wszystkich informacji o selekcji dla k-tego szablonu:
  \begin{lstlisting}[numbers=left,firstnumber=436]
  public ArrayList<ParsedSQLInfo> getStmts(int k){return sqlinfo.get(k);}
      \end{lstlisting}
-\subsubsection*{Pobranie nazwy pliku o indeksie k:}   
+\item Pobranie nazwy pliku o indeksie k: 
  \begin{lstlisting}[numbers=left,firstnumber=443]
  public String getFileName(int k ){ return(listOfFiles[k].getName());}
      \end{lstlisting}
 
+\end{itemize}
 
 \section{Zarządzanie kompilatorem LaTeX - klasa LatexCompiler}
 

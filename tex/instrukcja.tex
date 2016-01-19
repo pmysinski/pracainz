@@ -24,19 +24,19 @@ output=output/
 Poniżej opisane są wszystkie zmienne:\vspace{5mm}
 \begin{itemize}
 
-\item templatepath - ścieżka do szablonów.
-\item output - ścieżka do zapisu wyników pracy programu
-\item  encodingtex - kodowanie zapisu szablonów tex
-\item pattern - opcjonalnie, wyrażenie regularne przechwytujące polecania w szablonach.
-\item  dbengine - nazwa sterowników do obsługi danego silnika bazy danych (obsługiwane firebirdsql, mysql, sqlite)
-\item  hostname - IP lub nazwa hosta serwera bazy danych ( \texttt{//192.168.1.2 lub} \texttt{//Komputer-PC} ) lub dla lokalnego pliku firebird'a \texttt{embedded}.
-\item  port - port serwera bazy danych
-\item  dbpath - ścieżka do bazy danych w przypadku firebirda lub nazwa bazy danych w przypadku MySQL
-\item  user - nazwa użytkownika
-\item  password - hasło
-\item  dbencoding - kodowanie znaków w bazie danych  (np. \texttt{dbencoding=WIN1250}  . Jeśli puste, nastąpi automatyczne wykrycie kodowania)
-\item  pdflatexpath - ścieżka do kompilatora latex
-\item  pdfcompilemainfile - zmienna określająca jakie pliki kompilować za pomocą kompilatora latex. Można tutaj użyć wartości \texttt{ALL} (wszystkie), \texttt{ONLYBEGDOC} (skompilowane zostaną dokumenty tylko z begindoc), \texttt{NONE} (żadne) lub wymienić nazwy plików po przecinku (\texttt{main.tex,setup.tex ...})
+\item \textbf{templatepath} - ścieżka do szablonów.
+\item \textbf{output} - ścieżka do zapisu wyników pracy programu
+\item  \textbf{encodingtex} - kodowanie zapisu szablonów tex
+\item \textbf{pattern} - opcjonalnie, wyrażenie regularne przechwytujące polecania w szablonach.
+\item  \textbf{dbengine} - nazwa sterowników do obsługi danego silnika bazy danych (obsługiwane firebirdsql, mysql, sqlite)
+\item  \textbf{hostname} - IP lub nazwa hosta serwera bazy danych ( \texttt{//192.168.1.2 lub} \texttt{//Komputer-PC} ) lub dla lokalnego pliku firebird'a \texttt{embedded}.
+\item  \textbf{port} - port serwera bazy danych
+\item  \textbf{dbpath} - ścieżka do bazy danych w przypadku firebirda lub nazwa bazy danych w przypadku MySQL
+\item  \textbf{user} - nazwa użytkownika
+\item  \textbf{password }- hasło
+\item  \textbf{dbencoding} - kodowanie znaków w bazie danych  (np. \texttt{dbencoding=WIN1250}  . Jeśli puste, nastąpi automatyczne wykrycie kodowania)
+\item  \textbf{pdflatexpath} - ścieżka do kompilatora latex
+\item  \textbf{pdfcompilemainfile} - zmienna określająca jakie pliki kompilować za pomocą kompilatora latex. Można tutaj użyć wartości \texttt{ALL} (wszystkie), \texttt{ONLYBEGDOC} (skompilowane zostaną dokumenty tylko z begindoc), \texttt{NONE} (żadne) lub wymienić nazwy plików po przecinku (\texttt{main.tex,setup.tex ...})
 
 \end{itemize}
 
@@ -48,6 +48,7 @@ Informacje zawarte w poleceniach do programu mają na celu wyselekcjonowanie dan
 \item nazwę generowanego wywołania środowiska
 \item zapytanie SQL
 \end{itemize}
+\par
 Specjalnie dla tego programu został opracowany zapis polecenia tak aby kompilator dokumentów LaTeX ignorował to polecenie ale program mógł go przechwycić (w zapytaniu jest możliwość łamania linii):
 \begin{lstlisting}
 \iffalse 
