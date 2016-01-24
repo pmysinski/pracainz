@@ -1,8 +1,8 @@
 \chapter{Projekt programu i implementacja}
 
-Ten rozdział przedstawia dokładny proces implementacji programu \emph{DBLatexRaport,}  który ma na celu spełnienia wymagań oraz celów zawartych w rozdziale 1.  Osoba po przeanalizowaniu poniższego materiału, będzie w stanie w przyszłości ulepszyć o nowe funkcję istniejący już program lub stworzyć nowy, podobny program w innym języku programowania, który będzie w stanie obsłużyć istniejące już szablony. 
+Ten rozdział przedstawia dokładny proces implementacji programu \emph{DBLatexRaport,}  który ma na celu spełnienia wymagań oraz celów zawartych we wstępie.  Osoba po przeanalizowaniu poniższego materiału, będzie w stanie w przyszłości ulepszyć o nowe funkcję istniejący już program lub stworzyć nowy, podobny program w innym języku programowania, który będzie w stanie obsłużyć istniejące już szablony. 
 \par
- Wyjaśnione będą decyzje oraz postępowania przy pisaniu danego kodu, aby w pełni oddać idee tworzenia tego programu. Sekcję tę, można więc potraktować jako pewien samouczek, który jednak wymaga minimalnej znajomości języka programowania \emph{JAVA}. Pominięte też zostaną kwestie związane z importem podstawowych bibliotek, czy też wszelkie obsługi wyjątków, które mogą zaistnieć przy złej obsłudze programu. Cała uwaga zostanie skupiona tylko i wyłącznie na kodzie, przy poprawnym wykonaniu. W razie potrzeby dokładnej analizy cały kod programu znajduje się w załączniku.
+ Wyjaśnione będą decyzje oraz postępowania przy pisaniu danego kodu, aby w pełni oddać idee tworzenia tego programu. Sekcję tę, można więc potraktować jako pewien samouczek, który jednak wymaga minimalnej znajomości języka programowania \emph{JAVA}. Pominięte też zostaną kwestie związane z importem podstawowych bibliotek, czy też wszelkie obsługi wyjątków, które mogą zaistnieć przy złej obsłudze programu. Cała uwaga zostanie skupiona tylko i wyłącznie na kodzie, przy poprawnym wykonaniu. W razie potrzeby dokładnej analizy cały kod programu znajduje się w załączniku 2.
  \par
  Wszelki kod przedstawiony tutaj zawierający obok linie, znajduje się w programie. Numery linii odzwierciedlają dokładne położenie danego kodu w programie.
 
@@ -11,7 +11,7 @@ Ten rozdział przedstawia dokładny proces implementacji programu \emph{DBLatexR
 W poprzednim rozdziale przedstawiony został proces tworzenia samych szablonów, natomiast w tej sekcji skupiona uwaga zostanie na tym jak zaprojektować system uzupełniania tych szablonów. Między innymi właśnie o tym jak umieszczać informacje w szablonie na temat selekcjonowania danych czy też jak wygenerować odpowiednią strukturę danych.
 
 \subsection{Algorytm parsowania}
-Aby szablon raportu został uzupełniony o potrzebne dane, musi on posiadać pewną informację o tym, co i w jakiej formie należy w nim zapisać.  Program musi przeszukać szablon w celu znalezienia tej informacji i przeanalizowanie jej, aby wywołać odpowiednie procedury na rzecz danego szablonu. Jako, że informacja ta przeznaczona jest tylko dla programu przeszukującego, idealnym było by, gdyby zapis tej informacji byłby ignorowany przez środowisko kompilacji raportów.  W wybranym wcześniej środowisku \emph{Latex} znajduje się komenda \texttt{iffalse} oraz jej zamknięcie \texttt{fi} dzięki której wszystko pomiędzy zostanie zignorowane w czasie kompilacji dokumentów. Daje nam to taki zapis gdzie nasza informacja może zajmować wiele linii:
+Aby szablon raportu został uzupełniony o potrzebne dane, musi on posiadać pewną informację o tym, co i w jakiej formie należy w nim zapisać.  Program musi przeszukać szablon w celu znalezienia tej informacji i przeanalizowanie jej, aby wywołać odpowiednie procedury na rzecz danego szablonu. Jako, że informacja ta przeznaczona jest tylko dla programu przeszukującego, idealnym było by, gdyby zapis tej informacji byłby ignorowany przez środowisko kompilacji raportów.  W wybranym wcześniej środowisku LaTeX znajduje się komenda \texttt{iffalse} oraz jej zamknięcie \texttt{fi} dzięki której wszystko pomiędzy zostanie zignorowane w czasie kompilacji dokumentów. Daje nam to taki zapis gdzie nasza informacja może zajmować wiele linii:
 \begin{lstlisting}
 \iffalse 
 ...
@@ -70,7 +70,7 @@ Gdzie wynikiem takiego polecenia będzie właśnie:
 
 Na potrzeby systemu rekrutacji, musiała zostać stworzona dodatkowa struktura, pełniąca funkcję grupowania. Wykorzystana może być także w przypadku gdy rekordy zwrócone z bazy danych zawierają więcej niż 9 pól, ze względu na to, że środowiska mogą być wywoływane maksymalnie od 9 argumentów. Poniżej przedstawiona zostanie tylko struktura z krótkim wprowadzeniem. Dokładny opis jej tworzenia znajduje się w implementacji.
 \par
-Strukturę grupowania odzwierciedla struktura drzewa. Wywołanie środowiska z dodaną dużą literą alfabetu łacińskiego na końcu nazwy rozpoczyna grupę, natomiast wywołanie środowiska z dodaną frazą "end" na początku nazwy, kończy daną grupę. Uwagę należy zwrócić na fakt, iż w alfabecie łacińskim jest 26 znaków, co ogranicza ilość grup do 26. Na przykładzie drzewa może wyglądać to następująco:
+Strukturę grupowania odzwierciedla struktura drzewa. Wywołanie środowiska z dodaną dużą literą alfabetu łacińskiego na końcu nazwy rozpoczyna grupę, natomiast wywołanie środowiska z dodaną frazą \texttt{end} na początku nazwy, kończy daną grupę. Uwagę należy zwrócić na fakt, iż w alfabecie łacińskim jest 26 znaków, co ogranicza ilość grup do 26. Na przykładzie drzewa może wyglądać to następująco:
 
 \dirtree{%
  .1 \textbackslash NazwaA.
@@ -86,7 +86,7 @@ Strukturę grupowania odzwierciedla struktura drzewa. Wywołanie środowiska z d
  .1 \textbackslash endNazwaA.
 }
 \vspace{5mm}
-Od każde grupujące środowisko wymaga co najmniej 1 parametru, który zabierany jest z pól rekordów pobranych z bazy danych. Pole dla wszystkich rekordów w danej grupie jest takie samo dlatego jest ono właśnie przerzucane do wywołania środowiska grupy.
+Każde grupujące środowisko wymaga co najmniej 1 parametru, który zabierany jest z pól rekordów pobranych z bazy danych. Pole dla wszystkich rekordów w danej grupie jest takie samo dlatego jest ono właśnie przerzucane do wywołania środowiska grupy.
 Poniżej prosty przykład ukazujący dane zachowanie:
 \begin{lstlisting}
 \nazwasrodowiskaA{pole1}
@@ -136,7 +136,7 @@ Natomiast na środowisko w jakim powstanie projekt wybrany został program \emph
 
 Środowisko \emph{NetBeans 8.0.2} posiada funkcję utworzenia projektu typu \emph{JAVA Application}. Automatycznie stworzony zostanie package o nazwie projektu \emph{DBLatexRaport} oraz klasa, o tej samej nazwie, zawierającą metodę \texttt{main(String[] args)}. Od tej metody program zacznie swoje wykonanie. Tak więc, w metodzie tej, także będą umieszczane deklaracje wszystkich obiektów klas głównych oraz ich inicjalizacja. 
 \par 
-Aplikacja, oprócz swojej głównej klasy zawierającej metodę texttt{main()}, będzie wymagała podziału na moduły, które będą odzwierciedlane poprzez odpowiednie klasy. Wymagane do działania będą:
+Aplikacja, oprócz swojej głównej klasy zawierającej metodę \texttt{main()}, będzie wymagała podziału na moduły, które będą odzwierciedlane poprzez odpowiednie klasy. Wymagane do działania będą:
 \begin{itemize}
 \item klasa Config - moduł obsługi pliku konfiguracyjnego 
 \item klasa DBHandle - moduł obsługi połączenia z bazą danych.
@@ -191,7 +191,7 @@ Do odczytu przygotować należy pewien bufor oraz zmienne pomocnicze:
  int flag = 0;
 \end{lstlisting}
 
-Następnie potrzebna jest pętla odczytująca plik linia po linii. Pętla zakończy się po odczytaniu całego pliku, przekazując odczytaną linie do jednej iteracji w pętli. Wewnątrz pętli pierwszym krokiem jest sprawdzenie czy linia zawiera flagę \texttt{\#dbLatexRaportConfig} by móc zacząć odczytywać zmienne poprzez ustawienie zmiennej flag na wartość 1. Pozostaje już tylko sprawdzić czy linia nie jest pusta oraz czy nie jest komentarzem, aby móc zapisać zmienne poprzez wyłączenie z linii nazwy (cała linia do znaku "=") oraz wartości zmiennej (cała linia od znaku "=") do aktualnego indeksu bufora. Ostatecznie potrzeba zwiększyć indeks bufora o 1 i zakończyć iteracje.
+Następnie potrzebna jest pętla odczytująca plik linia po linii. Pętla zakończy się po odczytaniu całego pliku, przekazując odczytaną linie do jednej iteracji w pętli. Wewnątrz pętli pierwszym krokiem jest sprawdzenie czy linia zawiera flagę \texttt{\#dbLatexRaportConfig} by móc zacząć odczytywać zmienne poprzez ustawienie zmiennej \texttt{flag} na wartość 1. Pozostaje już tylko sprawdzić czy linia nie jest pusta oraz czy nie jest komentarzem, aby móc zapisać zmienne poprzez wyłączenie z linii nazwy (cała linia do znaku "=") oraz wartości zmiennej (cała linia od znaku "=") do aktualnego indeksu bufora. Ostatecznie potrzeba zwiększyć indeks bufora o 1 i zakończyć iteracje.
 \begin{lstlisting}[numbers=left,firstnumber=60]
 while ((tmp = in.readLine()) != null) {
  if(flag == 0 && tmp.equals("#dbLatexRaportConfig"))
@@ -283,7 +283,7 @@ public void setData(String data) {this.data = data;}
 \end{lstlisting}
 
 \subsection{Klasa RecordSet}
-Druga klasa typu kontener (\texttt{RecordSet}) przechowywać będzie wyniki zapytań SQL w postaci listy rekordów. Każdy rekord natomiast będzie reprezentowany jako tablica zmiennych typu String o danej długości. Składowe wyczerpujące wszelkie informacje wyglądać będą następująco:
+Druga klasa typu kontener przechowywać będzie wyniki zapytań SQL w postaci listy rekordów. Każdy rekord natomiast będzie reprezentowany jako tablica zmiennych typu \texttt{String} o danej długości. Składowe wyczerpujące wszelkie informacje wyglądać będą następująco:
 
 \begin{lstlisting}[numbers=left,firstnumber=13]
 public class RecordSet {
@@ -300,7 +300,7 @@ m = columncount;
 }
  \end{lstlisting}
 
-Interfejs wymagał by łatwo można było nadpisać daną wartość oraz pobrać w zależności od numeru rekordu oraz numeru pola. Zwrócić uwagę należy na to iż przy zapisie nowych rekordów, lista automatycznie się poszerzy. Dodatkowo dodana jest możliwość pobrania ilości rekordów czy też pól w 1 rekordzie.
+Interfejs wymagał by łatwo można było nadpisać daną wartość oraz pobrać w zależności od numeru rekordu oraz numeru pola. Zwrócić uwagę należy na to, iż przy zapisie nowych rekordów, lista automatycznie się poszerzy. Dodatkowo dodana jest możliwość pobrania ilości rekordów czy też pól w jednym rekordzie.
  \begin{lstlisting}[numbers=left,firstnumber=23]
 void setVal(String str,int i, int j){
  while(val.size() <= i)
@@ -318,7 +318,7 @@ int get_cols(){return(m);}
 Stworzenie klasy obsługującej połączenie z bazą danych oraz wywołania poleceń na tej bazie. wymagało będzie zaimportowania dodatkowych bibliotek. W języku \emph{Java} znajduje się moduł \emph{ JDBC(TM) Database Access}, który zostanie wykorzystany w implementacji tej klasy. Dokładna dokumentacja tego modułu znajduje się na stronie \emph{http://www.cs.mun.ca/~michael/java/jdk1.1.5-docs/guide/jdbc/index.html}. Poniżej przedstawiona zostanie jedynie idea zastosowanie tego rozwiązania oraz implementacja wykorzystująca ten moduł.
 \subsection{Wykorzystanie JDBC(TM) Database Access}
 
-Dzięki wykorzystaniu \emph{ JDBC(TM) Database Access} obsługa połączeń z wieloma rodzajami baz danych staje się prosta. Idea tego rozwiązania jest taka aby dla każdego rodzaju bazy danych interfejs połączenia był dokładnie taki sam. Interfejs ten dostępny jest przez klasę \texttt{java.sql.DriverManager}, pozwalającą załadować odpowiednią bibliotekę dla wybranego silnika bazodanowego, zwracając obiekt z takim samym interfejsem dla każdej możliwej bazy danych. 
+Dzięki wykorzystaniu \emph{ JDBC(TM) Database Access} \cite{Dokumentacja_Jaybird} obsługa połączeń z wieloma rodzajami baz danych staje się prosta. Idea tego rozwiązania jest taka aby dla każdego rodzaju bazy danych interfejs połączenia był dokładnie taki sam. Interfejs ten dostępny jest przez klasę \texttt{java.sql.DriverManager}, pozwalającą załadować odpowiednią bibliotekę dla wybranego silnika bazodanowego, zwracając obiekt z takim samym interfejsem dla każdej możliwej bazy danych. 
 \par
 W przypadku pracy z serwerem \emph{Firebird 2.5} potrzebne będzie jeszcze zaimportowanie do projektu odpowiedniego pliku \emph{jaybird-full-2.2.9.jar}, który został specjalnie przygotowany dla połączeń z tym serwerem. Jest on do pobrania z oficjalnej strony "\emph{http://www.firebirdsql.org/}". W razie potrzeby połączenie z innym rodzajem bazy danych, wystarczy w analogiczny sposób zaimportować biblioteki przygotowane przez twórców danego serwera a następnie tylko wywołać je poprzez klasę \texttt{java.sql.DriverManager} bez większej ingerencji w kod źródłowy programu.
 
@@ -349,7 +349,7 @@ Odpowiednio:
     \item \texttt{password} - hasło
     \end{itemize}
 
-Następnie w ciele konstruktora nawiążemy połączenie poprzez stworzenie tak zwanego \emph{Connection String}, czyli łańcucha znaków w odpowiednim formacie zawierającego informacje na temat połączenia, które ma zinterpretować klasa \texttt{java.sql.DriverManager} i spróbować nawiązać połączenie. \emph{Connection String} przyjmuje wiele zmiennych także w zależności od rodzaju połączenia. Poniżej pokazany zostanie przypadek nawiązania połączenia z serwerem \emph{Firebird 2.5} po adresie IP lub nazwie hosta. Najpierw ładowny jest sterownik \texttt{org.firebirdsql.jdbc.FBDriver}, następnie tworzony jest \texttt{Connection String} z parametrów przekazanych do konstruktora i ostatecznie wywoływana jest próba połączenia przez metodę \texttt{getConnection()}:
+Następnie w ciele konstruktora nawiązane zostanie połączenie poprzez  tak zwany \emph{Connection String}, czyli łańcucha znaków w odpowiednim formacie zawierającego informacje na temat połączenia, które ma zinterpretować klasa \texttt{java.sql.DriverManager} i spróbować nawiązać połączenie. \emph{Connection String} przyjmuje wiele zmiennych także w zależności od rodzaju połączenia. Poniżej pokazany zostanie przypadek nawiązania połączenia z serwerem \emph{Firebird 2.5} po adresie IP lub nazwie hosta. Najpierw ładowny jest sterownik \texttt{org.firebirdsql.jdbc.FBDriver}, następnie tworzony jest \texttt{Connection String} z parametrów przekazanych do konstruktora i ostatecznie wywoływana jest próba połączenia przez metodę \texttt{getConnection()}:
    \begin{lstlisting}[numbers=left,firstnumber=61]
 if(engine.equals("firebirdsql")){
  try {
@@ -601,9 +601,10 @@ Metoda przyjmować będzie za parametr wzorzec wyrażeń regularnych w celu moż
 Najważniejszym elementem tej metody jest właśnie zapisany w niej wzorzec (linia 218), za pomocą którego można znaleźć selekcje danych. Podzielony on został grupy, dzięki czemu będzie można oddzielić od siebie informacje i zapisać je w przygotowanej strukturze. Na rysunku \ref{fig:Wzorzec} przedstawiony został wzorzec. Jeżeli nie podany zostanie żaden wzorzec, użyty zostanie standardowy. 
 \begin{figure}[h]
     \centering
-    \label{fig:Wzorzec}
+    
     \includegraphics[width=1\textwidth]{rys/implementacja/regex.png}
     \caption{Graf przedstawiający wzorzec przechwytujący informacje o selekcji w szablonach}
+    \label{fig:Wzorzec}
 \end{figure}
 \par
 Grupy przechwytujące:
@@ -961,7 +962,7 @@ public int compileTemplate(String filetexpath){
 \subsubsection*{Metoda wywołująca polecenie powłoki systemu}
 
 
-Metoda ta ma na celu uruchomić nowy proces, którym będzie wywołanie komendy powłoki przesłanej przez parametr \texttt{String commmand}. \texttt{Runtime.getRuntime().exec("cmd /c start " + command);} Wywoła polecenie w nowym oknie i przypnie proces do zmiennej \texttt{Process p}. Następnie aby synchronicznie wywoływać polecenie jedno po drugim, program czeka na zakończenie procesu. 
+Metoda ta ma na celu uruchomić nowy proces, którym będzie wywołanie komendy powłoki przesłanej przez parametr \texttt{String commmand}. \texttt{Runtime.getRuntime().exec(''cmd /c start '' + command);} Wywoła polecenie w nowym oknie i przypnie proces do zmiennej \texttt{Process p}. Następnie aby synchronicznie wywoływać polecenie jedno po drugim, program czeka na zakończenie procesu. 
 
  \begin{lstlisting}[numbers=left,firstnumber=56]
 private String executeCommand(String command) {

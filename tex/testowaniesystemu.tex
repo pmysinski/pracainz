@@ -1,5 +1,5 @@
 \chapter{Uruchomienie oraz testowanie systemu}
-Przed wdrożeniem programu do realnego systemu, program należy przetestować. Testy powinny być prowadzone na tymczasowej bazie danych, ponieważ idea testów jest taka, że po podmianie bazy danych na realną wszystko ma działać bez zmian. Zmienić się może tylko zapis połączenia z bazą danych w pliku konfiguracyjnym. Dzięki takiemu zabiegowi, będzie można być pewnym tego, że wszystko będzie działać na prawdziwej bazie danych.  Do przeprowadzenia testów potrzebne będzie odtworzyć przyszłe środowisko, w którym będzie działać program, przygotować szablony dokumentów, które są wytwarzane w procesie rekrutacji oraz wygenerować dokumenty. Ostatnim już krokiem będzie sprawdzenie czy podczas tego procesu nie ma żadnych komplikacji oraz czy wygenerowane dokumenty nie zawierają błędów.
+Przed wdrożeniem programu do realnego systemu, program należy przetestować. Testy powinny być prowadzone na tymczasowej bazie danych, ponieważ idea testów jest taka, że po podmianie bazy danych na realną wszystko ma działać bez zmian. Zmienić się może tylko zapis połączenia z bazą danych w pliku konfiguracyjnym. Dzięki takiemu zabiegowi, będzie można być pewnym tego, że wszystko będzie działać na realnej bazie danych.  Do przeprowadzenia testów potrzebne będzie odtworzyć przyszłe środowisko, w którym będzie działać program, przygotować szablony dokumentów, które są wytwarzane w procesie rekrutacji oraz wygenerować dokumenty. Ostatnim już krokiem będzie sprawdzenie czy podczas tego procesu nie ma żadnych komplikacji oraz czy wygenerowane dokumenty nie zawierają błędów.
 \section{Wstępne ustalenia}
 
 Przed rozpoczęciem jakichkolwiek działań należy przygotować podstawowe rzeczy do rozpoczęcia testów.
@@ -585,6 +585,14 @@ Directory pdf results output: output/
 Program wykonał się bez żadnych błędów i wykonał swoje zadanie. Uzupełnienie szablonów trwało poniżej 1 sekundy, natomiast podwójna kompilacja wszystkich szablonów około jednej minuty, co spełnia założenia projektu. 
 
 \section{Wyniki testu}
-Wszystkie szablony zostały uzupełnione poprawnie danymi z bazy danych oraz kompilacja systemu LaTeX przebiegła bezproblemowo. W pliku wynikowym PDF ze wszystkimi dokumentami gotowymi do druku wszystko jest zgodnie z oczekiwaniami. Wygenerowany plik PDF z testów dołączony jest w załączniku.
+Wszystkie szablony zostały uzupełnione poprawnie danymi z bazy danych oraz kompilacja systemu LaTeX przebiegła bezproblemowo. Na rysunku \ref{fig:test} przedstawione zostały wybrane strony z wygenerowanych dokumentów. W pliku wynikowym PDF ze wszystkimi dokumentami gotowymi do druku wszystko jest zgodnie z oczekiwaniami. Wygenerowany plik PDF z testów dołączony jest w załączniku.
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{rys/testy/wynik.png}
+    \caption{Przykładowe strony wygenerowanych dokumentów z  testu }
+    \label{fig:test}
+\end{figure}
+\section{Wnioski}
+Po udanym przeprowadzeniu testu można stwierdzić, że tak przygotowana paczka systemu raportów zawierająca wszystkie potrzebne rzeczy do przeprowadzenia rekrutacji, spełnia w pełnym zakresie wymagania postawione w założeniach pracy. Cały katalog roboczy systemu po spakowaniu zajmuje około 50 megabajtów i po rozpakowaniu około 100 megabajtów co oznacza, że przy dzisiejszych nośnikach danych nie będzie problemu z przeniesieniem systemu. Dodatkowo paczka zaraz po rozpakowaniu na systemie Windows jest gotowa do pracy i wymaga jedynie zainstalowanego środowiska uruchomieniowego JAVA 1.8. Cały system tworzenia raportów znajduje się w załączniku 3.
 

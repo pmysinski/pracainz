@@ -1,17 +1,17 @@
 \chapter{Szablony raportów w systemie LaTeX}
 \label{ch:szablonyraportowwsystemielatex}
 
-W tym rozdziale przedstawiony zostanie proces przygotowania szablonów dokumentów potrzebnych przy rekrutacji na uczelni PWSZ Nowy Sącz. Opisane zostaną tylko problemy wynikające z tworzenia automatycznie uzupełnianych szablonów oraz ich rozwiązania.
+W tym rozdziale przedstawiony zostanie proces przygotowania szablonów dokumentów potrzebnych przy rekrutacji na uczelni PWSZ Nowy Sącz. Opisane zostaną tylko problemy wynikające z tworzenia automatycznie uzupełnianych szablonów oraz ich rozwiązania. Wszystkie stworzone szablony znajdują się w załączniku 3 w katalogu \texttt{template/}.
 
 \section{Idea tworzenia szablonów}
 
 Do wszystkich tych dokumentów potrzebny jest szablon w języku oprogramowania do zautomatyzowanego składu tekstu. W tej pracy został wybrany program LaTeX ze względu na jego możliwości automatyzacji procesu parsowania danych i uzupełniania nimi danych miejsc w tekście.
-\par Stworzenie szablonów polega, więc na wcześniejszym przygotowaniu plików tex, zawierających wcześniej strukturę danego dokumentu z "pustymi" miejscami do uzupełnienia przez program. Do uzupełnienia tych miejsc można wykorzystać funkcję LaTeX'u jaką jest tworzenie nowych poleceń z parametrami, gdzie odpowiednio parametry te będą wartościami, które zostaną wpisane w dane miejsce w danym dokumencie. Następnie wystarczy wywołać daną komendę z odpowiednimi wartościami aby otrzymać uzupełniony dokument. Dane polecenie możemy wywoływać wielokrotnie od różnych wartości tworząc w ten sposób wiele dokumentów tego samego typu o różnych zmiennych wartościach takich jak np imię i nazwisko. 
-\par Do wytworzenia wywołań tych komend posłuży właśnie program stworzony w Javie. Poprzez dodanie zapytania SQL w odpowiedniej formule do plików tex. Program \emph{DBLatexRaport} wyszuka takie zapytanie i uzupełni szablon wywołaniami poleceń z wartościami parametrów, jakimi będą wartości pola z rekordów zapytania SQL. 
+\par Stworzenie szablonów polega, więc na wcześniejszym przygotowaniu plików tex, zawierających wcześniej strukturę danego dokumentu z ''pustymi''  miejscami do uzupełnienia przez program. Do uzupełnienia tych miejsc można wykorzystać funkcję LaTeX'u jaką jest tworzenie nowych poleceń z parametrami, gdzie odpowiednio parametry te będą wartościami, które zostaną wpisane w dane miejsce w danym dokumencie. Następnie wystarczy wywołać daną komendę z odpowiednimi wartościami aby otrzymać uzupełniony dokument. Dane polecenie możemy wywoływać wielokrotnie od różnych wartości tworząc w ten sposób wiele dokumentów tego samego typu o różnych zmiennych wartościach takich jak np imię i nazwisko. 
+\par Do wytworzenia wywołań tych komend posłuży oddzielny program. Poprzez dodanie zapytania SQL w odpowiedniej formule do plików tex. Program \emph{DBLatexRaport} wyszuka takie zapytanie i uzupełni szablon wywołaniami poleceń z wartościami parametrów, jakimi będą wartości pola z rekordów zapytania SQL. 
 
 \section{Środowisko kompilacji raportów}
 
-Środowisko do kompilacji dokumentów zostało specjalnie przygotowane poprzez usuniecie nadmiarowych (nieużywanych) bibliotek. Dzięki temu cały system będzie zajmował mniej pamięci na dysku twardym i będzie łatwiejsze do przenoszenia. Dodatkowo kompilatora nie trzeba instalować, dzięki czemu cały system będzie szybki w użyciu. Środowisko kompilacji wymaga systemu operacyjnego Windows. Środowisko to znajduje się w załączniku razem z programem.
+Środowisko do kompilacji dokumentów zostało specjalnie przygotowane poprzez usuniecie nadmiarowych (nieużywanych) bibliotek. Dzięki temu cały system będzie zajmował mniej pamięci na dysku twardym i będzie łatwiejsze do przenoszenia. Dodatkowo kompilatora nie trzeba instalować, dzięki czemu cały system będzie szybki w użyciu. Środowisko kompilacji wymaga systemu operacyjnego Windows. Środowisko to znajduje się w załączniku 3. razem z programem.
 
 
 \section{Tworzenie szablonów raportów do systemu rekrutacji}
@@ -49,7 +49,7 @@ będzie można pobrać te zmienne za pomocą wywołania komendy o nazwie 1 param
 
 \subsection{Wstawianie wartości}
 
-Zapewnienie wygodnego użytkowania szablonu wymaga wcześniejszej deklaracji zmiennych zaraz po deklaracji komendy. Wszystkie parametry przekazane przy wywołaniu polecenia, przekazywane są pod postacią \texttt{\#numer}, więc aby zapewnić przejrzyste i proste wykorzystanie tych parametrów, można zdefiniować z nich zmienne, wewnątrz tej komendy i odwoływać się do nich poprzez nazwy a nie cyfry:
+Zapewnienie wygodnego użytkowania szablonu wymaga wcześniejszej deklaracji zmiennych zaraz po deklaracji komendy. Wszystkie parametry przekazane przy wywołaniu polecenia, przekazywane są pod postacią \texttt{\#numer}, więc aby zapewnić przejrzyste i proste wykorzystanie tych parametrów, można zdefiniować z nich zmienne wewnątrz tej komendy i odwoływać się do nich poprzez nazwy, a nie cyfry:
 
  \begin{lstlisting}
 \providecommand{\decyzjaSingle}{}\renewcommand{\decyzjaSingle}[9]{
@@ -63,7 +63,10 @@ Zapewnienie wygodnego użytkowania szablonu wymaga wcześniejszej deklaracji zmi
 \providecommand{\dataPrzyjeciaPodania}{}\renewcommand{\dataPrzyjeciaPodania}{#8}
 \providecommand{\MenKobieta}{}\renewcommand{\MenKobieta}{#9}
 \def\panpani#1#2{\if\MenKobieta M#1\else #2\fi}
-...
+ \end{lstlisting}
+ 
+Przykładowy kawałek kodu źródłowego szablonu w którym wykorzystane zostały zmienne przekazane przez parametry komendy:
+ \begin{lstlisting}
 ...
 \begin{picture}(190,70)
 \put(0,72){\instytutStamp}
@@ -72,9 +75,10 @@ Zapewnienie wygodnego użytkowania szablonu wymaga wcześniejszej deklaracji zmi
 %\put(-10,0){\line(1,0){5}}\put(195,0){\line(1,0){5}}
 \end{picture}
 }
+...
  \end{lstlisting}
 
-Dla  każdego wywołania komendy o nazwie \texttt{decyzjaSingle} od podanych parametrów, wyświetlona zostanie cała zawartość tego tego polecenia oraz podanych wartości w ustalonych miejscach. Poniższe dane są wygenerowane losowo dla zaprezentowania przykładu:
+Dla  każdego wywołania komendy o nazwie \texttt{decyzjaSingle} od podanych parametrów, wyświetlona zostanie cała zawartość tego tego polecenia oraz podanych wartości w ustalonych miejscach. Dla poniższych wygenerowanych losowo danych, wynik kompilacji pokazany został na rysunku \ref{fig:wstawianie}. Pełny kod szablonu znajduje się w załączniku 3 w pliku \texttt{template/decycja.tex}.
  \begin{lstlisting}
 \decyzja{38}{328/2015}{ Ablewicz Monika}{ gen.Stefana Grota-Roweckiego 8}
 {Nowy Sacz 33-300}{39 INF-n 1}{2}{14.08.2015}{K}
@@ -82,11 +86,11 @@ Dla  każdego wywołania komendy o nazwie \texttt{decyzjaSingle} od podanych par
  
  
  
-\begin{figure}[h]
+\begin{figure}
     \centering
-    \label{fig:wstawianie}
-    \includegraphics[width=0.6\textwidth]{rys/szablony/wstawianie.png}
+    \includegraphics[width=0.8\textwidth]{rys/szablony/wstawianie.png}
     \caption{Przykład rozwiązania wstawiania wartości w szablonie}
+    \label{fig:wstawianie}
 \end{figure}
 
 
@@ -112,7 +116,7 @@ Do wyświetlenia jednego wiersza posłuży komenda \texttt{prodokolprzekazania}:
 \end{lstlisting}
 \vspace{3mm}
 \par
-Następnie wywoływanie tego polecenia od podanych parametrów pomiędzy rozpoczęciem i zakończeniem tabeli spowoduje, że utworzona zostanie tabela zawierająca wszystkie rekordy pobrane z bazy. Wynik kodu można zobaczyć na rysunku poniżej.
+Następnie wywoływanie tego polecenia od podanych parametrów pomiędzy rozpoczęciem i zakończeniem tabeli spowoduje, że utworzona zostanie tabela zawierająca wszystkie rekordy pobrane z bazy. Wynik kodu można zobaczyć na rysunku \ref{fig:lista}.
 \begin{lstlisting}
 \begin{center}
 \begin{tabular}{clc}
@@ -130,25 +134,38 @@ Lp.&\multicolumn{1}{c}{Tok studiów}&Liczba kopert\\
 
 \begin{figure}[h]
     \centering
-    \label{fig:lista}
-    \includegraphics[width=0.8\textwidth]{rys/szablony/lista.png}
-    \caption{Przykład rozwiązania szablonu listy}
+      \includegraphics[width=0.8\textwidth]{rys/szablony/lista.png}
+    \caption{Przykład rozwiązania problemu wyświetlania listy}
+     \label{fig:lista}
 \end{figure}
-
 
 \subsection{Grupowanie}
 
 Problem grupowania występował przy tworzeniu list kandydatów dla różnych toków nauki. Dla każdego toku automatycznie musiała powstać oddzielna lista. Dla każdej listy także nagłówki posiadały różne wartości. 
-\par Rozwiązaniem tego problemu okazało się wykorzystanie komendy tworzącej środowisko \texttt{provideenvironment}, dzięki któremu można utworzyć rozpoczęcie i zakończenie danej grupy. Daje to możliwość tworzenia nagłówków oraz zakończeń dla każdej listy poprzez wywoływanie środowisk od odpowiednich parametrów. Każde środowisko należy zakończyć poprzez wywołanie komendy o nazwie środowiska z prefiksem end.
+\par Rozwiązaniem tego problemu okazało się wykorzystanie przygotowanej na początku komendy \texttt{provideenvironment} tworzącej środowisko, dzięki któremu można utworzyć rozpoczęcie i zakończenie danej grupy. 
+\begin{lstlisting}
+\makeatletter
+\def\provideenvironment{\@star@or@long\provide@environment}
+\def\provide@environment#1{%
+        \@ifundefined{#1}%
+                {\def\reserved@a{\newenvironment{#1}}}%
+                {\def\reserved@a{\renewenvironment{dummy@environ}}}%
+        \reserved@a
+}
+\def\dummy@environ{}
+\makeatother
+\end{lstlisting}
+Daje to możliwość tworzenia nagłówków oraz zakończeń dla każdej listy poprzez wywoływanie środowisk od odpowiednich parametrów. Każde środowisko należy zakończyć poprzez wywołanie komendy o nazwie środowiska z prefiksem end.
+\vspace{5mm}
 \par
-Poniżej przedstawiony został przykład wykorzystania pojedynczego grupowania po trzech polach, która została wykorzystana w szablonach przy rekrutacji:
+Poniżej przedstawiony został przykład wykorzystania pojedynczego grupowania po trzech polach, która został wykorzystany w szablonach przy rekrutacji:
 
 \begin{lstlisting}
 \providecommand{\listaprzyjetych}{}\renewcommand{\listaprzyjetych}[1]{\stepcounter{lp}\thelp&#1\\}
 
 \provideenvironment{listaprzyjetychA}{}{}
 \renewenvironment{listaprzyjetychA}[3]{
-\setcounter{lp}{0}\newpage 
+\setcounter{lp}{0} 
 {\small \begin{tabular}[t]{ll}
 Studia:&#1\\
 Kierunek studiów:&#2\\
@@ -175,13 +192,43 @@ Dzięki takiej konstrukcji możliwe będzie automatyczne tworzenie różnych lis
 \listaprzyjetych{ Ablewicz Monika}
 \listaprzyjetych{ Abram Halina}
 \listaprzyjetych{ Adamczyk Józef}
-...
 \endlistaprzyjetychA
 \listaprzyjetychA{pierwszego stopnia}{Informatyka}{stacjonarne}
 \listaprzyjetych{ Adamczyk Katarzyna}
 \listaprzyjetych{ Adamczyk Mieczysław}
 \listaprzyjetych{ Adamczyk Stanisław}
-...
 \endlistaprzyjetychA
+\end{lstlisting}
+
+Tak przygotowane dane powinny utworzyć dokładnie taką ilość list, ile jest wywołań grup. Każda lista powinna posiadać nagłówki z wartościami przekazanymi w parametrach grupy. W tym przypadku będą to dwie listy dla studiów stacjonarnych oraz niestacjonarnych. Zobaczyć to można na rysunku \ref{fig:grupowanie}.
+\begin{figure}[h]
+    \centering
+      \includegraphics[width=0.8\textwidth]{rys/szablony/grupowanie.png}
+    \caption{Przykład rozwiązania problemu grupowania}
+     \label{fig:grupowanie}
+\end{figure}
+\subsection{Nadmierna liczba parametrów}
+
+Środowisko LaTeX posiada ograniczenie, którym jest liczba parametrów komendy, wynosząca dziewięć. Istnienie tego ograniczenia powoduję, iż stworzenie komendy przyjmującej więcej jak 9 wartości staje się problemem. Nietypowym rozwiązaniem tego problemu może być użycie grupowania, które przejmie nadmiar parametrów do wywołań grup w których znajdą się już wywołania komend zwierających nie przepełnioną ilość parametrów. 
+\vspace{5mm}
+\par
+Problem ten wystąpił w szablonie dla decyzji przyjęcia kandydata. Ilość pojedynczych informacji o kandydacie wynosi 12, które należy wstawić w różne miejsca. Liczba ta przekracza limit parametrów komendy w LaTeX'ie. Do rozwiązania problemu wykorzystana została grupa pomocnicza przejmująca 3 pierwsze parametry jakimi są wartości: studia, kierunek oraz forma studiów. Stworzona grupa pomocnicza przy każdym jej wywołaniu ustawiała te wartości pod zmienne, które były identyczne dla wszystkich kandydatów w grupie i następnie zmienne te zostały już użyte w celu wstawiania wartości dla każdego kandydata zawartego w tej grupie. Poniżej znajduje się zapis tworzenia pomocniczej grupy.
+\begin{lstlisting}
+\provideenvironment{decyzjaA}{}{}
+\renewenvironment{decyzjaA}[3]
+{
+\providecommand{\studia}{}\renewcommand{\studia}{#1}
+\providecommand{\kierunekStudiow}{}\renewcommand{\kierunekStudiow}{#2}
+\providecommand{\formaStudiow}{}\renewcommand{\formaStudiow}{#3}
+}
+{} 
+\end{lstlisting}
+
+Przykład wykorzystania powyższego zapisu znajduje się poniżej (Dane są losowo wygenerowane) :
+\begin{lstlisting}
+\decyzjaA{pierwszego stopnia}{Informatyka}{niestacjonarne}
+\decyzja{38}{328/2015}{ Ablewicz Monika}{ gen.Stefana Grota-Roweckiego 8}
+{Nowy Sacz 33-300}{39 INF-n 1}{2}{14.08.2015}{K}
 ...
+\enddecyzjaA
 \end{lstlisting}
