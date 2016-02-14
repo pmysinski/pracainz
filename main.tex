@@ -10,15 +10,14 @@
 %\documentclass[a4paper,polish,onecolumn,oneside,floatssmall,11pt,titleauthor,wide,openright]{mwrep}
 %\usepackage[scale={0.7,0.8},paper=a4paper,twoside]{geometry}
 \documentclass[a4paper,onecolumn,twoside,12pt,wide,floatssmall]{mwrep}
-% \usepackage{polish}
+ \usepackage{polski}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{amsthm}
-\usepackage{bookman}
+%\usepackage{bookman}
 \usepackage{geometry}
-\usepackage[utf8x]{inputenc}
-\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
 % \usepackage{t1enc}
 % \usepackage[pdftex, bookmarks]{hyperref}
 \usepackage[pdftex, bookmarks=false]{hyperref}
@@ -52,10 +51,10 @@
 \hbadness1450
 
 \usepackage[pdftex]{color,graphicx}
-\usepackage[polish]{babel}
-\usepackage[T1]{fontenc}
-\usepackage{mathptmx}
-\usepackage{dirtree}
+%\usepackage[polish]{babel}
+%\usepackage[T1]{fontenc}
+%\usepackage{mathptmx}
+%\usepackage{dirtree}
 \usepackage{graphicx}
 % \textheight232mm
 % \setlength{\textwidth}{\textwidth}
@@ -64,33 +63,9 @@
 \usepackage[sort, compress]{cite}
 
 \definecolor{ListingBackground}{rgb}{0.95,0.95,0.95}
+\lstset{inputencoding=utf8,     basicstyle=\scriptsize\ttfamily,extendedchars=true,literate={ą}{{\k{a}}}1 {ć}{{\'c}}1 {ę}{{\k{e}}}1 {ł}{{\l{}}}1 {ń}{{\'n}}1 {ó}{{\'o}}1 {ś}{{\'s}}1 {ż}{{\.z}}1 {ź}{{\'z}}1 {Ą}{{\k{A}}}1 {Ć}{{\'C}}1 {Ę}{{\k{E}}}1 {Ł}{{\L{}}}1 {Ń}{{\'N}}1 {Ó}{{\'O}}1 {Ś}{{\'S}}1 {Ż}{{\.Z}}1 {Ź}{{\'Z}}1}
 
-\lstset{
-    inputencoding=utf8x, 
-    basicstyle=\scriptsize\ttfamily,
-    extendedchars=\true,
-    literate={ą}{{\k{a}}}1
-             {Ą}{{\k{A}}}1
-             {ę}{{\k{e}}}1
-             {Ę}{{\k{E}}}1
-             {ó}{{\'o}}1
-             {Ó}{{\'O}}1
-             {ś}{{\'s}}1
-             {Ś}{{\'S}}1
-             {ł}{{\l{}}}1
-             {Ł}{{\L{}}}1
-             {ż}{{\.z}}1
-             {Ż}{{\.Z}}1
-             {ź}{{\'z}}1
-             {Ź}{{\'Z}}1
-             {ć}{{\'c}}1
-             {Ć}{{\'C}}1
-             {ń}{{\'n}}1
-             {Ń}{{\'N}}1,
-              numbersep=5pt,    
-            % frameround=ffff,
-           %   frame=single,
-}
+
 
 \begin{document}
 
@@ -101,6 +76,7 @@
 \renewcommand{\baselinestretch}{1.0}
 \raggedbottom
 \input{tex/tytul.tex}
+
 
 \newpage
 
@@ -117,14 +93,7 @@
 \setcounter{page}{3}
 \pagestyle{plain}
 \tableofcontents
-% \addcontentsline{toc}{chapter}{{Przedmowa1}{vii}}{vii}
 
-% \chapter*{Spis tablic, rysunków i~wydruków}
-% \listoftables
-% \listoffigures
-% \lstlistoflistings
-
-%\setlength{\baselineskip}{7mm}
 
 
 \input{tex/wprowadzenie.tex}

@@ -69,9 +69,10 @@ Gdzie wynikiem takiego polecenia będzie właśnie:
 \end{lstlisting}
 
 Na potrzeby systemu rekrutacji, musiała zostać stworzona dodatkowa struktura, pełniąca funkcję grupowania. Wykorzystana może być także w przypadku gdy rekordy zwrócone z bazy danych zawierają więcej niż 9 pól, ze względu na to, że środowiska mogą być wywoływane maksymalnie od 9 argumentów. Poniżej przedstawiona zostanie tylko struktura z krótkim wprowadzeniem. Dokładny opis jej tworzenia znajduje się w implementacji.
-\par
+
 Strukturę grupowania odzwierciedla struktura drzewa. Wywołanie środowiska z dodaną dużą literą alfabetu łacińskiego na końcu nazwy rozpoczyna grupę, natomiast wywołanie środowiska z dodaną frazą \texttt{end} na początku nazwy, kończy daną grupę. Uwagę należy zwrócić na fakt, iż w alfabecie łacińskim jest 26 znaków, co ogranicza ilość grup do 26. Na przykładzie drzewa może wyglądać to następująco:
 
+\iffalse
 \dirtree{%
  .1 \textbackslash NazwaA.
  .2 \textbackslash NazwaB.
@@ -84,7 +85,7 @@ Strukturę grupowania odzwierciedla struktura drzewa. Wywołanie środowiska z d
  .3 \textbackslash Nazwa.
  .2 \textbackslash endNazwaB.
  .1 \textbackslash endNazwaA.
-}
+}\fi
 \vspace{5mm}
 Każde grupujące środowisko wymaga co najmniej 1 parametru, który zabierany jest z pól rekordów pobranych z bazy danych. Pole dla wszystkich rekordów w danej grupie jest takie samo dlatego jest ono właśnie przerzucane do wywołania środowiska grupy.
 Poniżej prosty przykład ukazujący dane zachowanie:
