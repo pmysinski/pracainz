@@ -1,7 +1,7 @@
 \chapter{Szablony raportów w systemie LaTeX}
 \label{ch:szablonyraportowwsystemielatex}
 
-W tym rozdziale przedstawiony zostanie proces przygotowania szablonów dokumentów potrzebnych przy rekrutacji na uczelni PWSZ Nowy Sącz. Opisane zostaną tylko problemy wynikające z tworzenia automatycznie uzupełnianych szablonów oraz ich rozwiązania. Wszystkie stworzone szablony znajdują się w załączniku 3 w katalogu \texttt{template/}.
+W tym rozdziale przedstawiony zostanie proces przygotowania szablonów dokumentów potrzebnych przy rekrutacji na uczelni PWSZ Nowy Sącz. Opisane zostaną tylko problemy wynikające z tworzenia automatycznie uzupełnianych szablonów oraz rozwiązania tych problemów. Wszystkie stworzone szablony znajdują się w załączniku 3 w katalogu \texttt{template/}.
 
 \section{Idea tworzenia szablonów}
 
@@ -112,7 +112,7 @@ Lp. Tok studiów Liczba kopert
 \par
 Stworzenie tabeli wymaga dodatkowo stworzenia nagłówka tabeli i zakończenia tabeli. Cała zawartość listy, czyli wywołania komend  od parametrów zawierających rekordy z bazy danych, powinna znaleźć się pomiędzy nagłówkiem a zakończeniem. W tym celu program \emph{DBLatexRaport} został rozwinięty o dodatkową funkcjonalność, która pozwala na dodawanie selekcji danych wewnątrz szablonu, co ułatwia stworzenie listy. 
 \par
-Do wyświetlenia jednego wiersza posłuży komenda \texttt{prodokolprzekazania}:
+Do wyświetlenia jednego wiersza posłuży komenda \texttt{protokolprzekazania}:
 \vspace{5mm}
 \begin{lstlisting}
 \newcommand{\protokolprzekazania}[2]{\stepcounter{lp}\thelp&{\tiny #1}&#2\\}

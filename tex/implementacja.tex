@@ -2,16 +2,16 @@
 
 Ten rozdział przedstawia dokładny proces implementacji programu \emph{DBLatexRaport,}  który ma na celu spełnienia wymagań oraz celów zawartych we wstępie.  Osoba po przeanalizowaniu poniższego materiału, będzie w stanie w przyszłości ulepszyć o nowe funkcję istniejący już program lub stworzyć nowy, podobny program w innym języku programowania, który będzie w stanie obsłużyć istniejące już szablony. 
 \par
- Wyjaśnione będą decyzje oraz postępowania przy pisaniu danego kodu, aby w pełni oddać idee tworzenia tego programu. Sekcję tę, można więc potraktować jako pewien samouczek, który jednak wymaga minimalnej znajomości języka programowania \emph{JAVA}. Pominięte też zostaną kwestie związane z importem podstawowych bibliotek, czy też wszelkie obsługi wyjątków, które mogą zaistnieć przy złej obsłudze programu. Cała uwaga zostanie skupiona tylko i wyłącznie na kodzie, przy poprawnym wykonaniu. W razie potrzeby dokładnej analizy cały kod programu znajduje się w załączniku 2.
+ Wyjaśnione zostaną podjęte decyzje oraz postępowania przy pisaniu danego kodu, aby w pełni oddać idee tworzenia tego programu. Sekcję tę, można więc potraktować jako pewien samouczek, który jednak wymaga minimalnej znajomości języka programowania \emph{JAVA}. Pominięte też zostaną kwestie związane z importem podstawowych bibliotek, czy też wszelkie obsługi wyjątków, które mogą zaistnieć przy złej obsłudze programu. Cała uwaga zostanie skupiona tylko i wyłącznie na kodzie, przy poprawnym wykonaniu. W razie potrzeby dokładnej analizy cały kod programu znajduje się w załączniku 2.
  \par
- Wszelki kod przedstawiony tutaj zawierający obok linie, znajduje się w programie. Numery linii odzwierciedlają dokładne położenie danego kodu w programie.
+ Wszelki kod przedstawiony w tym rozdziale zawierający z lewej stronie numery linii, znajduje się w programie. Numery te  odzwierciedlają dokładne położenie danej linii kodu w programie.
 
 \section{Algorytm działania systemu raportowania}
 
-W poprzednim rozdziale przedstawiony został proces tworzenia samych szablonów, natomiast w tej sekcji skupiona uwaga zostanie na tym jak zaprojektować system uzupełniania tych szablonów. Między innymi właśnie o tym jak umieszczać informacje w szablonie na temat selekcjonowania danych czy też jak wygenerować odpowiednią strukturę danych.
+W poprzednim rozdziale przedstawiony został proces tworzenia samych szablonów. W tej sekcji natomiast skupiona zostanie uwaga na tym jak zaprojektować system uzupełniania tych szablonów. Między innymi właśnie o tym jak umieszczać informacje w szablonie na temat selekcjonowania danych czy też jak wygenerować odpowiednią strukturę danych.
 
 \subsection{Algorytm parsowania}
-Aby szablon raportu został uzupełniony o potrzebne dane, musi on posiadać pewną informację o tym, co i w jakiej formie należy w nim zapisać.  Program musi przeszukać szablon w celu znalezienia tej informacji i przeanalizowanie jej, aby wywołać odpowiednie procedury na rzecz danego szablonu. Jako, że informacja ta przeznaczona jest tylko dla programu przeszukującego, idealnym było by, gdyby zapis tej informacji byłby ignorowany przez środowisko kompilacji raportów.  W wybranym wcześniej środowisku LaTeX znajduje się komenda \texttt{iffalse} oraz jej zamknięcie \texttt{fi} dzięki której wszystko pomiędzy zostanie zignorowane w czasie kompilacji dokumentów. Daje nam to taki zapis gdzie nasza informacja może zajmować wiele linii:
+Aby szablon raportu został uzupełniony o potrzebne dane, musi on posiadać pewną informację o tym, co i w jakiej formie należy w nim zapisać.  Program musi przeszukać szablon w celu znalezienia tej informacji i przeanalizowanie jej, aby wywołać odpowiednie procedury na rzecz danego szablonu. Jako, że informacja ta przeznaczona jest tylko dla programu przeszukującego, zapis tej informacji powinien być ignorowany przez środowisko kompilacji raportów.  W wybranym wcześniej środowisku LaTeX znajduje się komenda \texttt{iffalse} oraz jej zamknięcie \texttt{fi} dzięki której wszystko pomiędzy zostanie zignorowane w czasie kompilacji dokumentów. Zapis ten dodatkowo może zajmować wiele linii:
 \begin{lstlisting}
 \iffalse 
 ...
@@ -20,7 +20,7 @@ Aby szablon raportu został uzupełniony o potrzebne dane, musi on posiadać pew
 \end{lstlisting}
 Jeśli polecenie jest w stanie zmieścić się w jednej linii, można użyć \% aby za komentować tę linię, co przyniesie dokładnie taki sam efekt.
 \par
-Kolejnym krokiem jest ustalenie struktury informacji, która powinna zawierać instrukcje do stworzenia wywołań środowisk z danymi przesłanymi jako parametry. Instrukcjami tymi są po kolei: nazwa środowiska, grupowanie pól oraz selekcja danych. Utworzony został więc na potrzeby tego programu standardowy zapis w różnych wariantach z wykorzystaniem znaków \texttt{@} jako separatorów oraz informacji o zakończeniu instrukcji \texttt{@END@}:\vspace{5mm}
+Kolejnym krokiem jest ustalenie struktury informacji, która powinna zawierać instrukcje do stworzenia wywołań środowisk z danymi przesłanymi jako parametry. Instrukcjami tymi są po kolei: nazwa środowiska, grupowanie pól oraz selekcja danych. Utworzony został  na potrzeby tego programu standardowy zapis w różnych wariantach z wykorzystaniem znaków \texttt{@} jako separatorów oraz informacji o zakończeniu instrukcji \texttt{@END@}:\vspace{5mm}
 \begin{enumerate}
 \item Pusty - Polecenie do bazy danych, które nie zwraca żadnych danych.
 \begin{lstlisting}
@@ -46,11 +46,11 @@ Kolejnym krokiem jest ustalenie struktury informacji, która powinna zawierać i
 
 \subsection{Selekcjonowanie danych}
 
-Wybieranie danych z bazy odbywać się będzie na poziomie połączenia z wybranym silnikiem bazodanowym. Oznacza to ze zapytania o dane muszą zostać napisane tak, by interpreter poleceń SQL danego silnika był w stanie je przetworzyć i wykonać, zwracając przy tym potrzebne dane. Oznacza to, że zapytanie zapisane w danej instrukcji wywoływane jest bez żadnych zmian na bazie danych z którą połączona jest aplikacja.
+Wybieranie danych z bazy odbywać się będzie na poziomie połączenia z wybranym silnikiem bazodanowym. Oznacza to, że zapytania o dane muszą zostać napisane tak, by interpreter poleceń SQL danego silnika był w stanie je przetworzyć i wykonać tak by uzyskać potrzebne dane. Oznacza to, że zapytanie zapisane w danej instrukcji wywoływane jest bez żadnych zmian na bazie danych z którą połączona jest aplikacja.
 
 \subsection{Struktura uzupełnianych danych}
 
-Środowiska utworzone w szablonach są w stanie same, za pomocą argumentów, uzupełnić dane miejsca, o daną wartość. Zadaniem programu jest utworzyć z wyselekcjonowanych danych, wywołania tego środowiska jednorazowo dla każdego rekordu pobranego z bazy danych. Wywołanie środowiska odbywa się poprzez polecenie:
+Środowiska utworzone w szablonach są w stanie same, za pomocą argumentów, uzupełnić dane miejsca, o daną wartość. Zadaniem programu jest utworzyć z wyselekcjonowanych danych, wywołanie tego środowiska dla każdego rekordu pobranego z bazy danych. Wywołanie środowiska odbywa się poprzez polecenie:
 \begin{lstlisting}
 \nazwasrodowiska{parametr1}{parametr2}{parametr3} ...
 \end{lstlisting}
@@ -61,7 +61,7 @@ Taka struktura może być wynikiem prostego wariantu polecenia:
 SELECT klucz,wartosc FROM setup_aligeza
 @END@\fi
 \end{lstlisting}
-Gdzie wynikiem takiego polecenia będzie właśnie:
+Gdzie wynikiem takiego polecenia będzie:
 \begin{lstlisting}
 \parametrRekrutacyjny{rokAkademicki}{2014/2015}
 \parametrRekrutacyjny{czyUwzglednicDateWydaniaDecyzji}{N}
@@ -145,7 +145,7 @@ Aplikacja, oprócz swojej głównej klasy zawierającej metodę \texttt{main()},
 \item klasa LatexCompiler -  moduł obsługi wywoływania kompilatora szablonów.
 \end{itemize}
 \vspace{5mm}
-Podczas tworzenia programu może okazać się, że przydadzą się jeszcze dodatkowe klasy pomocnicze, przechowujące pewne dane w spójnej strukturze. Zastosowanie takich klas, znacznie ułatwi i przyspieszy pracę z danymi.Klasy te dokładnie opisane zostaną w jednej z następnych podsekcji:
+Podczas tworzenia programu może okazać się, że przydadzą się jeszcze dodatkowe klasy pomocnicze, przechowujące pewne dane w spójnej strukturze. Zastosowanie takich klas, znacznie ułatwi i przyspieszy pracę z danymi. Klasy te dokładnie opisane zostaną w jednej z następnych podsekcji:
 \begin{itemize}
 \item klasa ParsedSQLInfo - do przechowywania informacji o selekcji danych
 \item klasa RecordSet - do przechowywania pobranych danych z bazy.
@@ -153,7 +153,7 @@ Podczas tworzenia programu może okazać się, że przydadzą się jeszcze dodat
 
 \section{Zarządzanie konfiguracją - klasa Config}
 
-Większość programów przed uruchomieniem wymaga konfiguracji. Konfiguracje można przeprowadzić na wiele sposobów jednak najodpowiedniejszym sposobem do tej aplikacji będzie plik konfiguracyjny, wczytywany przed uruchomieniem programu. Taki plik powinien posiadać informacje, z których skorzysta program, przypisane do zmiennych nazwanych w stały sposób.  Dobrym zwyczajem jest, aby plik konfiguracyjny posiadał też możliwość pisania komentarzy. Dzięki komentarzom, łatwiej jest skonfigurować dany program.
+Większość programów przed uruchomieniem wymaga konfiguracji. Konfiguracje można przeprowadzić na wiele sposobów jednak najodpowiedniejszym sposobem do tej aplikacji będzie plik konfiguracyjny, wczytywany przed uruchomieniem programu. Taki plik powinien posiadać informacje przypisane do zmiennych o stałych nazwach. Dobrym zwyczajem jest, aby plik konfiguracyjny posiadał też możliwość pisania komentarzy. Dzięki komentarzom, łatwiej jest skonfigurować dany program.
 \par
 Autorskim pomysłem jest dodatkowa funkcja pliku konfiguracyjnego, jaką jest aby plik ten był jednocześnie plikiem wsadowym. Polecenia powłoki systemu rozpoczynają plik, i kończą się na poleceniu \texttt{EXIT}. Następnie od lini \emph{\#dbLatexRaportConfig} rozpoczyna się zapis zmiennych konfiguracyjnych.
 \par
@@ -219,7 +219,7 @@ for(int i=0;i < count; i++){
 }
 \end{lstlisting}
 
-Pozostaje zaimplementowanie metody zawracającej wartość zapamiętanej zmiennej. Do tego posłuży metoda o nazwie \texttt{getString} i parametrze \texttt{String name}. Parametr jest kluczem do wartości zmiennej, która zostanie zwrócona.  Aby znaleźć tą wartość należy przejrzeć tablicę nazw zmiennych i porównać każdą wartość z nazwą szukanej zmiennej. Jeśli znajdziemy odpowiednik oznaczać to będzie, że pod tym samym indeksem w tablicy wartości znajduje się szukana zmienna, którą zwróci metoda. W przypadku braku zmiennej metoda zwróci pustą wartość i wyświetli informacje o jej braku.
+Pozostaje zaimplementowanie metody zawracającej wartość zapamiętanej zmiennej. Do tego posłuży metoda o nazwie \texttt{getString} i parametrze \texttt{String name}. Parametr jest kluczem do wartości zmiennej, która zostanie zwrócona.  Aby znaleźć tą wartość należy przejrzeć tablicę nazw zmiennych i porównać każdą wartość z nazwą szukanej zmiennej. Jeśli znaleziony zostanie odpowiednik klucza, oznaczać to będzie, że pod tym samym indeksem w tablicy wartości znajduje się szukana zmienna, którą zwróci metoda. W przypadku braku zmiennej metoda zwróci pustą wartość i wyświetli informacje o jej braku.
 
 \begin{lstlisting}[numbers=left,firstnumber=169]
 public  String getString(String name){
@@ -257,7 +257,7 @@ Odpowiednio:
     \item \texttt{data} - wygenerowane dane dla tego zapytania.
     \end{itemize}
 
-Do klasy został stworzony konstruktor sparametryzowany, który przyda się przy tworzeniu obiektu:
+Do klasy został stworzony konstruktor sparametryzowany, który okaże się przydatny przy tworzeniu obiektu:
    
 \begin{lstlisting}[numbers=left,firstnumber=21]
 public ParsedSQLInfo(String query, String name,String group, int index) {
@@ -316,7 +316,7 @@ int get_cols(){return(m);}
 
 \section{Obsługa połączenia z bazą danych - klasa DBHandle}
 
-Stworzenie klasy obsługującej połączenie z bazą danych oraz wywołania poleceń na tej bazie. wymagało będzie zaimportowania dodatkowych bibliotek. W języku \emph{Java} znajduje się moduł \emph{ JDBC(TM) Database Access}, który zostanie wykorzystany w implementacji tej klasy. Dokładna dokumentacja tego modułu znajduje się na stronie \emph{http://www.cs.mun.ca/~michael/java/jdk1.1.5-docs/guide/jdbc/index.html}. Poniżej przedstawiona zostanie jedynie idea zastosowanie tego rozwiązania oraz implementacja wykorzystująca ten moduł.
+Stworzenie klasy obsługującej połączenie z bazą danych oraz wywołania poleceń na tej bazie, wymagało będzie zaimportowania dodatkowych bibliotek. W języku \emph{Java} znajduje się moduł \emph{ JDBC(TM) Database Access}, który zostanie wykorzystany w implementacji tej klasy. Dokładna dokumentacja tego modułu znajduje się na stronie \emph{http://www.cs.mun.ca/~michael/java/jdk1.1.5-docs/guide/jdbc/index.html}. Poniżej przedstawiona zostanie jedynie idea zastosowanie tego rozwiązania oraz implementacja wykorzystująca ten moduł.
 \subsection{Wykorzystanie JDBC(TM) Database Access}
 
 Dzięki wykorzystaniu \emph{ JDBC(TM) Database Access} \cite{Dokumentacja_Jaybird} obsługa połączeń z wieloma rodzajami baz danych staje się prosta. Idea tego rozwiązania jest taka aby dla każdego rodzaju bazy danych interfejs połączenia był dokładnie taki sam. Interfejs ten dostępny jest przez klasę \texttt{java.sql.DriverManager}, pozwalającą załadować odpowiednią bibliotekę dla wybranego silnika bazodanowego, zwracając obiekt z takim samym interfejsem dla każdej możliwej bazy danych. 
@@ -482,7 +482,7 @@ Konstruktor klasy będzie miał ze zadanie zainicjowanie obiektu. Powinien przyj
     \end{lstlisting}
     
     
-    Kolejnym krokiem będzie sprawdzenie i sporządzanie listy plików zawierających szablony znajdujących się pod ścieżką \texttt{path}. Listę tą zapiszemy pod tymczasową tablicą  \texttt{files}.
+    Kolejnym krokiem będzie sprawdzenie i sporządzanie listy plików ze szablonami, znajdujących się pod ścieżką \texttt{path}. Listę tę zapiszemy pod tymczasową tablicą  \texttt{files}.
  \begin{lstlisting}[numbers=left,firstnumber=74]
  File folder = new File(path);
  File[] listOfFilestmp = folder.listFiles(); 
@@ -517,16 +517,16 @@ Na koniec konstruktora pod składową \texttt{listOfFiles} przypisywana jest tab
  }
 \end{lstlisting}
   
-  W ten sposób dostajemy zainicjalizowany obiekt, w którym należy wywołać metody załadowujące szablony do pamięci.
+  W ten sposób otrzymywany jest zainicjalizowany obiekt, w którym należy wywołać metody ładujące szablony do pamięci z dysku.
   
   
 \subsection{Metody zarządzające operacjami na plikach}
 
-Do zaimplementowania potrzeba metody odczytującej oraz metody zapisującej szablon. Dodatkowo przydatnym byłoby napisanie metod wywołujących te metody dla wszystkich szablonów. Informacje o istniejących szablonach znajdują się w tablicy \texttt{listOfFiles}. \\
+Do zapisu i odczytu potrzeba zaimplementować metody odczytujące oraz metody zapisujące szablon. Dodatkowo potrzebnym jest napisanie metod wywołujących te metody dla wszystkich szablonów. Informacje o istniejących szablonach znajdują się w tablicy \texttt{listOfFiles}. \\
 \par
 \subsubsection*{Ładowanie szablonu}
-Potrzebne więc będzie odczytać pojedynczy szablon o indeksie k i zapisać go w pamięci pod składową \texttt{data} z tym samym indeksem. 
-Dodatkowo po załadowaniu szablonu wywołamy metodę  \texttt{isCompilable(k)}, która sprawdzi czy jest możliwość kompilacji danego szablonu. Jest to jedna z dodatkowych funkcji programu. Metoda ta opisana została w podsekcji metod parsujących. 
+Potrzeba odczytać pojedynczy szablon o indeksie k i zapisać go w pamięci pod składową \texttt{data} z tym samym indeksem. 
+Dodatkowo po załadowaniu szablonu wywołana zostanie metodę  \texttt{isCompilable(k)}, która sprawdzi czy jest możliwość kompilacji danego szablonu. Jest to jedna z dodatkowych funkcji programu. Metoda ta opisana została w podsekcji metod parsujących. 
  \begin{lstlisting}[numbers=left,firstnumber=121]
 public void loadTemplate(int k){
        
@@ -550,7 +550,7 @@ try {
 
 \subsubsection*{Zapisywanie uzupełnionego szablonu}
 
-Szablon zapisany pod indeksem \texttt{k} powinien zostać zapisany w miejscu zapisanym w składowej \texttt{pathoutput} pod nazwą taką samą jak nazwa szablonu czyli \texttt{listOfFiles[k].getName()}. Dodatkowym parametrem klasy \texttt{PrintWriter} przy otwarciu pliku do zapisu jest kodowanie, które trzymane jest w składowej \texttt{encoding}. Po otwarciu pliku potrzeba zapisać zawartość składowej \texttt{data} o indeksie \texttt{k} do pliku.
+Szablon zapisany pod indeksem \texttt{k} powinien zostać zapisany w miejscu przechowywanym w składowej \texttt{pathoutput} pod taką samą nazwą jak nazwa szablonu czyli \texttt{listOfFiles[k].getName()}. Dodatkowym parametrem klasy \texttt{PrintWriter} przy otwarciu pliku do zapisu jest kodowanie, które trzymane jest w składowej \texttt{encoding}. Po otwarciu pliku potrzeba zapisać zawartość składowej \texttt{data} o indeksie \texttt{k} do pliku.
 
  \begin{lstlisting}[numbers=left,firstnumber=171]
 public void saveTemplate(int k){
@@ -593,12 +593,12 @@ public void saveAllTemplates(){
 
 \subsection{Metody parsujące zawartość szablonów}
 
-Parsowanie czyli inaczej analiza zawartości jest podstawową funkcją tego systemu. W szablonach zgodnie z wcześniej ustalonym algorytmem, znajdować się będą informacje o selekcji danych, które należy znaleźć oraz zapisać w odpowiedniej strukturze. Dodatkowo zaimplementowana zostanie także funkcja, sprawdzająca czy dany szablon może zostać skompilowany samodzielnie. 
+Parsowanie, czyli inaczej analiza zawartości jest podstawową funkcją tego systemu. W szablonach zgodnie z wcześniej ustalonym algorytmem, znajdować się będą informacje o selekcji danych, które należy znaleźć oraz zapisać w odpowiedniej strukturze. Dodatkowo zaimplementowana zostanie także funkcja, sprawdzająca czy dany szablon może zostać skompilowany samodzielnie. 
 
 \subsubsection*{Metoda wyszukująca informacje o selekcji we wszystkich szablonach za pomocą wzorca}
 
-Celem metody jest przeszukanie wszystkich szablonów, używając do tego dostarczonego wzorca, pod kątem znalezienia informacji o selekcji. Następnie informacje te powinny zostać zapisane do przygotowanej składowej klasy, która może przyjąć te dane. 
-Metoda przyjmować będzie za parametr wzorzec wyrażeń regularnych w celu możliwości łatwej zmiany w przyszłości w pliku konfiguracyjnym. 
+Celem metody jest przeszukanie wszystkich szablonów, używając do tego dostarczonego wzorca, pod kątem znalezienia informacji o selekcji. Następnie informacje te powinny zostać zapisane do przygotowanej składowej klasy, która może przechować te dane. 
+Metoda przyjmować będzie za parametr wzorzec wyrażeń regularnych, w celu posiadania możliwości łatwej zmiany wzorca w przyszłości. Taką zmianę będzie można dokonać tylko w pliku konfiguracyjnym. 
 Najważniejszym elementem tej metody jest właśnie zapisany w niej wzorzec (linia 218), za pomocą którego można znaleźć selekcje danych. Podzielony on został grupy, dzięki czemu będzie można oddzielić od siebie informacje i zapisać je w przygotowanej strukturze. Na rysunku \ref{fig:Wzorzec} przedstawiony został wzorzec. Jeżeli nie podany zostanie żaden wzorzec, użyty zostanie standardowy. 
 \begin{figure}[h]
     \centering
@@ -642,7 +642,7 @@ public void parseSqlStatements(String pat)
    
 \subsubsection*{Metoda sprawdzająca zdolność szablonu do kompilacji}
 
-W czasie tworzenia projektu wynikła potrzeba wprowadzenia dodatkowej funkcji, która jest dodatkową funkcjonalnością wykorzystywaną w klasie odpowiadającej za kompilacje szablonów. Poniższa metoda sprawdza każdy szablon czy jest możliwe skompilowanie go, poprzez sprawdzenie czy wewnątrz szablonu znajduje się początek i koniec środowiska \texttt{document}. Informacje te zapisywane są odpowiednie dla k-tego szablonu w składowej klasy, która jest tablicą. Dla kompilowanych szablonów zapisywana jest odpowiednio jedynka, natomiast dla braku możliwości kompilacji jest to zero. Wywoływana jest ona w metodzie ładowania szablonu(138 linia).
+W czasie tworzenia projektu wynikła potrzeba wprowadzenia dodatkowej funkcji, która wykorzystywana jest w klasie odpowiadającej za kompilacje szablonów. Poniższa metoda sprawdza każdy szablon czy jest możliwe skompilowanie go, poprzez weryfikację czy wewnątrz szablonu znajduje się początek i koniec środowiska \texttt{document}. Informacje te zapisywane są odpowiednie dla k-tego szablonu w składowej klasy, która jest tablicą. Dla kompilowalnych szablonów zapisywana jest odpowiednio jedynka, natomiast dla braku możliwości kompilacji jest to zero. Wywoływana jest ona w metodzie ładowania szablonu(138 linia).
 
  \begin{lstlisting}[numbers=left,firstnumber=155]
  private void isCompilable(int k) {
@@ -673,13 +673,13 @@ Do metody przekazywane są następujące parametry:
 \item \texttt{RecordSet rs} - Dane pobrane z bazy danych
 \end{itemize}
 \vspace{5mm}
-Jeśli parametr \texttt{env} wygenerowana zostanie nazwa środowiska za pomocą nazwy pliku oraz dodany do tego postfiks, który będzie dużą literą alfabetu łacińskiego w zależności od numeru selekcji. 
+Jeśli parametr \texttt{env} jest pusty wygenerowana zostanie nazwa środowiska za pomocą nazwy pliku oraz dodany do tego postfiks, który będzie dużą literą alfabetu łacińskiego w zależności od numeru selekcji. 
 \par
 Jeśli parametr \texttt{grouping} jest pusty to znaczy ze wykorzystane zostanie proste przetwarzanie poprzez wywołanie metody \texttt{prepareValuesSimple(k,c, prefix, rs);}.
 \par
  W przeciwnym wypadku przygotowana zostanie tablica \texttt{int group}, 
- która zawierająca informację o ilości i wielkości wszystkich grup. Tablica ta zostanie przekazana przy wywołaniu metody
- przetwarzającą grupowanie danych \texttt{prepareValuesGrouping(group, 0,0,rs.get\_rows(),  rs, prefix)}. Metoda ta potrzebuje pewnych inicjacji w postaci parametrów 0, dlatego że jest to metoda rekurencyjna. Dokładny opis znajduje się w późniejszej sekcji.
+ która zawierająca informację o ilości i wielkości wszystkich grup. Tablica ta zostanie przekazana przy wywołaniu metody, która
+ przetwarza grupowanie danych \texttt{prepareValuesGrouping(group, 0,0,rs.get\_rows(),  rs, prefix)}. Metoda ta potrzebuje pewnych inicjacji w postaci parametrów 0, dlatego że jest to metoda rekurencyjna. Dokładny opis znajduje się w późniejszej sekcji.
  
  \begin{lstlisting}[numbers=left,firstnumber=246]
 public int prepareValues(int k,int c,String env,String grouping,RecordSet rs){
@@ -763,11 +763,11 @@ Metoda przyjmuje parametry:
 \item \texttt{String prefix} - Nazwa środowiska
 \end{itemize}
 \vspace{5mm}
-Dla aktualnej grupy i zakresu działania metoda uruchamia proste przetwarzanie danych lub w razie istnienia niższych grup, wykonuje kolejny podział na kolejną grupę poprzez analizę zawartości pól po których jest ta grupa. Dla każdej unikatowej kombinacji tworzone jest wywołanie grupy z tymi wartościami, a następnie metoda wywołuje samą siebie od zakresu w którym występują dane unikatowe wartości. Wywołanie w ten sposób tej metody zwróci zawartość tej grupy która zostanie umiejscowiona pomiędzy wywołaniem grupy oraz wywołaniem zamknięcia grupy.
+Dla aktualnej grupy i zakresu działania metoda uruchamia proste przetwarzanie danych lub w razie istnienia niższych grup, wykonuje kolejny podział na kolejną grupę poprzez analizę zawartości pól po których jest ta grupa. Dla każdej unikatowej kombinacji tworzone jest wywołanie grupy z tymi wartościami, a następnie metoda wywołuje samą siebie od zakresu w którym występują dane o unikatowych wartościach. Wywołanie w ten sposób tej metody zwróci zawartość tej grupy, która zostanie umiejscowiona pomiędzy wywołaniem grupy (startu) oraz wywołaniem zamknięcia grupy (końca).
 \par 
-Do nazwy grupy zgodnie z algorytmem dodawane są litery alfabetu łacińskiego w zależności od numeru grupy.
+Do nazwy grupy zgodnie z algorytmem dodawane są litery alfabetu łacińskiego w zależności od numeru poziomu grupy.
 \par
-Jeśli skończą się grupy do tworzenia, wywoływana jest metoda \texttt{prepareInjectValues(prefix, rs,s,e,sc)} która zwróci dla danego zakresu rekordów i wyciętych odpowiednich pól, proste wywołania środowiska o przekazanej nazwie. Wywołanie tej metody, zwróci przetworzone odpowiednio wartości, które przekazane zostaną dalej do grupy z której została wywołana metoda grupująca.
+Jeśli skończą się niższe grupy do utworzenia w czasie działania metody na danym zakresie danych, wywoływana jest metoda \texttt{prepareInjectValues(prefix, rs,s,e,sc)} która zwróci dla danego zakresu rekordów i wyciętych odpowiednich pól, proste wywołania środowiska o przekazanej nazwie. Wywołanie tej metody, zwróci przetworzone odpowiednio wartości, które przekazane zostaną dalej do grupy z której została wywołana metoda grupująca.
 
  \begin{lstlisting}[numbers=left,firstnumber=322]
  public String prepareValuesGrouping(
@@ -950,7 +950,7 @@ public LatexCompiler(String latexcompilerpathh,String pdfoutputt){
 
 \subsubsection*{Metoda wywołująca kompilacje pliku LaTeX}
 
-Parametrem metody jest nazwa pliku, który zostanie poddany kompilacji.  Następnie aby skompilować dany plik należy uruchomić kompilator, do którego ścieżka zapisana jest w składowej \texttt{latexcompilerpath} z parametrem \texttt{--output-directory} w którym przekażemy katalog wynikowy oraz z parametrem którym jest ścieżka pliku do kompilacji. Wygenerowane polecenie zostanie wywołane w powłoce systemowej za pomocą metody \texttt{lexecuteCommand} opisanej w podsekcji niżej.
+Parametrem metody jest nazwa pliku, który zostanie poddany kompilacji.  Następnie aby skompilować dany plik należy uruchomić kompilator, do którego ścieżka zapisana jest w składowej \texttt{latexcompilerpath} z parametrem \texttt{--output-directory} w którym przekażemy katalog wynikowy oraz z parametrem którym jest ścieżka pliku do kompilacji. Wygenerowane polecenie zostanie wywołane w powłoce systemowej za pomocą metody \texttt{executeCommand} opisanej w podsekcji niżej.
 
  \begin{lstlisting}[numbers=left,firstnumber=46]
 public int compileTemplate(String filetexpath){
@@ -963,7 +963,7 @@ public int compileTemplate(String filetexpath){
 \subsubsection*{Metoda wywołująca polecenie powłoki systemu}
 
 
-Metoda ta ma na celu uruchomić nowy proces, którym będzie wywołanie komendy powłoki przesłanej przez parametr \texttt{String commmand}. \texttt{Runtime.getRuntime().exec(''cmd /c start '' + command);} Wywoła polecenie w nowym oknie i przypnie proces do zmiennej \texttt{Process p}. Następnie aby synchronicznie wywoływać polecenie jedno po drugim, program czeka na zakończenie procesu. 
+Metoda ta ma na celu uruchomić nowy proces, którym będzie wywołanie komendy powłoki przesłanej przez parametr \texttt{String commmand}. \texttt{Runtime.getRuntime().exec("cmd /c start" + command);} Wywoła polecenie w nowym oknie i przypnie proces do zmiennej \texttt{Process p}. Następnie aby synchronicznie wywoływać polecenie jedno po drugim, program czeka na zakończenie procesu. 
 
  \begin{lstlisting}[numbers=left,firstnumber=56]
 private String executeCommand(String command) {
@@ -1047,7 +1047,7 @@ public static void main(String[] args) {
  temps.parseSqlStatements(pattern);
 \end{lstlisting}
 
-\item Główna pętla przechodząca przez wszystkie szablony, pobierająca wszystkie polecenia selekcji z każdego szablonu. Następnie wewnętrzna pętla dla każdego polecenia wywołuje zapytanie w bazie danych i od zwróconych wyników wywołuje funkcje generującą dane do uzupełnienia w szablonie. Na koniec zewnętrznej pętli wywołuje metodę uzupełniającą szablon o wygenerowane dane:
+\item Główna pętla przechodząca przez wszystkie szablony, pobierająca wszystkie polecenia selekcji z każdego szablonu. Następnie wewnętrzna pętla dla każdego polecenia wywołuje zapytanie w bazie danych i od zwróconych wyników wywołuje funkcje generującą dane do uzupełnienia w szablonie. Na koniec zewnętrznej pętli wywołanie metody uzupełniającej szablon o wygenerowane dane:
 
  \begin{lstlisting}[numbers=left,firstnumber=98]
  for(int i=0; i < temps.getLenght(); i++){

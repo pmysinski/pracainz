@@ -1,5 +1,5 @@
 \chapter{Instrukcja obsługi}
-DBRaportLatex jest programem napisanym w JAVA'ie służącym do tworzenia raportów w środowisku latex z informacji przechowywanych w bazie danych.Program ten został przygotowany specjalnie w celu obsługi tworzenia dokumentów potrzebnych do rekrutacji na uczelni PWSZ Nowy Sącz.
+DBRaportLatex jest programem napisanym w JAVA'ie służącym do tworzenia raportów w środowisku latex z informacji przechowywanych w bazie danych. Program ten został przygotowany specjalnie w celu obsługi tworzenia dokumentów potrzebnych do rekrutacji na uczelni PWSZ Nowy Sącz.
 Program oparty jest głównie o wcześniej przygotowane szablony w środowisku latex, które w czasie tworzenia raportów są uzupełniane informacjami pobranymi przez program z bazy danych.
 Środowisko kompilacji szablonów zostało także przygotowane razem z programem. Kompilacja szablonów jest uruchamiana zaraz po uzupełnieniu szablonów i wynikiem jej jest plik pdf gotowy do wydruku.
 \section{Wymagania systemowe}
@@ -90,7 +90,7 @@ W miejscu \texttt{Grupowanie} należy wpisać liczby oddzielone przecinkami, gdz
 \par 
 Grupowanie działa według zasad:
 \begin{itemize}
-\item Z pobranych rekordów z bazy danych od lewej strony zabierane sa te pola, które sa grupowane i stwarzane są z nich grupy ze wszystkich ich możliwych kombinacji ich wartości. 
+\item Z pobranych rekordów z bazy danych od lewej strony zabierane sa te pola, które sa grupowane i wytwarzane są z nich grupy ze wszystkich ich możliwych kombinacji ich wartości. 
 \item Ostatecznie wywołania środowisk będą miały tylko te wartości pól które nie były grupowane.
 \item Każda grupa będzie otwarta i zamknięta poprzez dodanie do nazwy środowiska end na początku.
 \item Grupy nie przeplatają się.
@@ -147,7 +147,7 @@ Lp.&\multicolumn{1}{c}{Nagłówek 2 kolumny}&Nagłówek 3 kolumny\\
 \hline
 \end{lstlisting}
 
-Następnie w tym miejscu należy umieścić polecenie uzupełniające dane. Jak napisać takie polecenie opisane jest w następnej sekcji. Teraz użyte zostanie proste polecenie pobierające 2 pola z bazy danych, zapisujące pod nazwą wywołania komendy lista:
+Następnie w tym miejscu należy umieścić polecenie uzupełniające dane. Jak napisać takie polecenie opisane jest w poprzedniej sekcji. Teraz użyte zostanie proste polecenie pobierające 2 pola z bazy danych, zapisujące pod nazwą wywołania komendy lista:
 \begin{lstlisting}
 \iffalse @@lista@@
 SELECT pole1, pole2

@@ -1,5 +1,5 @@
 \chapter{Uruchomienie oraz testowanie systemu}
-Przed wdrożeniem programu do realnego systemu, program należy przetestować. Testy powinny być prowadzone na tymczasowej bazie danych, ponieważ idea testów jest taka, że po podmianie bazy danych na realną wszystko ma działać bez zmian. Zmienić się może tylko zapis połączenia z bazą danych w pliku konfiguracyjnym. Dzięki takiemu zabiegowi, będzie można być pewnym tego, że wszystko będzie działać na realnej bazie danych.  Do przeprowadzenia testów potrzebne będzie odtworzyć przyszłe środowisko, w którym będzie działać program, przygotować szablony dokumentów, które są wytwarzane w procesie rekrutacji oraz wygenerować dokumenty. Ostatnim już krokiem będzie sprawdzenie czy podczas tego procesu nie ma żadnych komplikacji oraz czy wygenerowane dokumenty nie zawierają błędów.
+Przed wdrożeniem programu do realnego systemu, program należy przetestować. Testy powinny być prowadzone na bazie danych która jest odwzorowaniem istniejącej już bazy, ponieważ idea testów jest taka, że po podmianie bazy danych na realną wszystko ma działać bez zmian. Jedyną różnicą może tylko zapis połączenia w pliku konfiguracyjnym. Do przeprowadzenia testów potrzebne więc będzie odtworzenie przyszłego środowiska, w którym będzie działać program, przygotować szablony dokumentów, które są wytwarzane w procesie rekrutacji oraz wygenerować dokumenty. Ostatnim już krokiem będzie sprawdzenie czy podczas tego procesu nie ma żadnych komplikacji oraz czy wygenerowane dokumenty nie zawierają błędów.
 \section{Wstępne ustalenia}
 
 Przed rozpoczęciem jakichkolwiek działań należy przygotować podstawowe rzeczy do rozpoczęcia testów.
@@ -55,22 +55,22 @@ Proponowana struktura więc może wyglądać następująco:
  %.2 rekrutacja.fdb.
 %}
 \vspace{5mm}
-Do katalogu \emph{texlive} przegrane zostało środowisko do kompilacji plików latex. W katalogu firebird są biblioteki tylko na czas testów do wersji embedded bazy danych. W katalogu \emph{template} dograne zostaną szablony dokumentów.
+Do katalogu \emph{texlive} przegrane zostało środowisko do kompilacji plików latex. W katalogu firebird są biblioteki tylko na czas testów do wersji embedded bazy danych. W katalogu \emph{template} zapisane zostaną szablony dokumentów.
 
 
-\section{ Generowanie przykładowych danych}
+\section{Generowanie przykładowych danych}
 
-W celu przetestowania systemu generowania raportów w procesie rekrutacji kandydatów na studia potrzebne będą testowe dane w dokładnie tej samej strukturze co w systemie rekrutacji, ponieważ w szablonach latexu znajdują się zapytania SQL do danych tabel w bazie danych. 
+W celu przetestowania systemu generowania raportów w procesie rekrutacji kandydatów na studia potrzebne będą testowe dane w dokładnie tej samej strukturze, co w systemie rekrutacji, ze względu na fakt, iż w szablonach LaTeX znajdują się zapytania SQL do tabel w znajdujących się w bazie danych. 
 W celu otrzymania tych danych potrzebne będzie:
 \begin{enumerate}
 
 \item	Utworzenie nowej bazy danych na silniku Firebird’a 
-\item	Stworzenie wystarczającej struktury tabel odzwierciedlającą strukturę w systemie uczelnianym.
-\item	Wygenerowanie dużej ilości testowych danych osobowych.
+\item	Stworzenie struktury tabel odzwierciedlającą strukturę w systemie uczelnianym.
+\item	Wygenerowanie wyczerpującej potrzeby testu ilości testowych danych osobowych.
 \item	Uzupełnienie tabel danymi, które zostały wygenerowane wcześniej oraz dodanie do nich dodatkowych, jednocześnie losowych, informacji na temat procesu rekrutacji.
 \vspace{5mm}
 \end{enumerate}
-Po wykonaniu tych kroków, powinna powstać baza danych do której bez problem program połączy się i wyciągnie z niej potrzebne dane dokładnie jak z realnej bazy danych.
+Po wykonaniu tych kroków, powinna powstać baza danych do której bez problem program połączy się i uzyska z niej potrzebne dane dokładnie w ten sam sposób jak z realnej bazy danych.
 
 \subsection{ Tworzenie bazy danych }
 
@@ -91,7 +91,7 @@ password= masterkey
 \end{lstlisting}
 \subsection{ Stworzenie struktury bazy}
 
-Dotychczasowy system wykorzystywał tabelę (widok) która była generowana dynamicznie i która zawiera wszystkich studentów w rekrutacji. Zawiera ona wszystkie dane potrzebne do wytworzenia dokumentów. Jeden rekord to jeden student ze wszystkimi informacjami na jego temat. Dodatkowo jeszcze potrzebna jest tabela z informacjami na temat rekrutacji, takimi jak na przykład nazwisko i imię przewodniczącego komisji, czy data wydania decyzji przyjęcia studenta. Z tych tabel będą pobierane informacje, natomiast do wygenerowania danych potrzebne będą dwie dodatkowe tymczasowe tabele.
+Dotychczasowy system wykorzystywał tabelę (widok) która była generowana dynamicznie i która zawiera wszystkich kandydatów w rekrutacji. Zawiera ona wszystkie dane potrzebne do wytworzenia dokumentów. Jeden rekord to jeden student ze wszystkimi informacjami na jego temat. Dodatkowo jeszcze potrzebna jest tabela z informacjami na temat rekrutacji, takimi jak na przykład nazwisko i imię przewodniczącego komisji, czy data wydania decyzji przyjęcia studenta. Z tych tabel będą pobierane informacje, natomiast do wygenerowania danych potrzebne będą dwie dodatkowe tymczasowe tabele.
 Tabela główna z kandydatami(zapis SQL):
 \begin{lstlisting}
 CREATE TABLE KANDYDAT_ALIGEZA (
@@ -156,7 +156,7 @@ CREATE TABLE TOKNAUKI_ALIGEZA (
 \end{lstlisting}
 \subsection{ Generowanie testowych danych osobowych}
 
-Do wygenerowania kandydatów potrzebne jest imię, nazwisko oraz adres. Takie dane dostępne są w książkach telefonicznych. Posługując się jedną z nich stworzony został plik \emph{CSV} o separatorze „;” zawierający po kolei imię z nazwiskiem, adres, pesel, nazwisko oraz imię. Pesel został dodany do każdej osoby jako losowy ciąg cyfr spełniający walidację peselu. Ze względu na fakt iż pesel został wygenerowany losowo,  w wygenerowanych dokumentach nie będzie możliwości ustawienia płci osoby, dlatego też w bazie danych do testów 5 pierwszych kandydatów dostanie płeć żeńską, a reszta męską.\\
+Do wygenerowania kandydatów potrzebne jest imię, nazwisko oraz adres. Takie dane dostępne są w książkach telefonicznych. Posługując się jedną z nich stworzony został plik \emph{CSV} o separatorze „;” zawierający po kolei imię z nazwiskiem, adres, pesel, nazwisko oraz imię. Pesel został dodany do każdej osoby jako losowy ciąg cyfr spełniający walidację peselu. Ze względu na fakt iż pesel został wygenerowany losowo,  w wygenerowanych dokumentach nie będzie poprawnie przypisana płeć do imienia. Dlatego tylko do testów ustawione zostanie 5 pierwszych kandydatów jako płeć żeńska, a cała reszta męska.\\
 Struktura pliku:
 \begin{lstlisting}
  Abram Andrzej; Lwowska 116;88071640299;Abram;Andrzej
@@ -253,12 +253,12 @@ Powyższa procedura z jednej osoby z tabeli \texttt{dane} tworzy jednego kandyda
 
 \section{Dodanie zapytań SQL do szablonów}
 
-Stworzone szablony w poprzednim rozdziale nie zawierają zapytań, które odzwierciedlały by wyselekcjonowanie danych z istniejącej struktury bazy. Zawierają tylko sztywne dane testujące środowiska LaTeX'owe. Aby szablony podczas procesu tworzenia dokumentów zostały uzupełnione poprawnymi danymi potrzeba je uzupełnić o odpowiednia zapytania SQL w odpowiedniej formie tak aby parser zawarty w programie był wstanie je znaleźć i wykonań.
+Stworzone szablony w poprzednim rozdziale nie zawierają zapytań, które odzwierciedlały by wyselekcjonowanie danych z istniejącej struktury bazy. Zawierają tylko sztywne dane testujące środowiska LaTeX'owe. Aby szablony podczas procesu tworzenia dokumentów zostały uzupełnione poprawnymi danymi potrzeba je uzupełnić o odpowiednia zapytania SQL w odpowiedniej formie tak aby parser zawarty w programie był wstanie je znaleźć i wykonać.
 \par 
-Potrzebnych jest 9 zapytań, za pomocą których wyciągnięte zostaną dane do szablonów. Poniżej opisane zostały każde z zapytań oraz przykład jakie dane zostaną wyselekcjonowane z bazy przez to zapytanie. Ta sekcja skupia się tylko i wyłącznie na uzyskaniu potrzebnych danych do środowisk LaTeX'a, a nie jak one zostaną wykorzystane. Dokładny opis jak wygląda wykorzystanie takiego zapisu znajduje się w rozdziale \ref{ch:szablonyraportowwsystemielatex}. Dodać jeszcze należy ze poniższe zapytania znajdują się pod koniec każdego szablonu, zaraz po zdefiniowaniu środowisk. Takie umiejscowienie tych zapytań sprawi, że dane zostaną uzupełnione zaraz pod tymi zapytaniami.
+Potrzebnych jest 9 zapytań, za pomocą których wyciągnięte zostaną dane do szablonów. Poniżej opisane zostały każde z zapytań oraz dla każdego przykład danych jakie zostaną wyselekcjonowane z bazy przez to zapytanie. Ta sekcja skupia się tylko i wyłącznie na uzyskaniu potrzebnych danych do środowisk LaTeX'a, a nie na tym jak one zostaną wykorzystane. Dokładny opis jak wygląda wykorzystanie takiego zapisu znajduje się w rozdziale \ref{ch:szablonyraportowwsystemielatex}. Dodać jeszcze należy ze poniższe zapytania znajdują się pod koniec każdego szablonu, zaraz po zdefiniowaniu środowisk. Takie umiejscowienie tych zapytań sprawi, że dane zostaną uzupełnione zaraz pod tymi zapytaniami.
 \par 
 \subsubsection*{Szablon z ustawieniami - aaasetup.tex}
-Pierwsze zapytanie które zostanie omówione jest to  zapytanie o podstawowe parametry, informacje na temat rekrutacji. Znajduje się ono w pliku \emph{aaasetup.tex}. Plik posiada 3 litery a w nazwie ponieważ program parsujący, otwiera pliki alfabetycznie a zapytanie to musi zostać wykonane jako pierwsze.  Poniżej mamy przykład danych do zapisania:
+Pierwsze zapytanie które zostanie omówione jest to  zapytanie o podstawowe parametry, informacje na temat rekrutacji. Znajduje się ono w pliku \emph{aaasetup.tex}. Plik posiada trzy litery "a" w nazwie, ponieważ program parsujący, otwiera pliki alfabetycznie a zapytanie to, musi zostać wykonane jako pierwsze.  Poniżej mamy przykład danych do zapisania:
  \begin{lstlisting}
 \parametrRekrutacyjny{dataWydaniaDecyzji}{09.10.2015}
 \parametrRekrutacyjny{miejsceWydaniaDecyzji}{Nowy Sącz}
@@ -269,7 +269,7 @@ Aby uzyskać takie dane, potrzeba będzie pobrać wszystkie rekordy z tabeli \te
  \begin{lstlisting}
 SELECT klucz,wartosc FROM setup_aligeza
 \end{lstlisting}
-Po wywołaniu go faktycznie otrzymamy dane potrzebne nam dane. Jednak aby program parsujący był wstanie znaleźć takie zapytanie w szablonie potrzeba je obudować w odpowiednią konstrukcję, która będzie odpowiadać wyrażeniu regularnemu zapisanemu w parserze. Należy także wpisać nazwę środowiska w odpowiednie miejsce między znakami @@. Dodatkowo musimy jeszcze postarać się aby kompilator LaTeX'a zignorował nasz zapis i go nie wyświetlał. Do tego celu zastosowana została komenda \texttt{iffalse}.
+Po wywołaniu go, otrzymamy potrzebne nam dane. Jednak aby program parsujący był wstanie znaleźć takie zapytanie w szablonie potrzeba je obudować w odpowiednią konstrukcję, która będzie odpowiadać wyrażeniu regularnemu zapisanemu w parserze. Należy także wpisać nazwę środowiska w odpowiednie miejsce między znakami @@. Dodatkowo należy jeszcze postarać się aby kompilator LaTeX'a zignorował ten zapis i go nie wyświetlał. Do tego celu zastosowana została komenda \texttt{iffalse}.
  \begin{lstlisting}
 \iffalse@@parametrRekrutacyjny@@
 SELECT klucz,wartosc FROM setup_aligeza
@@ -289,7 +289,7 @@ Następnie zapytanie zawarte w pliku \emph{protokolprzekazania.tex}. Występuje 
 \endprotokolprzekazaniaA        
 \end{lstlisting}
 \par
-Pomijając na razie otwarcie środowiska \texttt{protokolprzekazaniaA\{1\} }oraz zamkniecie \texttt{endprotokolprzekazaniaA}, w zapytaniu potrzebujemy wyświetlić każdy tok nauczania oraz z agregowaną liczbę kandydatów na tym toku. Do agregacji użyjemy polecenia \texttt{group}  na polu tok by móc otrzymać liczbę kandydatów używając funkcji count(*). Dodatkowo potrzeba także wybrać kandydatów tylko posiadającą daną datę decyzji. Do tego posłuży podzapytanie, które pobierze datę decyzji z aktualnej rekrutacji i porówna ją z datą decyzji dla danego kandydata. 
+Pomijając na razie otwarcie środowiska \texttt{protokolprzekazaniaA\{1\} }oraz zamkniecie \texttt{endprotokolprzekazaniaA}, w zapytaniu potrzebne jest wyświetlić każdy tok nauczania oraz zagregowaną liczbę kandydatów na tym toku. Do agregacji użyte zostanie polecenie \texttt{group} na polu tok by móc otrzymać liczbę kandydatów używając funkcji count(*). Dodatkowo potrzeba także wybrać kandydatów, posiadających daną datę decyzji. Do tego posłuży podzapytanie, które pobierze datę decyzji z aktualnej rekrutacji i porówna ją z datą decyzji dla danego kandydata. 
  \begin{lstlisting}
 SELECT  k.kierunek_my||' --- '||k.forma_studiow_my||
 ' STUDIA '||k.stopien_studiow_my AS tok, count(*) AS ile
@@ -299,8 +299,8 @@ WHERE  k.data_decyzji=(SELECT wartosc FROM
 GROUP BY tok
 \end{lstlisting}
 \par
-Takie zapytanie wyświetli nam dane pomiędzy tymi pominiętymi dotychczas komendami. 
-Rozwiązaniem wyświetlenia tych komend jest funkcja programu uzupełniającego szablony, a dokładnie funkcja grupowania. Dokładny opis tej funkcji znajduje się w rozdziale ref. Do zapytania dodamy jako pierwsze pole wartość 1, a następnie użyta zostanie funkcja grupowania po 1 polu wewnątrz szablonu:
+Takie zapytanie wyświetli dane pomiędzy tymi pominiętymi dotychczas komendami. 
+Rozwiązaniem wyświetlenia tych komend jest funkcja programu uzupełniającego szablony, a dokładnie funkcja grupowania. Dokładny opis tej funkcji znajduje się w rozdziale \ref{ch:szablonyraportowwsystemielatex}. Do zapytania dodamy jako pierwsze pole wartość 1, a następnie użyta zostanie funkcja grupowania po 1 polu wewnątrz szablonu:
  \begin{lstlisting}
 \iffalse @@protokolprzekazania@1@@
 SELECT 1 AS n,k.kierunek_my||' --- '||
@@ -314,7 +314,7 @@ GROUP BY tok
 \end{lstlisting}
 
 \subsubsection*{Szablon z nadrukami na koperty- pocztex.tex}
-Dla szablonu 'pocztex.tex' potrzebujemy prostą listę z adresami każdego kandydata z danej rekrutacji:
+Dla szablonu 'pocztex.tex' potrzebna jest prosta lista z adresami każdego kandydata z danej rekrutacji:
 
 
  \begin{lstlisting}
@@ -348,7 +348,7 @@ W kolejnym szablonie \emph{listasekretariat.tex} potrzebne jest utworzenie list 
 ...
 \end{lstlisting}
 
-W zapytaniu więc potrzebne będzie wybrać wszystkich kandydatów z datą decyzji aktualnej rekrutacji, a następnie wyświetlić kierunek, formę, stopień studiów, imię, nazwisko oraz numer teczki. W zapytaniu także potrzebne będzie sortowanie po polach, które będą grupowane w programie uzupełniającym szablon. Każde na tych polach w zapytaniu SQL użyjemy polecenia \texttt{ORDER BY}. Ostatecznie poinformujemy program, aby otrzymane dane grupował po 3 pierwszych polach:
+W zapytaniu więc potrzebne będzie wybrać wszystkich kandydatów z datą decyzji aktualnej rekrutacji, a następnie wyświetlić kierunek, formę, stopień studiów, imię, nazwisko oraz numer teczki. W zapytaniu także potrzebne będzie sortowanie po polach, które będą grupowane w programie uzupełniającym szablon. W zapytaniu SQL zastosowane zostanie polecenie \texttt{ORDER BY} na grupowanych polach. Ostatecznie w odpowiednim miejscu pomiędzy nazwą a zapytaniem wpisana zostanie liczba "3", oznaczająca polecenie aby dane grupowane były po 3 pierwszych polach:
  \begin{lstlisting}
 \iffalse@@listarsekretariat@3@@
 SELECT stopien_studiow_my,kierunek_my,forma_studiow_my,
@@ -362,7 +362,7 @@ ORDER BY kierunek_forma_skrot_my, nazwiskoimiona
 \end{lstlisting}
 
 \subsubsection*{Szablony z listami listaprzyjetych.tex, listanieprzyjetych.tex, listawysylkowa.tex, listarankingowa.tex}
-W szablonach znajdują się jeszcze 4 kolejne podobne listy: przyjętych, nieprzyjętych,wysyłkowa oraz rankingowa. Zasada utworzenia zapytań do tych list jest identyczna jak w liście do sekretariatu. Różnią się one będą jedynie pewnymi warunkami wewnątrz zapytań SQL czy też polami po których będą sortowane dane.
+W szablonach znajdują się jeszcze 4 kolejne podobne listy: przyjętych, nieprzyjętych, wysyłkowa oraz rankingowa. Zasada utworzenia zapytań do tych list jest identyczna jak w liście do sekretariatu. Różnią się one jedynie pewnymi warunkami wewnątrz zapytań SQL czy też polami po których będą sortowane dane.
 
 \par Lista przyjętych:
  \begin{lstlisting}
@@ -416,7 +416,7 @@ ORDER BY kierunek_forma_skrot_my, STUD_ILPUNKTOW desc
 \end{lstlisting}
 \par 
 \subsubsection*{Szablon z decyzją odnośnie przyjęcia kandydata - decyzja.tex}
-W ostatnim szablonie wystąpił problem ilości parametrów jakie trzeba przekazać do poprawnego działania szablonu. W LaTeX'ie można stworzyć środowisko o maksymalnie 9 parametrach, natomiast w szablonie \emph{decyzja.tex} dla każdego kandydata potrzeba 12 różnych informacji. Rozwiązaniem tego problemu także było grupowanie przez program uzupełniania raportów. Grupowanie wytnie 3 pierwsze pola i wstawi je do nowego środowiska. W zapytaniu SQL wyświetlanie daty musi posiadać dodatkowe 0 przy datach typu 01.02.2015 gdzie właśnie liczby dni lub miesięcy są mniejsze od 10:
+W ostatnim szablonie wystąpił problem ilości parametrów jakie trzeba przekazać do poprawnego działania szablonu. W LaTeX'ie można stworzyć środowisko o maksymalnie 9 parametrach, natomiast w szablonie \emph{decyzja.tex} dla każdego kandydata potrzeba 12 różnych informacji. Rozwiązaniem tego problemu także było grupowanie przez program uzupełniania raportów. Funkcja grupująca wycina 3 pierwsze pola i wstawia je do nowego środowiska. Dodatkowo w zapytaniu SQL wyświetlanie daty musi posiadać dodatkowe 0 przy datach typu 01.02.2015 gdzie właśnie liczby dni lub miesięcy są mniejsze od 10:
  \begin{lstlisting}
 \iffalse@@decyzja@3@@
 SELECT ka.stopien_studiow_my,ka.kierunek_my,ka.forma_studiow_my,
@@ -449,10 +449,6 @@ Następnie od linijki zawierającej \texttt{\#dbLatexRaportConfig} zaczynają si
 templatepath=template/
   \end{lstlisting}
   \item Ścieżka do uzupełnionych szablonów LaTeX oraz skompilowanego pliku PDF
-  \begin{lstlisting}
-output=output/
- \end{lstlisting}
- \item Ścieżka do uzupełnionych szablonów LaTeX oraz skompilowanego pliku PDF
   \begin{lstlisting}
 output=output/
  \end{lstlisting}
@@ -594,5 +590,5 @@ Wszystkie szablony zostały uzupełnione poprawnie danymi z bazy danych oraz kom
     \label{fig:test}
 \end{figure}
 \section{Wnioski}
-Po udanym przeprowadzeniu testu można stwierdzić, że tak przygotowana paczka systemu raportów zawierająca wszystkie potrzebne rzeczy do przeprowadzenia rekrutacji, spełnia w pełnym zakresie wymagania postawione w założeniach pracy. Cały katalog roboczy systemu po spakowaniu zajmuje około 50 megabajtów i po rozpakowaniu około 100 megabajtów co oznacza, że przy dzisiejszych nośnikach danych nie będzie problemu z przeniesieniem systemu. Dodatkowo paczka zaraz po rozpakowaniu na systemie Windows jest gotowa do pracy i wymaga jedynie zainstalowanego środowiska uruchomieniowego JAVA 1.8. Cały system tworzenia raportów znajduje się w załączniku 3.
+Po udanym przeprowadzeniu testu można stwierdzić, że tak przygotowana paczka systemu raportów zawierająca wszystkie rzeczy do przeprowadzenia rekrutacji, spełnia w pełnym zakresie wymagania postawione w założeniach pracy. Cały katalog roboczy systemu po spakowaniu zajmuje około 50 megabajtów i po rozpakowaniu około 100 megabajtów co oznacza, że przy dzisiejszych nośnikach danych nie będzie problemu z przeniesieniem systemu. Dodatkowo paczka zaraz po rozpakowaniu na systemie Windows jest gotowa do pracy i wymaga jedynie zainstalowanego środowiska uruchomieniowego JAVA 1.8. Cały system tworzenia raportów znajduje się w załączniku 3.
 
