@@ -4,7 +4,7 @@ Ten rozdział przedstawia dokładny proces implementacji programu \emph{DBLatexR
 \par
  Wyjaśnione zostaną podjęte decyzje oraz postępowania przy pisaniu danego kodu, aby w pełni oddać idee tworzenia tego programu. Sekcję tę, można więc potraktować jako pewien samouczek, który jednak wymaga minimalnej znajomości języka programowania \emph{JAVA}. Pominięte też zostaną kwestie związane z importem podstawowych bibliotek, czy też wszelkie obsługi wyjątków, które mogą zaistnieć przy złej obsłudze programu. Cała uwaga zostanie skupiona tylko i wyłącznie na kodzie, przy poprawnym wykonaniu. W razie potrzeby dokładnej analizy cały kod programu znajduje się w załączniku 2.
  \par
- Wszelki kod przedstawiony w tym rozdziale zawierający z lewej stronie numery linii, znajduje się w programie. Numery te  odzwierciedlają dokładne położenie danej linii kodu w programie.
+ Wszelki kod przedstawiony w tym rozdziale zawierający z lewej stronie numery linii, znajduje się w programie. Numery te  odzwierciedlają dokładne położenie danej linii kodu w programie. Dodatkowo pełna dokumentacja kodu w języku angielskim znajduje się w załączniku 2.
 
 \section{Algorytm działania systemu raportowania}
 
@@ -109,7 +109,7 @@ cmd /c start texlive\2010min\bin\win32\pdflatex.exe
 \section{Wybór języka oraz środowiska programistycznego }
 
 Pierwszym podstawowym kryterium wyboru języka programowania, w tym projekcie, jest fakt posiadania przez język gotowych bibliotek obsługujących połączenie z serwerem bazodanowym. Cała reszta wymagań takich jak obsługa operacji na plikach, operacje na łańcuchach tekstu, obiektowość języka czy też multiplatformowość schodzą na drugi plan, ze względu na to, że każdy współczesny język posiada większość podstawowych funkcjonalności. 
-\par Na uczelni wykorzystywany jest serwer bazodanowy o silniku \emph{Firebird 2.5}. Najpopularniejsze języki programowania, które obsługują połączenie z tym serwerem to:
+\par Na uczelni wykorzystywany jest serwer bazodanowy o silniku \emph{Firebird 2.5}. Najpopularniejsze języki programowania, które obsługują połączenie z tym serwerem to \cite{Dokumentacja_Firebird}:
 \begin{itemize}
 \item JAVA
 \item C++
@@ -120,7 +120,7 @@ Pierwszym podstawowym kryterium wyboru języka programowania, w tym projekcie, j
 \item wszystkie języki obsługujące połączenie z \emph{ODBC (Open DataBase Connectivity)} 
 \end{itemize}
 \vspace{5mm}
-We wszystkich powyższych językach jest wstanie powstać potrzebny program, jednak najlepszym wyborem okazał się język \emph{\textbf{JAVA}}, ze względu na wiele zalet:
+We wszystkich powyższych językach jest wstanie powstać potrzebny program, jednak najlepszym wyborem okazał się język \emph{\textbf{JAVA}} \cite{kompediumjava}, ze względu na wiele zalet:
 \begin{itemize}
 \item prostota importu bibliotek połączenia z serwerem bazodanowym. Dodatkowo na jednym interfejsie można obsłużyć połączenia z innymi silnikami bazodanowymi.
 \item multiplatformowość
@@ -131,7 +131,7 @@ We wszystkich powyższych językach jest wstanie powstać potrzebny program, jed
 \end{itemize}
 \vspace{5mm}
 \par
-Natomiast na środowisko w jakim powstanie projekt wybrany został program \emph{\textbf{NetBeans 8.0.2 }} ze względu wiele przydanych funkcjonalności oraz  prostotę obsługi. Dodatkowo posiada on pełną dokumentację jak i wiele samouczków w Internecie. 
+Natomiast na środowisko w jakim powstanie projekt wybrany został program \emph{\textbf{NetBeans 8.0.2 }} ze względu wiele przydanych funkcjonalności oraz  prostotę obsługi. Dodatkowo posiada on pełną dokumentację jak i wiele samouczków w Internecie \cite{NetBeans_Platform}. 
 
 \section{Utworzenie projektu i jego struktury}
 
@@ -617,7 +617,7 @@ Grupy przechwytujące:
 \end{itemize}
 \vspace{5mm}
  \par
-W języku JAVA zaimplementowana została już obsługa wyrażeń regularnych. Wystarczy więc wykorzystać dostępne klasy \texttt{Pattern} oraz \texttt{Matcher}. Przez wywołanie statycznej metody \texttt{compile} z flagami \texttt{Pattern.DOTALL | Pattern.MULTILINE} uzyskamy odpowiednio skompilowane wyrażenie regularne. Zewnętrzna pętla wykorzystana będzie do iterowania szablonów, natomiast wewnętrzna pętla do zapisu znalezionych selekcji dla danego szablonu. Składowa \texttt{sqlinfo} po jednorazowym wywołaniu tej metody przechowywać będzie dla k-tego szablonu wszystkie znalezione selekcje.
+W języku JAVA zaimplementowana została już obsługa wyrażeń regularnych \cite{REGEX}. Wystarczy więc wykorzystać dostępne klasy \texttt{Pattern} oraz \texttt{Matcher}. Przez wywołanie statycznej metody \texttt{compile} z flagami \texttt{Pattern.DOTALL | Pattern.MULTILINE} uzyskamy odpowiednio skompilowane wyrażenie regularne. Zewnętrzna pętla wykorzystana będzie do iterowania szablonów, natomiast wewnętrzna pętla do zapisu znalezionych selekcji dla danego szablonu. Składowa \texttt{sqlinfo} po jednorazowym wywołaniu tej metody przechowywać będzie dla k-tego szablonu wszystkie znalezione selekcje.
 
  \begin{lstlisting}[numbers=left,firstnumber=214]
 public void parseSqlStatements(String pat)
@@ -719,7 +719,7 @@ public int prepareValues(int k,int c,String env,String grouping,RecordSet rs){
 
 \subsubsection*{Metoda prostego przetworzenia danych}
 
-%bib Java. Kompendium programisty. Wydanie VIII
+
 Metoda ma na celu utworzenie dla każdego przekazanego rekordu w parametrze metody \texttt{RecordSet rs } utworzenie linii tekstu zawierającego wywołanie środowiska o nazwie przekazanej w parametrze metody \texttt{String prefix} i od parametrów, którymi będą kolejne pola w rekordach. 
 \par 
 Obiekt typu \texttt{RecordSet} jest macierzą typu \texttt{String}, którą należy połączyć w odpowiedni sposób. Do tego celu wykorzystana została klasa \texttt{StringBuilder}, która potrafi połączyć znaczą ilość obiektów typu \texttt{String} w optymalny sposób poprzez metodę \texttt{append} i utworzyć z nich jeden obiekt.
@@ -885,7 +885,7 @@ Metoda dodająca przetworzone wartości do zmiennej przechowującej zawartość 
 
 
 \subsection{Akcesory}
-Akcesory (gettery i settery) to określenie metod jakie wykorzystuje obiekt do pobrania wartości i modyfikacji swoich atrybutów. Są one bardzo często dołączane do klas przez programistów Javy i nawet niektóre edytory (np. Eclipse) posiadają funkcjonalność automatycznego wygenerowania ich. Poniżej przedstawiony został każdy akcesor do klasy z krótką informacją co pobiera:
+Akcesory (gettery i settery) to określenie metod jakie wykorzystuje obiekt do pobrania wartości i modyfikacji swoich atrybutów \cite{Akcesory}. Są one bardzo często dołączane do klas przez programistów Javy i nawet niektóre edytory (np. Eclipse) posiadają funkcjonalność automatycznego wygenerowania ich. Poniżej przedstawiony został każdy akcesor do klasy z krótką informacją co pobiera:
 \par
 \begin{itemize}
 
