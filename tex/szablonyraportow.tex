@@ -1,22 +1,23 @@
 \chapter{Szablony raportów w systemie LaTeX}
 \label{ch:szablonyraportowwsystemielatex}
 
-W tym rozdziale przedstawiony zostanie proces przygotowania szablonów dokumentów potrzebnych przy rekrutacji na uczelni PWSZ Nowy Sącz. Opisane zostaną tylko problemy wynikające z tworzenia automatycznie uzupełnianych szablonów oraz ich rozwiązania. Wszystkie stworzone szablony znajdują się w załączniku 3 w katalogu \texttt{template/}.
+W tym rozdziale przedstawiony zostanie proces przygotowania szablonów dokumentów potrzebnych przy rekrutacji na uczelni PWSZ Nowy Sącz. Opisane zostaną tylko problemy wynikające z tworzenia automatycznie uzupełnianych szablonów oraz rozwiązania tych problemów. Wszystkie stworzone szablony znajdują się w załączniku 3 w katalogu \texttt{template/}.
 
 \section{Idea tworzenia szablonów}
 
-Do wszystkich tych dokumentów potrzebny jest szablon w języku oprogramowania do zautomatyzowanego składu tekstu. W tej pracy został wybrany program LaTeX ze względu na jego możliwości automatyzacji procesu parsowania danych i uzupełniania nimi danych miejsc w tekście.
-\par Stworzenie szablonów polega, więc na wcześniejszym przygotowaniu plików tex, zawierających wcześniej strukturę danego dokumentu z ''pustymi''  miejscami do uzupełnienia przez program. Do uzupełnienia tych miejsc można wykorzystać funkcję LaTeX'u jaką jest tworzenie nowych poleceń z parametrami, gdzie odpowiednio parametry te będą wartościami, które zostaną wpisane w dane miejsce w danym dokumencie. Następnie wystarczy wywołać daną komendę z odpowiednimi wartościami aby otrzymać uzupełniony dokument. Dane polecenie możemy wywoływać wielokrotnie od różnych wartości tworząc w ten sposób wiele dokumentów tego samego typu o różnych zmiennych wartościach takich jak np imię i nazwisko. 
-\par Do wytworzenia wywołań tych komend posłuży oddzielny program. Poprzez dodanie zapytania SQL w odpowiedniej formule do plików tex. Program \emph{DBLatexRaport} wyszuka takie zapytanie i uzupełni szablon wywołaniami poleceń z wartościami parametrów, jakimi będą wartości pola z rekordów zapytania SQL. 
+Do wszystkich tych dokumentów potrzebny jest szablon w języku opisu strony do zautomatyzowanego składu tekstu. W pracy został wybrany program LaTeX ze względu na jego możliwości automatyzacji procesu parsowania danych i uzupełniania nimi danych miejsc w tekście.
+
+Stworzenie szablonów polega, więc na wcześniejszym przygotowaniu plików tex, zawierających wcześniej strukturę danego dokumentu z ''pustymi''  miejscami do uzupełnienia przez program. Do uzupełnienia tych miejsc można wykorzystać funkcję LaTeX'u jaką jest tworzenie nowych poleceń z parametrami, gdzie odpowiednio parametry te będą wartościami, które zostaną wpisane w dane miejsce w danym dokumencie. Następnie wystarczy wywołać daną komendę z odpowiednimi wartościami aby otrzymać uzupełniony dokument. Dane polecenie możemy wywoływać wielokrotnie od różnych wartości tworząc w ten sposób wiele dokumentów tego samego typu o różnych zmiennych wartościach takich jak np imię i nazwisko. 
+
+ Do wytworzenia wywołań tych komend posłuży oddzielny program. Poprzez dodanie zapytania SQL w odpowiedniej formule do plików tex. Program \emph{DBLatexRaport} wyszuka takie zapytanie i uzupełni szablon wywołaniami poleceń z wartościami parametrów, jakimi będą wartości pola z rekordów zapytania SQL. 
 
 \section{Środowisko kompilacji raportów}
 
-Środowisko do kompilacji dokumentów zostało specjalnie przygotowane poprzez usuniecie nadmiarowych (nieużywanych) bibliotek. Dzięki temu cały system będzie zajmował mniej pamięci na dysku twardym i będzie łatwiejsze do przenoszenia. Dodatkowo kompilatora nie trzeba instalować, dzięki czemu cały system będzie szybki w użyciu. Środowisko kompilacji wymaga systemu operacyjnego Windows. Środowisko to znajduje się w załączniku 3. razem z programem.
+Środowisko do kompilacji dokumentów zostało specjalnie przygotowane poprzez usuniecie nadmiarowych (nieużywanych) bibliotek. Dzięki temu cały system będzie zajmował mniej pamięci na dysku twardym i będzie łatwiejsze do przenoszenia. Dodatkowo kompilatora nie trzeba instalować, dzięki czemu cały system będzie szybki w użyciu. Środowisko kompilacji wymaga systemu operacyjnego Windows. Środowisko to znajduje się w załączniku 3 wraz z programem.
 
 
 \section{Tworzenie szablonów raportów do systemu rekrutacji}
-
-W rekrutacji na uczelnie wykorzystuje się dokumenty, które należało dokładnie odwzorować w nowym systemie. Są to następujące dokumenty:\\
+W rekrutacji kandydatów na studia wykorzystuje się dokumenty, które należało dokładnie odwzorować w nowym systemie. Są to następujące dokumenty:
 \begin{enumerate}
 \item protokół przekazania
 \item listy potwierdzenia podjęcia studiów 
@@ -25,6 +26,8 @@ W rekrutacji na uczelnie wykorzystuje się dokumenty, które należało dokładn
 \item listy nieprzyjętych
 \item decyzja o przyjęciu danego kandydata
 \item decyzja o nieprzyjęciu danego kandydata 
+\item potwierdzenia odbioru decyzji przez kandydata
+\item listy wysyłkowe
 \end{enumerate}
 \vspace{5mm}
 \par
@@ -32,7 +35,7 @@ Przy tworzeniu szablonów wystąpiły problemy, które należało rozwiązać.  
 \subsection{Definiowanie zmiennych}
 
 Pewne dynamicznie pobrane z bazy danych informacje powtarzają się w szablonach w wielu miejscach, zaistniała więc potrzeba zapisania tych informacji jednorazowo do zmiennych, które można wywołać w każdym miejscu w dokumencie. 
-\par
+
 Do uzyskania takiego efektu wykorzystana została poniższa procedura:
  \begin{lstlisting}
 \long\def\parametrRekrutacyjny#1#2{\expandafter\def\csname#1\endcsname{#2}}
@@ -43,7 +46,7 @@ Po wywołaniu przykładowych danych pokazanych poniżej:
  \begin{lstlisting}
 \parametrRekrutacyjny{dataWydaniaDecyzji}{2015-03-06}
 \parametrRekrutacyjny{miejsceWydaniaDecyzji}{Nowy Sącz}
-\parametrRekrutacyjny{przewodniczacyIKR}{dr inż. Tomasz Kądziołka}
+\parametrRekrutacyjny{przewodniczacyIKR}{dr inż. Tomasz Kadziołka}
  \end{lstlisting}
 będzie można pobrać te zmienne za pomocą wywołania komendy o nazwie 1 parametru. Wywołanie więc \texttt{ \textbackslash dataWydaniaDecyzji} zwróci wartość w danym miejscu \texttt{2015-03-06}.
 
@@ -100,16 +103,16 @@ Dla  każdego wywołania komendy o nazwie \texttt{decyzjaSingle} od podanych par
 Problem występujący w protokole przekazania oraz we wszystkich listach. Dla przykładu potrzeba wyświetlić poniższą listę w tabeli, gdzie wartości pochodzą z bazy danych:
 \begin{lstlisting}
 Lp. Tok studiów Liczba kopert
-1 Informatyka — niestacjonarne STUDIA pierwszego stopnia 1455
-2 Informatyka — stacjonarne STUDIA pierwszego stopnia 729
-3 Mechatronika — niestacjonarne STUDIA pierwszego stopnia 1447
+1 Informatyka - niestacjonarne STUDIA pierwszego stopnia 1455
+2 Informatyka - stacjonarne STUDIA pierwszego stopnia 729
+3 Mechatronika - niestacjonarne STUDIA pierwszego stopnia 1447
 ...
 \end{lstlisting}
 \vspace{5mm}
 \par
 Stworzenie tabeli wymaga dodatkowo stworzenia nagłówka tabeli i zakończenia tabeli. Cała zawartość listy, czyli wywołania komend  od parametrów zawierających rekordy z bazy danych, powinna znaleźć się pomiędzy nagłówkiem a zakończeniem. W tym celu program \emph{DBLatexRaport} został rozwinięty o dodatkową funkcjonalność, która pozwala na dodawanie selekcji danych wewnątrz szablonu, co ułatwia stworzenie listy. 
 \par
-Do wyświetlenia jednego wiersza posłuży komenda \texttt{prodokolprzekazania}:
+Do wyświetlenia jednego wiersza posłuży komenda \texttt{protokolprzekazania}:
 \vspace{5mm}
 \begin{lstlisting}
 \newcommand{\protokolprzekazania}[2]{\stepcounter{lp}\thelp&{\tiny #1}&#2\\}
